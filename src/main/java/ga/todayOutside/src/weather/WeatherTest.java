@@ -36,8 +36,66 @@ import org.json.simple.parser.ParseException;
 import javax.swing.event.CellEditorListener;
 
 
+
+
 @RestController
 public class WeatherTest {
+
+
+    //todayWeather 시각별 날씨 관련 변수 선언
+
+    //최종 오늘의 날씨 return 변수
+    static Map<String, Map> todayWeahterResult=new LinkedHashMap<>();
+
+    static Map<String,String> clock_00=new HashMap<>();
+    static Map<String,String> clock_01=new HashMap<>();
+    static Map<String,String>clock_02=new HashMap<>();
+    static Map<String,String> clock_03=new HashMap<>();
+    static Map<String,String> clock_04=new HashMap<>();
+    static Map<String,String> clock_05=new HashMap<>();
+    static Map<String,String> clock_06=new HashMap<>();
+    static Map<String,String> clock_07=new HashMap<>();
+    static Map<String,String> clock_08=new HashMap<>();
+
+    static Map<String,String> clock_09=new HashMap<>();
+    static Map<String,String>clock_10=new HashMap<>();
+    static Map<String,String> clock_11=new HashMap<>();
+    static Map<String,String> clock_12=new HashMap<>();
+    static Map<String,String> clock_13=new HashMap<>();
+    static Map<String,String> clock_14=new HashMap<>();
+    static Map<String,String> clock_15=new HashMap<>();
+    static Map<String,String> clock_16=new HashMap<>();
+    static Map<String,String> clock_17=new ManagedMap<>();
+
+    static Map<String,String> clock_18=new HashMap<>();
+    static Map<String,String>clock_19=new HashMap<>();
+    static Map<String,String> clock_20=new HashMap<>();
+    static Map<String,String> clock_21=new HashMap<>();
+    static Map<String,String> clock_22=new HashMap<>();
+    static Map<String,String> clock_23=new HashMap<>();
+
+    //일주일 단위의 날씨 정보 조회 변수
+
+    static Map<String,String> day1_high=new HashMap<>();
+    static Map<String,String> day1_low=new HashMap<>();
+
+    static Map<String,String> day2_high=new HashMap<>();
+    static Map<String,String> day2_low=new HashMap<>();
+
+    static Map<String,String> day3_high=new HashMap<>();
+    static Map<String,String> day3_low=new HashMap<>();
+
+    static Map<String,String> day4_high=new HashMap<>();
+    static Map<String,String> day4_low=new HashMap<>();
+
+    static Map<String,String> day5_high=new HashMap<>();
+    static Map<String,String> day5_low=new HashMap<>();
+
+    static Map<String,String> day6_high=new HashMap<>();
+    static Map<String,String> day6_low=new HashMap<>();
+
+    static Map<String,String> day7_high=new HashMap<>();
+    static Map<String,String> day7_low=new HashMap<>();
 
 
     //open api사용 초단기 예보
@@ -47,18 +105,25 @@ public class WeatherTest {
     @GetMapping("/todayWeather")
     public Map weather() throws IOException, ParseException {
 
+
+        //시간을 받아오는 코드
+        //조회하는 시간에서 +1 정보만 가져온다.
+        int currentTime= LocalDateTime.now().getHour();
+        int min=LocalDateTime.now().getMinute();
+
+        String time=Integer.toString(currentTime)+Integer.toString(min);
+
         String apiUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService/getUltraSrtFcst";
         // 홈페이지에서 받은 키
         String serviceKey = Secret.WEATHER_OPEN_APIKEY;
         String nx = "60";	//위도
         String ny = "125";	//경도
-        String baseDate = "20210226";	//조회하고싶은 날짜
-        String baseTime = "0000";	//조회하고싶은 시간
+        String baseDate = "20210227";	//조회하고싶은 날짜
+        String baseTime = time;	//조회하고싶은 시간
         String dataType = "json";	//타입 xml, json 등등 ..
         String numOfRows = "10000";	//한 페이지 결과 수
 
         //전날 23시 부터 153개의 데이터를 조회하면 오늘과 내일의 날씨를 알 수 있음
-
 
         StringBuilder urlBuilder = new StringBuilder(apiUrl);
         urlBuilder.append("?" + URLEncoder.encode("ServiceKey","UTF-8") + "="+serviceKey);
@@ -102,12 +167,8 @@ public class WeatherTest {
         JSONObject parse_items = (JSONObject) parse_body.get("items");
         JSONArray parse_item = (JSONArray) parse_items.get("item");
 
+        //element 변수 선언
         JSONObject element;
-
-
-
-
-
         //JSONObject item = (JSONObject) parse_item.get("item");
 
         System.out.println(data);
@@ -116,194 +177,67 @@ public class WeatherTest {
 ////            System.out.println("i = " + i);
 //        }
 
-        Map<String, Map> result=new HashMap<>();
-        Map<String,String> clock_24=new HashMap<>();
-        Map<String,String> clock_01=new HashMap<>();
-        Map<String,String>clock_02=new HashMap<>();
-        Map<String,String> clock_03=new HashMap<>();
-        Map<String,String> clock_04=new HashMap<>();
-        Map<String,String> clock_05=new HashMap<>();
-        Map<String,String> clock_06=new HashMap<>();
-        Map<String,String> clock_07=new HashMap<>();
-        Map<String,String> clock_08=new HashMap<>();
-
-        Map<String,String> clock_09=new HashMap<>();
-        Map<String,String>clock_10=new HashMap<>();
-        Map<String,String> clock_11=new HashMap<>();
-        Map<String,String> clock_12=new HashMap<>();
-        Map<String,String> clock_13=new HashMap<>();
-        Map<String,String> clock_14=new HashMap<>();
-        Map<String,String> clock_15=new HashMap<>();
-        Map<String,String> clock_16=new HashMap<>();
-        Map<String,String> clock_17=new ManagedMap<>();
-
-        Map<String,String> clock_18=new HashMap<>();
-        Map<String,String>clock_19=new HashMap<>();
-        Map<String,String> clock_20=new HashMap<>();
-        Map<String,String> clock_21=new HashMap<>();
-        Map<String,String> clock_22=new HashMap<>();
-        Map<String,String> clock_23=new HashMap<>();
-
 
         for(int i=0;i<parse_item.size();i++){
               element =(JSONObject) parse_item.get(i);
 
-              //밤 12 시
-              if(element.get("fcstTime").equals("0000")){
-                      if(element.get("category").equals("SKY")){
-//                          System.out.println("SKY = " + element);
-                          String skyValue= element.get("fcstValue").toString();
-                          clock_24.put("SKY",skyValue);
-                      }
-                      else if(element.get("category").equals("PTY")){
-//                          System.out.println("PTY = " + element);
-                          String ptyValue= element.get("fcstValue").toString();
-                          clock_24.put("PTY",ptyValue);
-                      }
-                      else if(element.get("category").equals("T1H")){
-//                          System.out.println("T1H = " + element);
-                          String T1H= element.get("fcstValue").toString();
-                          clock_24.put("T1H",T1H);
-                      }
+            //시간 별 날씨 데이터 받아오기 함수 호출
+            today(element,"0000",clock_00,"0시");
+            today(element,"0100",clock_01,"1시");
+            today(element,"0200",clock_02,"2시");
+            today(element,"0300",clock_03,"3시");
+            today(element,"0400",clock_04,"4시");
+            today(element,"0500",clock_05,"5시");
+            today(element,"0600",clock_06,"6시");
+            today(element,"0700",clock_07,"7시");
+            today(element,"0800",clock_08,"8시");
+            today(element,"0900",clock_09,"9시");
+            today(element,"1000",clock_03,"10시");
+            today(element,"1100",clock_04,"11시");
+            today(element,"1200",clock_05,"12시");
+
+            today(element,"1300",clock_13,"13시");
+            today(element,"1400",clock_14,"14시");
+            today(element,"1500",clock_15,"15시");
+            today(element,"1600",clock_16,"16시");
+            today(element,"1700",clock_17,"17시");
+            today(element,"1800",clock_18,"18시");
+            today(element,"1900",clock_19,"19시");
+            today(element,"2000",clock_20,"20시");
+            today(element,"2100",clock_21,"21시");
+            today(element,"2200",clock_22,"22시");
+            today(element,"2300",clock_23,"23시");
+            today(element,"2400",clock_00,"24시");
 
 
-                      result.put("24시",clock_24);
 
-              }
+        }
+        return todayWeahterResult;
+    }
 
-
-            //새벽 1 시
-            if(element.get("fcstTime").equals("0100")){
-                if(element.get("category").equals("SKY")){
-//                    System.out.println("SKY = " + element);
-                    String skyValue= element.get("fcstValue").toString();
-                    clock_01.put("SKY",skyValue);
+    void today(JSONObject object,String clock,Map clockValue,String clockName){
+        if(object.get("fcstTime").equals(clock)){
+                if(object.get("category").equals("SKY")){
+//                    System.out.println("SKY = " + object);
+                    String skyValue= object.get("fcstValue").toString();
+                    clockValue.put("SKY",skyValue);
+//                    System.out.println("today 함수 ");
                 }
-                else if(element.get("category").equals("PTY")){
-//                    System.out.println("PTY = " + element);
-                    String ptyValue= element.get("fcstValue").toString();
-                    clock_01.put("PTY",ptyValue);
+                else if(object.get("category").equals("PTY")){
+                    String ptyValue= object.get("fcstValue").toString();
+                    clockValue.put("PTY",ptyValue);
                 }
-                else if(element.get("category").equals("T1H")){
-//                    System.out.println("T1H = " + element);
-                    String T1H= element.get("fcstValue").toString();
-                    clock_01.put("T1H",T1H);
-                }
-
-
-                result.put("01시",clock_01);
-
-            }
-
-            //새벽 2 시
-            if(element.get("fcstTime").equals("0200")){
-                if(element.get("category").equals("SKY")){
-//                    System.out.println("SKY = " + element);
-                    String skyValue= element.get("fcstValue").toString();
-                    clock_02.put("SKY",skyValue);
-                }
-                else if(element.get("category").equals("PTY")){
-//                    System.out.println("PTY = " + element);
-                    String ptyValue= element.get("fcstValue").toString();
-                    clock_02.put("PTY",ptyValue);
-                }
-                else if(element.get("category").equals("T1H")){
-//                    System.out.println("T1H = " + element);
-                    String T1H= element.get("fcstValue").toString();
-                    clock_02.put("T1H",T1H);
+                else if(object.get("category").equals("T1H")){
+                    String T1H= object.get("fcstValue").toString();
+                    clockValue.put("T1H",T1H);
                 }
 
 
-                result.put("02시",clock_02);
-
-            }
-
-            //새벽 3 시
-            if(element.get("fcstTime").equals("0300")){
-                if(element.get("category").equals("SKY")){
-//                    System.out.println("SKY = " + element);
-                    String skyValue= element.get("fcstValue").toString();
-                    clock_03.put("SKY",skyValue);
-                }
-                else if(element.get("category").equals("PTY")){
-//                    System.out.println("PTY = " + element);
-                    String ptyValue= element.get("fcstValue").toString();
-                    clock_03.put("PTY",ptyValue);
-                }
-                else if(element.get("category").equals("T1H")){
-//                    System.out.println("T1H = " + element);
-                    String T1H= element.get("fcstValue").toString();
-                    clock_03.put("T1H",T1H);
-                }
-
-
-                result.put("03시",clock_03);
-
-            }
-
-
-            //새벽 4 시
-            if(element.get("fcstTime").equals("0400")){
-                if(element.get("category").equals("SKY")){
-//                    System.out.println("SKY = " + element);
-                    String skyValue= element.get("fcstValue").toString();
-                    clock_04.put("SKY",skyValue);
-                }
-                else if(element.get("category").equals("PTY")){
-//                    System.out.println("PTY = " + element);
-                    String ptyValue= element.get("fcstValue").toString();
-                    clock_04.put("PTY",ptyValue);
-                }
-                else if(element.get("category").equals("T1H")){
-//                    System.out.println("T1H = " + element);
-                    String T1H= element.get("fcstValue").toString();
-                    clock_04.put("T1H",T1H);
-                }
-
-
-                result.put("04시",clock_04);
-
-            }
-
-            //새벽 5 시
-            if(element.get("fcstTime").equals("0500")){
-                if(element.get("category").equals("SKY")){
-//                    System.out.println("SKY = " + element);
-                    String skyValue= element.get("fcstValue").toString();
-                    clock_05.put("SKY",skyValue);
-                }
-                else if(element.get("category").equals("PTY")){
-//                    System.out.println("PTY = " + element);
-                    String ptyValue= element.get("fcstValue").toString();
-                    clock_05.put("PTY",ptyValue);
-                }
-                else if(element.get("category").equals("T1H")){
-//                    System.out.println("T1H = " + element);
-                    String T1H= element.get("fcstValue").toString();
-                    clock_05.put("T1H",T1H);
-                }
-
-
-                result.put("05시",clock_05);
-
-            }
-//            System.out.println("element = " + element.get("category"));
-//            System.out.println("element = " + element);
-//            Set set = element.entrySet();
-//            for (Object test : set) {
-//                System.out.println(test.toString());
-//
-//            }
-//            Collection<String> keys=element.values();
+                todayWeahterResult.put(clockName,clockValue);
 
         }
 
 
-
-
-
-
-        return result;
     }
 
 
@@ -322,9 +256,14 @@ public class WeatherTest {
         String nx = "60";    //위도
         String ny = "127";    //경도
 
+        //시간을 받아오는 코드
+        int currentTime= LocalDateTime.now().getHour();
+        int min=LocalDateTime.now().getMinute();
 
-        String baseDate = "20210225";	//조회하고싶은 날짜
-        String baseTime = "2300";    //API 제공 시간
+        String time=Integer.toString(currentTime)+Integer.toString(min);
+
+        String baseDate = "20210227";	//조회하고싶은 날짜
+        String baseTime = time;    //API 제공 시간
         String dataType = "json";    //타입 xml, json
         String numOfRows = "255";    //한 페이지 결과 수
 
@@ -374,9 +313,9 @@ public class WeatherTest {
 
           JSONObject object;
 
-          int Info;//구름 ,맑음 정보 값 임의 네이밍 ->나중에 수정
 
-//        System.out.println(data);
+
+        System.out.println(data);
         for (int i = 0; i < parse_item.size(); i++) {
             object=(JSONObject) parse_item.get(i);
 //            System.out.println("parse_item = " + parse_item);
@@ -384,22 +323,22 @@ public class WeatherTest {
             //SKY,POP,PTY,TMN,TMX
             //sky =3 구름 많움 하늘 상태
             if(object.get("category").equals("SKY")){
-                System.out.println("object = " + object);
-                Stream stream = object.values().stream();
+//                System.out.println("object = " + object);
+//                Stream stream = object.values().stream();
                 Object fcstValue = object.get("fcstValue");
                 System.out.println("SKY = " + fcstValue);
             }
             //강수 확률 POP
             //항상 fcstime 은 pop부터 변경
              else if(object.get("category").equals("POP")){
-                System.out.println("object = " + object);
-                Stream stream = object.values().stream();
+//                System.out.println("object = " + object);
+//                Stream stream = object.values().stream();
                 Object fcstValue = object.get("fcstValue");
                 System.out.println("POP = " + fcstValue);
             }
             //강수형태 PTY
             else if(object.get("category").equals("PTY")){
-                System.out.println("object = " + object);
+//                System.out.println("object = " + object);
 
                 Object fcstValue = object.get("fcstValue");
                 System.out.println("PTY = " + fcstValue);
@@ -407,16 +346,14 @@ public class WeatherTest {
 
             //최저기온
             else if(object.get("category").equals("TMN")){
-                System.out.println("object = " + object);
-                Stream stream = object.values().stream();
-
+//                System.out.println("object = " + object);
+//                Stream stream = object.values().stream();
                 Object fcstValue = object.get("fcstValue");
                 System.out.println("TMN = " + fcstValue);
             }
 
             else if(object.get("category").equals("TMX")){
-                System.out.println("object = " + object);
-
+//                System.out.println("object = " + object);
                 Object fcstValue = object.get("fcstValue");
                 System.out.println("TMX = " + fcstValue.getClass());
             }
