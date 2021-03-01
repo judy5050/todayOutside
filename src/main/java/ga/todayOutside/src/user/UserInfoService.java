@@ -1,18 +1,27 @@
-package ga.todayOutside.src.user;
-
-import ga.todayOutside.utils.JwtService;
-import ga.todayOutside.config.secret.Secret;
-import ga.todayOutside.utils.AES128;
-import ga.todayOutside.config.BaseException;
-import ga.todayOutside.config.BaseResponseStatus;
-import ga.todayOutside.src.user.models.*;
-import lombok.NonNull;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-
+//package ga.todayOutside.src.user;
+//
+//import ga.todayOutside.utils.JwtService;
+//import ga.todayOutside.config.secret.Secret;
+//import ga.todayOutside.utils.AES128;
+//import ga.todayOutside.config.BaseException;
+//import ga.todayOutside.config.BaseResponseStatus;
+//import ga.todayOutside.src.user.models.*;
+//import lombok.NonNull;
+//import lombok.RequiredArgsConstructor;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.security.core.authority.SimpleGrantedAuthority;
+//import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
+//import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+//import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+//import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+//import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+//import org.springframework.security.oauth2.core.user.OAuth2User;
+//import org.springframework.stereotype.Service;
+//
+//import java.util.Collections;
+//
 //@Service
-//public class UserInfoService {
+//public class UserInfoService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 //    private final UserInfoRepository userInfoRepository;
 //    private final UserInfoProvider userInfoProvider;
 //    private final JwtService jwtService;
@@ -114,4 +123,5 @@ import org.springframework.stereotype.Service;
 //            throw new BaseException(BaseResponseStatus.FAILED_TO_DELETE_USER);
 //        }
 //    }
+//
 //}
