@@ -1,4 +1,4 @@
-package ga.todayOutside.src.address;
+package ga.todayOutside.src.address.model;
 
 import ga.todayOutside.config.BaseEntity;
 import ga.todayOutside.src.user.models.UserInfo;

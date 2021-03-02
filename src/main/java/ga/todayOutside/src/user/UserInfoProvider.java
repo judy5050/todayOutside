@@ -1,17 +1,17 @@
-package ga.todayOutside.src.user;
-
-import ga.todayOutside.config.secret.Secret;
-import ga.todayOutside.utils.AES128;
-import ga.todayOutside.config.BaseException;
-import ga.todayOutside.utils.JwtService;
-import ga.todayOutside.config.BaseResponseStatus;
-import ga.todayOutside.src.user.models.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
+//package ga.todayOutside.src.user;
+//
+//import ga.todayOutside.config.secret.Secret;
+//import ga.todayOutside.utils.AES128;
+//import ga.todayOutside.config.BaseException;
+//import ga.todayOutside.utils.JwtService;
+//import ga.todayOutside.config.BaseResponseStatus;
+//import ga.todayOutside.src.user.models.*;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.stereotype.Service;
+//
+//import java.util.List;
+//import java.util.stream.Collectors;
+//
 //@Service
 //public class UserInfoProvider {
 //    private final UserInfoRepository userInfoRepository;
@@ -63,8 +63,8 @@ import java.util.stream.Collectors;
 //        int id = userInfo.getId();
 //        String email = userInfo.getEmail();
 //        String nickname = userInfo.getNickname();
-//        String phoneNumber = userInfo.getPhoneNumber();
-//        return new GetUserRes(id, email, nickname, phoneNumber);
+//
+//        return new GetUserRes(id, email, nickname);
 //    }
 //
 //    /**
@@ -77,18 +77,18 @@ import java.util.stream.Collectors;
 //        // 1. DB에서 email로 UserInfo 조회
 //        UserInfo userInfo = retrieveUserInfoByEmail(postLoginReq.getEmail());
 //
-//        // 2. UserInfo에서 password 추출
-//        String password;
-//        try {
-//            password = new AES128(Secret.USER_INFO_PASSWORD_KEY).decrypt(userInfo.getPassword());
-//        } catch (Exception ignored) {
-//            throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
-//        }
-//
-//        // 3. 비밀번호 일치 여부 확인
-//        if (!postLoginReq.getPassword().equals(password)) {
-//            throw new BaseException(BaseResponseStatus.WRONG_PASSWORD);
-//        }
+////        // 2. UserInfo에서 password 추출
+////        String password;
+////        try {
+////            password = new AES128(Secret.USER_INFO_PASSWORD_KEY).decrypt(userInfo.getPassword());
+////        } catch (Exception ignored) {
+////            throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
+////        }
+////
+////        // 3. 비밀번호 일치 여부 확인
+////        if (!postLoginReq.getPassword().equals(password)) {
+////            throw new BaseException(BaseResponseStatus.WRONG_PASSWORD);
+////        }
 //
 //        // 3. Create JWT
 //        String jwt = jwtService.createJwt(userInfo.getId());
