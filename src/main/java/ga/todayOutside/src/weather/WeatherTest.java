@@ -22,11 +22,13 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+import java.util.zip.DataFormatException;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -96,6 +98,155 @@ public class WeatherTest {
 
     static Map<String,String> day7_high=new HashMap<>();
     static Map<String,String> day7_low=new HashMap<>();
+
+    //최종 오늘의 날씨 return 변수
+    static Map<String, Map> todayWeatherPer03Result=new LinkedHashMap<>();
+
+
+    //3시간별 단위 날씨 조회
+    //3시간을 1시간 단위로 쪼갬
+
+    static Map<String,String> per_00=new HashMap<>();
+    static Map<String,String> per_01=new HashMap<>();
+    static Map<String,String> per_02=new HashMap<>();
+    static Map<String,String> per_03=new HashMap<>();
+    static Map<String,String> per_04=new HashMap<>();
+    static Map<String,String> per_05=new HashMap<>();
+    static Map<String,String> per_06=new HashMap<>();
+    static Map<String,String> per_07=new HashMap<>();
+    static Map<String,String> per_08=new HashMap<>();
+    static Map<String,String> per_09=new HashMap<>();
+    static Map<String,String> per_10=new HashMap<>();
+    static Map<String,String> per_11=new HashMap<>();
+    static Map<String,String> per_12=new HashMap<>();
+
+    static Map<String,String> per_13=new HashMap<>();
+    static Map<String,String> per_14=new HashMap<>();
+    static Map<String,String> per_15=new HashMap<>();
+    static Map<String,String> per_16=new HashMap<>();
+    static Map<String,String> per_17=new HashMap<>();
+    static Map<String,String> per_18=new HashMap<>();
+    static Map<String,String> per_19=new HashMap<>();
+    static Map<String,String> per_20=new HashMap<>();
+    static Map<String,String> per_21=new HashMap<>();
+    static Map<String,String> per_22=new HashMap<>();
+    static Map<String,String> per_23=new HashMap<>();
+
+
+    //당일~7일 데이터 정보 넘김
+    static Map<String,String> day_01_high=new HashMap<>();
+    static Map<String,String> day_01_low=new HashMap<>();
+    static Map<String,String> day_02_high=new HashMap<>();
+    static Map<String,String> day_02_low=new HashMap<>();
+    static Map<String,String> day_03_high=new HashMap<>();
+    static Map<String,String> day_03_low=new HashMap<>();
+    static Map<String,String> day_04_high=new HashMap<>();
+    static Map<String,String> day_04_low=new HashMap<>();
+    static Map<String,String> day_05_high=new HashMap<>();
+    static Map<String,String> day_05_low=new HashMap<>();
+    static Map<String,String> day_06_high=new HashMap<>();
+    static Map<String,String> day_06_low=new HashMap<>();
+    static Map<String,String> day_07_high=new HashMap<>();
+    static Map<String,String> day_07_low=new HashMap<>();
+
+    static Map<String,String> weeklyResult=new LinkedHashMap<>();// 키값 자동정
+
+
+
+    //하늘상태, 강수확률,강수형, 최고 ,최고 기온
+    //SKY,POP,PTY
+    //getMapping 네이밍 생각해보기
+    //3시간 마다 날씨 정보 제공
+    @ResponseBody
+    @GetMapping("/per3today")
+    public Map<String, Map> per3today() throws IOException, ParseException {
+
+        String apiUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService/getVilageFcst";    //동네예보조회
+
+        // 홈페이지에서 받은 키
+        String serviceKey = Secret.WEATHER_OPEN_APIKEY;
+        String nx = "60";    //위도
+        String ny = "127";    //경도
+
+        //시간을 받아오는 코드
+        int currentTime= LocalDateTime.now().getHour();
+        int min=LocalDateTime.now().getMinute();
+
+        String time=Integer.toString(currentTime)+Integer.toString(min);
+
+        String baseDate = "20210301";	//조회하고싶은 날짜
+        String baseTime = "2300";    //API 제공 시간
+        String dataType = "json";    //타입 xml, json
+        String numOfRows = "255";    //한 페이지 결과 수
+
+        //동네예보 -- 전날 05시 부터 225개의 데이터를 조회하면 모레까지의 날씨를 알 수 있음
+
+        StringBuilder urlBuilder = new StringBuilder(apiUrl);
+        urlBuilder.append("?" + URLEncoder.encode("ServiceKey", "UTF-8") + "=" + serviceKey);
+        urlBuilder.append("&" + URLEncoder.encode("nx", "UTF-8") + "=" + URLEncoder.encode(nx, "UTF-8")); //경도
+        urlBuilder.append("&" + URLEncoder.encode("ny", "UTF-8") + "=" + URLEncoder.encode(ny, "UTF-8")); //위도
+        urlBuilder.append("&" + URLEncoder.encode("base_date", "UTF-8") + "=" + URLEncoder.encode(baseDate, "UTF-8")); /* 조회하고싶은 날짜*/
+        urlBuilder.append("&" + URLEncoder.encode("base_time", "UTF-8") + "=" + URLEncoder.encode(baseTime, "UTF-8")); /* 조회하고싶은 시간 AM 02시부터 3시간 단위 */
+        urlBuilder.append("&" + URLEncoder.encode("dataType", "UTF-8") + "=" + URLEncoder.encode(dataType, "UTF-8"));    /* 타입 */
+        urlBuilder.append("&" + URLEncoder.encode("numOfRows", "UTF-8") + "=" + URLEncoder.encode(numOfRows, "UTF-8"));    /* 한 페이지 결과 수 */
+
+        // GET방식으로 전송해서 파라미터 받아오기
+        URL url = new URL(urlBuilder.toString());
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Content-type", "application/json");
+
+        BufferedReader rd;
+        if (conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
+            rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        } else {
+            rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+        }
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = rd.readLine()) != null) {
+            sb.append(line);
+        }
+        rd.close();
+        conn.disconnect();
+        String data = sb.toString();
+
+        // Json parser를 만들어 만들어진 문자열 데이터를 객체화
+        JSONParser parser = new JSONParser();
+        JSONObject obj = (JSONObject) parser.parse(data);
+        // response 키를 가지고 데이터를 파싱
+        JSONObject parse_response = (JSONObject) obj.get("response");
+        // response 로 부터 body 찾기
+        JSONObject parse_body = (JSONObject) parse_response.get("body");
+        // body 로 부터 items 찾기
+        JSONObject parse_items = (JSONObject) parse_body.get("items");
+        JSONArray parse_item = (JSONArray) parse_items.get("item");
+        //JSONObject item = (JSONObject) parse_item.get("item");
+
+        JSONObject object;
+
+        //element 변수 선언
+        JSONObject element=null;
+
+
+        System.out.println(data);
+        for (int i = 0; i < parse_item.size(); i++) {
+            object=(JSONObject) parse_item.get(i);
+
+            todayPer03(object,"0300",per_03,"3시");
+            todayPer03(object,"0600",per_06,"6시");
+            todayPer03(object,"0900",per_09,"9시");
+            todayPer03(object,"1200",per_12,"11시");
+            todayPer03(object,"1500",per_15,"15시");
+            todayPer03(object,"1800",per_18,"18시");
+            todayPer03(object,"2100",per_21,"21시");
+            todayPer03(object,"0000",per_00,"00시");
+
+        }
+
+        return todayWeatherPer03Result;
+    }
+
 
 
     //open api사용 초단기 예보
@@ -192,9 +343,9 @@ public class WeatherTest {
             today(element,"0700",clock_07,"7시");
             today(element,"0800",clock_08,"8시");
             today(element,"0900",clock_09,"9시");
-            today(element,"1000",clock_03,"10시");
-            today(element,"1100",clock_04,"11시");
-            today(element,"1200",clock_05,"12시");
+            today(element,"1000",clock_10,"10시");
+            today(element,"1100",clock_11,"11시");
+            today(element,"1200",clock_12,"12시");
 
             today(element,"1300",clock_13,"13시");
             today(element,"1400",clock_14,"14시");
@@ -242,41 +393,77 @@ public class WeatherTest {
 
 
 
+    void todayPer03(JSONObject object,String clock,Map clockValue,String clockName){
+        if(object.get("fcstTime").equals(clock)){
+            if(object.get("category").equals("SKY")){
+                System.out.println("object = " + object);
+                String skyValue= object.get("fcstValue").toString();
+                clockValue.put("SKY",skyValue);
+            }
+            else if(object.get("category").equals("PTY")){
+                String ptyValue= object.get("fcstValue").toString();
+                clockValue.put("PTY",ptyValue);
+            }
+            else if(object.get("category").equals("T3H")){
+                String T1H= object.get("fcstValue").toString();
+                clockValue.put("T3H",T1H);
+            }
+
+
+            todayWeatherPer03Result.put(clockName,clockValue);
+
+        }
+
+
+    }
+
+
     //하늘상태, 강수확률,강수형, 최고 ,최고 기온
     //SKY,POP,PTY,TMN,TMX
     //getMapping 네이밍 생각해보기
+    //3~7일 데이터만 받기
+    //6시 8
+    //하루 전 데이터만 보관 오전 6시가 넘으면 해당 6시 조
     @ResponseBody
     @GetMapping("/weeklyWeather")
     public String weather2() throws IOException, ParseException {
 
-        String apiUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService/getVilageFcst";    //동네예보조회
+        Calendar cal=Calendar.getInstance();
+        cal.setTime(new Date());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+
+        //시각을 얻는 코드
+        int currentTime= LocalDateTime.now().getHour();
+        System.out.println("currentTime = " + currentTime);
+
+        if(currentTime<6){
+          cal.add(Calendar.DATE,-1);
+        }
+
+
+        //날짜 값 빼기 연산
+//        cal.add(Calendar.DATE,-1);
+
+        String apiUrl = "http://apis.data.go.kr/1360000/MidFcstInfoService/getMidTa";	//중기기온조회
 
         // 홈페이지에서 받은 키
         String serviceKey = Secret.WEATHER_OPEN_APIKEY;
-        String nx = "60";    //위도
-        String ny = "127";    //경도
+        String regId = "11B10101";	//예보 구역 코드
 
-        //시간을 받아오는 코드
-        int currentTime= LocalDateTime.now().getHour();
-        int min=LocalDateTime.now().getMinute();
+        //발표시각 0600 1800시
 
-        String time=Integer.toString(currentTime)+Integer.toString(min);
+        String tmFc = sdf.format(cal.getTime())+"0600";	//발표시각 입력
+        String dataType = "json";	//타입 xml, json
+        String numOfRows = "250";	//한 페이지 결과 수
 
-        String baseDate = "20210227";	//조회하고싶은 날짜
-        String baseTime = time;    //API 제공 시간
-        String dataType = "json";    //타입 xml, json
-        String numOfRows = "255";    //한 페이지 결과 수
-
-        //동네예보 -- 전날 05시 부터 225개의 데이터를 조회하면 모레까지의 날씨를 알 수 있음
+        System.out.println("tmFc = " + tmFc);
 
         StringBuilder urlBuilder = new StringBuilder(apiUrl);
-        urlBuilder.append("?" + URLEncoder.encode("ServiceKey", "UTF-8") + "=" + serviceKey);
-        urlBuilder.append("&" + URLEncoder.encode("nx", "UTF-8") + "=" + URLEncoder.encode(nx, "UTF-8")); //경도
-        urlBuilder.append("&" + URLEncoder.encode("ny", "UTF-8") + "=" + URLEncoder.encode(ny, "UTF-8")); //위도
-        urlBuilder.append("&" + URLEncoder.encode("base_date", "UTF-8") + "=" + URLEncoder.encode(baseDate, "UTF-8")); /* 조회하고싶은 날짜*/
-        urlBuilder.append("&" + URLEncoder.encode("base_time", "UTF-8") + "=" + URLEncoder.encode(baseTime, "UTF-8")); /* 조회하고싶은 시간 AM 02시부터 3시간 단위 */
-        urlBuilder.append("&" + URLEncoder.encode("dataType", "UTF-8") + "=" + URLEncoder.encode(dataType, "UTF-8"));    /* 타입 */
-        urlBuilder.append("&" + URLEncoder.encode("numOfRows", "UTF-8") + "=" + URLEncoder.encode(numOfRows, "UTF-8"));    /* 한 페이지 결과 수 */
+        urlBuilder.append("?" + URLEncoder.encode("ServiceKey","UTF-8") + "="+serviceKey);
+        urlBuilder.append("&" + URLEncoder.encode("regId","UTF-8") + "=" + URLEncoder.encode(regId, "UTF-8"));
+        urlBuilder.append("&" + URLEncoder.encode("tmFc","UTF-8") + "=" + URLEncoder.encode(tmFc, "UTF-8")); /* 조회하고싶은 날짜*/
+        urlBuilder.append("&" + URLEncoder.encode("numOfRows","UTF-8") + "=" + URLEncoder.encode(numOfRows, "UTF-8")); /* 조회하고싶은 시간 AM 02시부터 3시간 단위 */
+        urlBuilder.append("&" + URLEncoder.encode("dataType","UTF-8") + "=" + URLEncoder.encode(dataType, "UTF-8"));	/* 타입 */
 
         // GET방식으로 전송해서 파라미터 받아오기
         URL url = new URL(urlBuilder.toString());
@@ -285,7 +472,7 @@ public class WeatherTest {
         conn.setRequestProperty("Content-type", "application/json");
 
         BufferedReader rd;
-        if (conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
+        if(conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
             rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         } else {
             rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
@@ -297,7 +484,7 @@ public class WeatherTest {
         }
         rd.close();
         conn.disconnect();
-        String data = sb.toString();
+        String data= sb.toString();
 
         // Json parser를 만들어 만들어진 문자열 데이터를 객체화
         JSONParser parser = new JSONParser();
@@ -311,57 +498,10 @@ public class WeatherTest {
         JSONArray parse_item = (JSONArray) parse_items.get("item");
         //JSONObject item = (JSONObject) parse_item.get("item");
 
-          JSONObject object;
-
-
-
         System.out.println(data);
-        for (int i = 0; i < parse_item.size(); i++) {
-            object=(JSONObject) parse_item.get(i);
-//            System.out.println("parse_item = " + parse_item);
+        System.out.println(parse_item);
 
-            //SKY,POP,PTY,TMN,TMX
-            //sky =3 구름 많움 하늘 상태
-            if(object.get("category").equals("SKY")){
-//                System.out.println("object = " + object);
-//                Stream stream = object.values().stream();
-                Object fcstValue = object.get("fcstValue");
-                System.out.println("SKY = " + fcstValue);
-            }
-            //강수 확률 POP
-            //항상 fcstime 은 pop부터 변경
-             else if(object.get("category").equals("POP")){
-//                System.out.println("object = " + object);
-//                Stream stream = object.values().stream();
-                Object fcstValue = object.get("fcstValue");
-                System.out.println("POP = " + fcstValue);
-            }
-            //강수형태 PTY
-            else if(object.get("category").equals("PTY")){
-//                System.out.println("object = " + object);
-
-                Object fcstValue = object.get("fcstValue");
-                System.out.println("PTY = " + fcstValue);
-            }
-
-            //최저기온
-            else if(object.get("category").equals("TMN")){
-//                System.out.println("object = " + object);
-//                Stream stream = object.values().stream();
-                Object fcstValue = object.get("fcstValue");
-                System.out.println("TMN = " + fcstValue);
-            }
-
-            else if(object.get("category").equals("TMX")){
-//                System.out.println("object = " + object);
-                Object fcstValue = object.get("fcstValue");
-                System.out.println("TMX = " + fcstValue.getClass());
-            }
-
-//            System.out.println(parse_item.get(i));
-        }
-
-        return "OK";
+        return  "OK";
     }
 
     //시간 변경 확인용 시간 테스트 코드
@@ -371,11 +511,13 @@ public class WeatherTest {
 
         int currentTime= LocalDateTime.now().getHour();
         int min=LocalDateTime.now().getMinute();
+        int year=LocalDateTime.now().getYear();
+        int month=LocalDateTime.now().getMonthValue();
 
         String time=Integer.toString(currentTime)+Integer.toString(min);
+        String day=Integer.toString(year)+Integer.toString(month);
 
-
-        return time;
+        return day;
     }
 
     //사용자 위치 값 nx,ny로 변경
