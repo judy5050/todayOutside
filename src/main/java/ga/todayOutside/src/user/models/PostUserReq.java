@@ -1,5 +1,6 @@
 package ga.todayOutside.src.user.models;
 
+import ga.todayOutside.src.user.Role;
 import lombok.*;
 
 @NoArgsConstructor(access = AccessLevel.PUBLIC) // Unit Test 를 위해 PUBLIC
@@ -9,5 +10,6 @@ public class PostUserReq {
     private String password;
     private String confirmPassword;
     private String nickname;
-    private String phoneNumber;
+    private String picture;
+    private Role role;
 }

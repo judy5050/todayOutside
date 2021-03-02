@@ -21,7 +21,7 @@
 //import java.util.Collections;
 //
 //@Service
-//public class UserInfoService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
+//public class UserInfoService {
 //    private final UserInfoRepository userInfoRepository;
 //    private final UserInfoProvider userInfoProvider;
 //    private final JwtService jwtService;
@@ -58,14 +58,15 @@
 //        // 2. 유저 정보 생성
 //        String email = postUserReq.getEmail();
 //        String nickname = postUserReq.getNickname();
-//        String phoneNumber = postUserReq.getPhoneNumber();
-//        String password;
+//        String picture = postUserReq.getPicture();
+//        Role role = postUserReq.getRole();
+//
 //        try {
-//            password = new AES128(Secret.USER_INFO_PASSWORD_KEY).encrypt(postUserReq.getPassword());
+//            //password = new AES128(Secret.USER_INFO_PASSWORD_KEY).encrypt(postUserReq.getPassword());
 //        } catch (Exception ignored) {
 //            throw new BaseException(BaseResponseStatus.FAILED_TO_POST_USER);
 //        }
-//        UserInfo userInfo = new UserInfo(email, password, nickname, phoneNumber);
+//        UserInfo userInfo = new UserInfo(email, nickname, picture, role);
 //
 //        // 3. 유저 정보 저장
 //        try {

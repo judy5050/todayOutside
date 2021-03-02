@@ -1,5 +1,6 @@
 package ga.todayOutside.src.user.models;
 
+import ga.todayOutside.src.user.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -8,5 +9,6 @@ import lombok.Getter;
 public class PatchUserRes {
     private final String email;
     private final String nickname;
-    private final String phoneNumber;
+    private String picture;
+    private Role role;
 }
