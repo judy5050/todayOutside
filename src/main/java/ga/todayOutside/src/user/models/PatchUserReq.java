@@ -1,5 +1,6 @@
 package ga.todayOutside.src.user.models;
 
+import ga.todayOutside.src.user.Role;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,5 +12,7 @@ public class PatchUserReq {
     private String password;
     private String confirmPassword;
     private String nickname;
-    private String phoneNumber;
+    private String picture;
+    private Role role;
+
 }
