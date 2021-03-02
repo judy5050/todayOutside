@@ -1,6 +1,7 @@
 package ga.todayOutside.src.user.models;
 
 import ga.todayOutside.config.BaseEntity;
+import ga.todayOutside.src.user.Role;
 import lombok.*;
 
 import javax.persistence.*;
@@ -10,6 +11,7 @@ import javax.persistence.*;
 @Data // from lombok
 @Entity // 필수, Class 를 Database Table화 해주는 것이다
 @Table(name = "UserInfo") // Table 이름을 명시해주지 않으면 class 이름을 Table 이름으로 대체한다.
+@Getter
 public class UserInfo extends BaseEntity {
     /**
      * 유저 ID
@@ -25,34 +27,41 @@ public class UserInfo extends BaseEntity {
     @Column(name = "email", nullable = false, length = 100)
     private String email;
 
-    /**
-     * 비밀번호
-     */
-    @Column(name = "password", nullable = false)
-    private String password;
 
     /**
      * 닉네임
      */
-    @Column(name = "nickname", nullable = false, length = 30)
+    @Column(name = "nickname", nullable = true, length = 30)
     private String nickname;
-
-    /**
-     * 전화번호
-     */
-    @Column(name = "phoneNumber", length = 30)
-    private String phoneNumber;
 
     /**
      * 상태
      */
-    @Column(name = "status", nullable = false, length = 10)
+    @Column(name = "status", nullable = true, length = 10)
     private String status = "ACTIVE";
 
-    public UserInfo(String email, String password, String nickname, String phoneNumber) {
+    @Column(name = "picture")
+    private String picture;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+
+    @Builder
+    public UserInfo(String email, String nickname, String picture, Role role) {
         this.email = email;
-        this.password = password;
         this.nickname = nickname;
-        this.phoneNumber = phoneNumber;
+        this.picture = picture;
+        this.role = role;
     }
+
+    public UserInfo update(String nickname, String picture) {
+        this.nickname = nickname;
+        this.picture = picture;
+
+        return this;
+    }
+
+    public String getRoleKey() { return this.role.getKey(); }
+
 }
