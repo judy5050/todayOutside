@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 @Getter
 public class PatchUserReq {
     private String email;
-    private String password;
-    private String confirmPassword;
     private String nickname;
     private String picture;
     private Role role;

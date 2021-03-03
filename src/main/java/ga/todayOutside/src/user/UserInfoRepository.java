@@ -1,5 +1,6 @@
 package ga.todayOutside.src.user;
 
+import ga.todayOutside.src.user.models.PatchUserReq;
 import ga.todayOutside.src.user.models.UserInfo;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -13,4 +14,7 @@ public interface UserInfoRepository extends CrudRepository<UserInfo, Integer> {
     Optional<UserInfo> findByEmail(String email);
     List<UserInfo> findByEmailAndStatus(String email, String status);
     List<UserInfo> findByStatusAndNicknameIsContaining(String status, String word);
+    UserInfo save(PatchUserReq email);
+    //Integer delete(String email);
+
 }
