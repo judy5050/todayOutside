@@ -33,14 +33,15 @@ public class UserInfoService {
 
     /**
      *userInfo 찾기
+     * judy 5050 작성
      */
-    public UserInfo findByUserIdx(Long userIdx){
-
-        Optional <UserInfo> userInfo;
-        userInfo= userInfoRepository.findById(userIdx);
-        return userInfo.get();
-
-    }
+//    public UserInfo findByUserIdx(Long userIdx){
+//
+//        Optional <UserInfo> userInfo;
+//        userInfo= userInfoRepository.findById(userIdx);
+//        return userInfo.get();
+//
+//    }
 
 }
 //

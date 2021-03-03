@@ -31,6 +31,8 @@ public class UserInfo extends BaseEntity {
     @Column(name = "id", nullable = false, updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+
     /**
      * 이메일
      */
