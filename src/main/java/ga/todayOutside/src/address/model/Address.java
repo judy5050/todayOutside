@@ -6,11 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.persistence.JoinColumn;
 
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name="address")
+@Table(name="Address")
 public class Address  extends BaseEntity {
 
     /**
@@ -46,10 +47,17 @@ public class Address  extends BaseEntity {
      * 회원엔티티
      */
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn("userIdx")
-//    private UserInfo userInfo;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="userIdx")
+    private UserInfo userInfo;
 
+    public Address(String firstAddressName, String secondAddressName, String thirdAddressName) {
+
+       this.firstAddressName=firstAddressName;
+       this.secondAddressName=secondAddressName;
+       this.thirdAddressName=thirdAddressName;
+
+    }
 
 
 }
