@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Getter
-public class PostUserTownReq {
+public class PostAddressReq {
 
     private  String firstAddressName;
     private String secondAddressName;

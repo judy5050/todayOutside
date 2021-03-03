@@ -5,9 +5,9 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class PostUserRes {
+public class PostAddressRes {
 
-    private int userAddressIdx;
+    private Long addressIdx;
 
 
 

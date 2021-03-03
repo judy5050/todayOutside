@@ -51,8 +51,16 @@ public class Address  extends BaseEntity {
     @JoinColumn(name="userIdx")
     private UserInfo userInfo;
 
-    public Address(String firstAddressName, String secondAddressName, String thirdAddressName) {
+    /**
+     * 주소 상태 여부
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "addressType")
+    private AddressType addressType;
 
+    public Address(UserInfo userInfo, String firstAddressName, String secondAddressName, String thirdAddressName) {
+
+       this.userInfo=userInfo;
        this.firstAddressName=firstAddressName;
        this.secondAddressName=secondAddressName;
        this.thirdAddressName=thirdAddressName;
@@ -60,4 +68,11 @@ public class Address  extends BaseEntity {
     }
 
 
+    public Address(UserInfo userInfo, String firstAddressName, String secondAddressName, String thirdAddressName, AddressType addressType) {
+        this.userInfo=userInfo;
+        this.firstAddressName=firstAddressName;
+        this.secondAddressName=secondAddressName;
+        this.thirdAddressName=thirdAddressName;
+        this.addressType=addressType;
+    }
 }

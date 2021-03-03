@@ -16,6 +16,8 @@ import java.util.Date;
 
 @Service
 public class JwtService {
+
+
     /**
      * JWT 생성
      * @param userId
@@ -53,6 +55,7 @@ public class JwtService {
 
         // 2. JWT parsing
         Jws<Claims> claims;
+
         try {
             claims = Jwts.parser()
                     .setSigningKey(Secret.JWT_SECRET_KEY)
@@ -62,6 +65,7 @@ public class JwtService {
         }
 
         // 3. userId 추출
-        return claims.getBody().get("userId", Long.class);
+        Long userId= Long.valueOf(claims.getBody().get("userId",Integer.class));
+        return userId;
     }
 }
