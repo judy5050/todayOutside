@@ -33,55 +33,58 @@ public class UserInfoService {
         this.jwtService = jwtService;
     }
 
-//    /**
-//     * 회원가입
-//     * @param postUserReq
-//     * @return PostUserRes
-//     * @throws BaseException
-//     */
-//    public PostUserRes createUserInfo(PostUserReq postUserReq) throws BaseException {
-//        UserInfo existsUserInfo = null;
-//        try {
-//            // 1-1. 이미 존재하는 회원이 있는지 조회
-//            existsUserInfo = userInfoProvider.retrieveUserInfoByEmail(postUserReq.getEmail());
-//        } catch (BaseException exception) {
-//            // 1-2. 이미 존재하는 회원이 없다면 그대로 진행
-//            if (exception.getStatus() != BaseResponseStatus.NOT_FOUND_USER) {
-//                throw exception;
-//            }
-//        }
-//        // 1-3. 이미 존재하는 회원이 있다면 return DUPLICATED_USER
-//        if (existsUserInfo != null) {
-//            throw new BaseException(BaseResponseStatus.DUPLICATED_USER);
-//        }
-//
-//        // 2. 유저 정보 생성
-//        String email = postUserReq.getEmail();
-//        String nickname = postUserReq.getNickname();
-//        String picture = postUserReq.getPicture();
-//        Role role = postUserReq.getRole();
-//
-//        try {
-//            //password = new AES128(Secret.USER_INFO_PASSWORD_KEY).encrypt(postUserReq.getPassword());
-//        } catch (Exception ignored) {
-//            throw new BaseException(BaseResponseStatus.FAILED_TO_POST_USER);
-//        }
-//        UserInfo userInfo = new UserInfo(email, nickname, picture, role);
-//
-//        // 3. 유저 정보 저장
-//        try {
-//            userInfo = userInfoRepository.save(userInfo);
-//        } catch (Exception exception) {
-//            throw new BaseException(BaseResponseStatus.FAILED_TO_POST_USER);
-//        }
-//
-//        // 4. JWT 생성
-//        String jwt = jwtService.createJwt(userInfo.getId());
-//
-//        // 5. UserInfoLoginRes로 변환하여 return
-//        int id = userInfo.getId();
-//        return new PostUserRes(id, jwt);
-//    }
+    /**
+     * 회원가입
+     * @param postUserReq
+     * @return PostUserRes
+     * @throws BaseException
+     */
+    public PostUserRes createUserInfo(PostUserReq postUserReq) throws BaseException {
+        UserInfo existsUserInfo = null;
+        System.out.println("service 진입");
+
+        try {
+            // 1-1. 이미 존재하는 회원이 있는지 조회
+            existsUserInfo = userInfoProvider.retrieveUserInfoByUserId(postUserReq.getId());
+        } catch (BaseException exception) {
+            // 1-2. 이미 존재하는 회원이 없다면 그대로 진행
+            if (exception.getStatus() != BaseResponseStatus.NOT_FOUND_USER) {
+                throw exception;
+            }
+        }
+        // 1-3. 이미 존재하는 회원이 있다면 return DUPLICATED_USER
+        if (existsUserInfo != null) {
+            throw new BaseException(BaseResponseStatus.DUPLICATED_USER);
+        }
+
+        // 2. 유저 정보 생성
+        String email = postUserReq.getEmail();
+        String nickname = postUserReq.getNickname();
+        String picture = postUserReq.getPicture();
+        Role role = postUserReq.getRole();
+        String status = postUserReq.getStatus();
+
+        try {
+            //password = new AES128(Secret.USER_INFO_PASSWORD_KEY).encrypt(postUserReq.getPassword());
+        } catch (Exception ignored) {
+            throw new BaseException(BaseResponseStatus.FAILED_TO_POST_USER);
+        }
+        UserInfo userInfo = new UserInfo(email, nickname, picture, role, status);
+
+        // 3. 유저 정보 저장
+        try {
+            userInfo = userInfoRepository.save(userInfo);
+        } catch (Exception exception) {
+            throw new BaseException(BaseResponseStatus.FAILED_TO_POST_USER);
+        }
+
+        // 4. JWT 생성
+        String jwt = jwtService.createJwt(userInfo.getId());
+
+        // 5. UserInfoLoginRes로 변환하여 return
+        int id = userInfo.getId();
+        return new PostUserRes(id, jwt);
+    }
 
     /**
      * 회원 정보 수정 (POST uri 가 겹쳤을때의 예시 용도)

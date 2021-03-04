@@ -37,11 +37,19 @@ dependencies {
 
     // Web
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-web-services'
+    implementation 'org.apache.httpcomponents:httpclient:4.5'
 
     // Security, Authentication
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.7.0'
+
+    //jason
+    compile group: 'com.faseterxml.jackson.core', name: 'jackson-core', version: '2.9.3'
+    compile group: 'com.faseterxml.jackson.core', name: 'jackson-databind', version: '2.9.3'
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.8.5'
+    compile group: 'com.googlecode.json-simple', name: 'json-simple', version:'1.1.1'
 }
 
 test {

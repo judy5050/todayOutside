@@ -8,5 +8,5 @@ import lombok.NoArgsConstructor;
 @Getter
 public class PostLoginReq {
     private String email;
-    private String password;
+    private Integer id;
 }

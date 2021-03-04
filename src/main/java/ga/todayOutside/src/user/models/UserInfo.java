@@ -48,11 +48,12 @@ public class UserInfo extends BaseEntity {
     private Role role;
 
     @Builder
-    public UserInfo(String email, String nickname, String picture, Role role) {
+    public UserInfo(String email, String nickname, String picture, Role role, String status) {
         this.email = email;
         this.nickname = nickname;
         this.picture = picture;
         this.role = role;
+        this.status = status;
     }
 
     public UserInfo update(String nickname, String picture) {
