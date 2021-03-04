@@ -33,6 +33,54 @@ public class UserInfoService {
         this.jwtService = jwtService;
     }
 
+=======
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.security.core.authority.SimpleGrantedAuthority;
+//import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
+//import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+//import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+//import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+//import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+//import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+
+import java.util.Collections;
+import java.util.Optional;
+
+
+@Service
+@AllArgsConstructor
+public class UserInfoService {
+    private final UserInfoRepository userInfoRepository;
+    private final JwtService jwtService;
+
+
+    /**
+     *userInfo 찾기
+     * judy 5050 작성
+     */
+//    public UserInfo findByUserIdx(Long userIdx){
+//
+//        Optional <UserInfo> userInfo;
+//        userInfo= userInfoRepository.findById(userIdx);
+//        return userInfo.get();
+//
+//    }
+
+}
+//
+//    @Autowired
+//    public UserInfoService(UserInfoRepository userInfoRepository, UserInfoProvider userInfoProvider, JwtService jwtService) {
+//        this.userInfoRepository = userInfoRepository;
+//        this.userInfoProvider = userInfoProvider;
+//        this.jwtService = jwtService;
+//    }
+//
+
 //    /**
 //     * 회원가입
 //     * @param postUserReq

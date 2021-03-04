@@ -15,11 +15,23 @@ import javax.persistence.*;
 public class UserInfo extends BaseEntity {
     /**
      * 유저 ID
+     * judy 5050작성 코드
      */
+
+//    @Id // PK를 의미하는 어노테이션
+//    @Column(name = "userIdx", nullable = false, updatable = false)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    private Long id;
+
+    /**
+     * 유저 ID
+     */
+
     @Id // PK를 의미하는 어노테이션
     @Column(name = "id", nullable = false, updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
+
 
     /**
      * 이메일
