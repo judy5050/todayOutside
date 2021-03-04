@@ -12,10 +12,9 @@ import java.util.Optional;
 public interface UserInfoRepository extends CrudRepository<UserInfo, Integer> {
     List<UserInfo> findByStatus(String status);
     Optional<UserInfo> findByEmail(String email);
-    Optional<UserInfo> findById(Integer id);
     List<UserInfo> findByEmailAndStatus(String email, String status);
     List<UserInfo> findByStatusAndNicknameIsContaining(String status, String word);
-    UserInfo save(UserInfo email);
+    UserInfo save(PatchUserReq email);
     //Integer delete(String email);
 
 }

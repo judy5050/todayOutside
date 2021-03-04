@@ -16,12 +16,14 @@ import java.util.Date;
 
 @Service
 public class JwtService {
+
+
     /**
      * JWT 생성
      * @param userId
      * @return String
      */
-    public String createJwt(int userId) {
+    public String createJwt(Long userId) {
         Date now = new Date();
         return Jwts.builder()
                 .claim("userId", userId)
@@ -44,7 +46,7 @@ public class JwtService {
      * @return int
      * @throws BaseException
      */
-    public int getUserId() throws BaseException {
+    public Long getUserId() throws BaseException {
         // 1. JWT 추출
         String accessToken = getJwt();
         if (accessToken == null || accessToken.length() == 0) {
@@ -53,6 +55,7 @@ public class JwtService {
 
         // 2. JWT parsing
         Jws<Claims> claims;
+
         try {
             claims = Jwts.parser()
                     .setSigningKey(Secret.JWT_SECRET_KEY)
@@ -62,6 +65,7 @@ public class JwtService {
         }
 
         // 3. userId 추출
-        return claims.getBody().get("userId", Integer.class);
+        Long userId= Long.valueOf(claims.getBody().get("userId",Integer.class));
+        return userId;
     }
 }
