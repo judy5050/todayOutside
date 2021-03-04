@@ -6,6 +6,34 @@ import ga.todayOutside.utils.AES128;
 import ga.todayOutside.config.BaseException;
 import ga.todayOutside.config.BaseResponseStatus;
 import ga.todayOutside.src.user.models.*;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+
+@Service
+public class UserInfoService {
+    private final UserInfoRepository userInfoRepository;
+    private final UserInfoProvider userInfoProvider;
+    private final JwtService jwtService;
+
+    @Autowired
+    public UserInfoService(UserInfoRepository userInfoRepository, UserInfoProvider userInfoProvider, JwtService jwtService) {
+        this.userInfoRepository = userInfoRepository;
+        this.userInfoProvider = userInfoProvider;
+        this.jwtService = jwtService;
+    }
+
+=======
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +80,7 @@ public class UserInfoService {
 //        this.jwtService = jwtService;
 //    }
 //
+
 //    /**
 //     * 회원가입
 //     * @param postUserReq
@@ -101,47 +130,49 @@ public class UserInfoService {
 //        int id = userInfo.getId();
 //        return new PostUserRes(id, jwt);
 //    }
-//
-//    /**
-//     * 회원 정보 수정 (POST uri 가 겹쳤을때의 예시 용도)
-//     * @param patchUserReq
-//     * @return PatchUserRes
-//     * @throws BaseException
-//     */
-//    public PatchUserRes updateUserInfo(@NonNull Integer userId, PatchUserReq patchUserReq) throws BaseException {
+
+    /**
+     * 회원 정보 수정 (POST uri 가 겹쳤을때의 예시 용도)
+     * @param patchUserReq
+     * @return PatchUserRes
+     * @throws BaseException
+     */
+    public PatchUserRes updateUserInfo(@NonNull Integer userId, PatchUserReq patchUserReq) throws BaseException {
+        try {
+            String email = patchUserReq.getEmail().concat("_edited");
+            String nickname = patchUserReq.getNickname().concat("_edited");
+            String picture = patchUserReq.getPicture().concat("_edited");
+            Role role = patchUserReq.getRole();
+//            UserInfoRepository.save(patchUserReq);
+            return new PatchUserRes(email, nickname, picture, role);
+        } catch (Exception ignored) {
+            throw new BaseException(BaseResponseStatus.FAILED_TO_PATCH_USER);
+        }
+    }
+
+    /**
+     * 회원 탈퇴
+     * @param userId
+     * @throws BaseException
+     */
+    public void deleteUserInfo(int userId) throws BaseException {
+        // 1. 존재하는 UserInfo가 있는지 확인 후 저장
+        UserInfo userInfo = userInfoProvider.retrieveUserInfoByUserId(userId);
+
+        // 2-1. 해당 UserInfo를 완전히 삭제
 //        try {
-//            String email = patchUserReq.getEmail().concat("_edited");
-//            String nickname = patchUserReq.getNickname().concat("_edited");
-//            String phoneNumber = patchUserReq.getPhoneNumber().concat("_edited");
-//            return new PatchUserRes(email, nickname, phoneNumber);
-//        } catch (Exception ignored) {
-//            throw new BaseException(BaseResponseStatus.FAILED_TO_PATCH_USER);
+//            userInfoRepository.delete(userInfo);
+//        } catch (Exception exception) {
+//            throw new BaseException(DATABASE_ERROR_USER_INFO);
 //        }
-//    }
-//
-//    /**
-//     * 회원 탈퇴
-//     * @param userId
-//     * @throws BaseException
-//     */
-//    public void deleteUserInfo(int userId) throws BaseException {
-//        // 1. 존재하는 UserInfo가 있는지 확인 후 저장
-//        UserInfo userInfo = userInfoProvider.retrieveUserInfoByUserId(userId);
-//
-//        // 2-1. 해당 UserInfo를 완전히 삭제
-////        try {
-////            userInfoRepository.delete(userInfo);
-////        } catch (Exception exception) {
-////            throw new BaseException(DATABASE_ERROR_USER_INFO);
-////        }
-//
-//        // 2-2. 해당 UserInfo의 status를 INACTIVE로 설정
-//        userInfo.setStatus("INACTIVE");
-//        try {
-//            userInfoRepository.save(userInfo);
-//        } catch (Exception ignored) {
-//            throw new BaseException(BaseResponseStatus.FAILED_TO_DELETE_USER);
-//        }
-//    }
-//
-//}
+
+        // 2-2. 해당 UserInfo의 status를 INACTIVE로 설정
+        userInfo.setStatus("INACTIVE");
+        try {
+            userInfoRepository.save(userInfo);
+        } catch (Exception ignored) {
+            throw new BaseException(BaseResponseStatus.FAILED_TO_DELETE_USER);
+        }
+    }
+
+}

@@ -1,6 +1,6 @@
 package ga.todayOutside.src.user;
 
-import ga.todayOutside.src.address.model.GetAddressRes;
+
 import ga.todayOutside.src.user.models.UserInfo;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
