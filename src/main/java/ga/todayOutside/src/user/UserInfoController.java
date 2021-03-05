@@ -1,28 +1,14 @@
 package ga.todayOutside.src.user;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import ga.todayOutside.config.BaseException;
 import ga.todayOutside.config.BaseResponse;
 import ga.todayOutside.utils.JwtService;
 import ga.todayOutside.config.BaseResponseStatus;
 import ga.todayOutside.src.user.models.*;
-import ga.todayOutside.utils.ValidationRegex;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.client.reactive.HttpComponentsClientHttpConnector;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,12 +19,14 @@ public class UserInfoController {
     private final UserInfoProvider userInfoProvider;
     private final UserInfoService userInfoService;
     private final JwtService jwtService;
+    private final KakaoService kakaoService;
 
     @Autowired
-    public UserInfoController(UserInfoProvider userInfoProvider, UserInfoService userInfoService, JwtService jwtService) {
+    public UserInfoController(UserInfoProvider userInfoProvider, UserInfoService userInfoService, JwtService jwtService, KakaoService kakaoService) {
         this.userInfoProvider = userInfoProvider;
         this.userInfoService = userInfoService;
         this.jwtService = jwtService;
+        this.kakaoService = kakaoService;
     }
 
     /**
@@ -71,7 +59,7 @@ public class UserInfoController {
      */
     @ResponseBody
     @GetMapping("/{userId}")
-    public BaseResponse<GetUserRes> getUser(@PathVariable Integer userId) {
+    public BaseResponse<GetUserRes> getUser(@PathVariable Long userId) {
         if (userId == null || userId <= 0) {
             return new BaseResponse<>(BaseResponseStatus.EMPTY_USERID);
         }
@@ -92,25 +80,42 @@ public class UserInfoController {
      */
     @ResponseBody
     @PostMapping("")
-    public BaseResponse<PostUserRes> postUsers(@RequestBody PostUserReq parameters) {
-        // 1. Body Parameter Validation
+    public BaseResponse<PostUserRes> postUsers(@RequestBody PostUserReq params) throws JsonProcessingException {
+        // 토큰 검증
+//        String snsId = "";
+//        Map<String, Object> result = kakaoService.accessToken(accessToken);
+//        System.out.println(result.get("body"));
+////
+////        // object의 snsid 값 추출 과정
+////        String [] s1 = result.get("body").toString().split(",");
+////        String [] s2 = s1[0].split("=");
+////        snsId = s1[1];
+//
+//        if (!result.get("status").equals("200")) {
+//            //추후 수정 해야함
+//            return new BaseResponse<>(BaseResponseStatus.INVALID_EMAIL);
+//        }
 
-        if (parameters.getEmail() == null || parameters.getEmail().length() == 0) {
-            return new BaseResponse<>(BaseResponseStatus.EMPTY_EMAIL);
-        }
-        if (!ValidationRegex.isRegexEmail(parameters.getEmail())){
-            return new BaseResponse<>(BaseResponseStatus.INVALID_EMAIL);
-        }
-        if (parameters.getNickname() == null || parameters.getNickname().length() == 0) {
-            return new BaseResponse<>(BaseResponseStatus.EMPTY_PASSWORD);
-        }
-        if (parameters.getNickname() == null || parameters.getNickname().length() == 0) {
-            return new BaseResponse<>(BaseResponseStatus.EMPTY_NICKNAME);
-        }
 
+//        // 1. Body Parameter Validation
+//        if (parameters.getEmail() == null || parameters.getEmail().length() == 0) {
+//            return new BaseResponse<>(BaseResponseStatus.EMPTY_EMAIL);
+//        }
+//        if (!ValidationRegex.isRegexEmail(parameters.getEmail())){
+//            return new BaseResponse<>(BaseResponseStatus.INVALID_EMAIL);
+//        }
+//        if (parameters.getNickname() == null || parameters.getNickname().length() == 0) {
+//            return new BaseResponse<>(BaseResponseStatus.EMPTY_PASSWORD);
+//        }
+//        if (parameters.getNickname() == null || parameters.getNickname().length() == 0) {
+//            return new BaseResponse<>(BaseResponseStatus.EMPTY_NICKNAME);
+//        }
+//
         // 2. Post UserInfo
+
+        System.out.println(params);
         try {
-            PostUserRes postUserRes = userInfoService.createUserInfo(parameters);
+            PostUserRes postUserRes = userInfoService.createUserInfo(params);
             return new BaseResponse<>(BaseResponseStatus.SUCCESS_POST_USER, postUserRes);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
@@ -144,59 +149,7 @@ public class UserInfoController {
         }
     }
 
-    /**
-     *  토큰 검증
-     */
 
-    @GetMapping("/kakao/access-token")
-    public String accessToken(@RequestParam String accessToken) throws JsonProcessingException {
-        //accesstoken 검증
-        HashMap<String, Object> result = new HashMap<String, Object>();
-        String jsonInString = "";
-
-        try {
-            HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
-            factory.setConnectTimeout(5000);
-            factory.setReadTimeout(5000);
-            RestTemplate restTemplate = new RestTemplate(factory);
-
-            HttpHeaders header = new HttpHeaders();
-            HttpEntity<?> entity = new HttpEntity<>(header);
-
-            String url = "https://kapi.kakao.com/v1/user/access_token_info";
-
-            System.out.println(accessToken);
-
-            header.add("Authorization","Bearer " + accessToken);
-            UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
-
-            ResponseEntity<Map> resultMap = restTemplate.exchange(uri.toString(), HttpMethod.GET, entity, Map.class);
-            result.put("status", resultMap.getStatusCodeValue());
-            result.put("header", resultMap.getHeaders());
-            result.put("body", resultMap.getBody());
-
-            ObjectMapper mapper = new ObjectMapper();
-            jsonInString = mapper.writeValueAsString(resultMap.getBody());
-
-        } catch (HttpClientErrorException | HttpServerErrorException e) {
-            result.put("statusCode", e.getRawStatusCode());
-            result.put("body", e.getStatusText());
-            System.out.println(e.toString());
-
-            return e.toString();
-        } catch (Exception e) {
-            result.put("statusCode","999");
-            System.out.println(e.toString());
-
-            return e.toString();
-        }
-        //에러 관련 문서 -> 토큰 정보 보기 탭
-        // https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api#get-token-info
-
-
-        return jsonInString;
-
-    }
 
 
     /**
@@ -206,23 +159,22 @@ public class UserInfoController {
      * @return BaseResponse<PostLoginRes>
      */
     @PostMapping("/login")
-    public BaseResponse<PostLoginRes> login(@RequestBody PostLoginReq parameters) {
-        int userId = 1;
-        //GetUserRes userInfo = userInfoProvider.retrieveUserInfo(userId);
+    public BaseResponse<PostLoginRes> login(@RequestParam String accessToken) throws BaseException {
 
-        // 1. Body Parameter Validation
-//        if (parameters.getEmail() == null || parameters.getEmail().length() == 0) {
-//            return new BaseResponse<>(BaseResponseStatus.EMPTY_EMAIL);
-//        } else if (!ValidationRegex.isRegexEmail(parameters.getEmail())) {
-//            return new BaseResponse<>(BaseResponseStatus.INVALID_EMAIL);
-//        } else if (parameters.getId() == null || parameters.getId().length() == 0) {
-//            return new BaseResponse<>(BaseResponseStatus.EMPTY_PASSWORD);
-//        }
+        //토큰 유저 정보 조회
+        Map<String, Object> result = kakaoService.getUserInfo(accessToken);
+        Map<String, Object> body =  (Map<String, Object>) result.get("body");
+        Map<String, Object> kakaoAccount =  (Map<String, Object>) body.get("kakao_account");
 
+        String userEmail = kakaoAccount.get("email").toString();
+        String snsId = body.get("id").toString();
+
+        PostLoginReq postLoginReq = new PostLoginReq(userEmail, Long.parseLong(snsId));
         // 2. Login
+
         try {
-            PostLoginRes postLoginRes = userInfoProvider.login(parameters);
-            return new BaseResponse<>(BaseResponseStatus.SUCCESS_LOGIN, postLoginRes);
+            PostLoginRes res = userInfoProvider.login(postLoginReq);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS_LOGIN, res);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
@@ -235,7 +187,7 @@ public class UserInfoController {
      * @return BaseResponse<Void>
      */
     @DeleteMapping("/{userId}")
-    public BaseResponse<Void> deleteUsers(@PathVariable Integer userId) {
+    public BaseResponse<Void> deleteUsers(@PathVariable Long userId) {
         if (userId == null || userId <= 0) {
             return new BaseResponse<>(BaseResponseStatus.EMPTY_USERID);
         }
@@ -256,7 +208,7 @@ public class UserInfoController {
     @GetMapping("/jwt")
     public BaseResponse<Void> jwt() {
         try {
-            int userId = jwtService.getUserId();
+            Long userId = jwtService.getUserId();
             userInfoProvider.retrieveUserInfo(userId);
             return new BaseResponse<>(BaseResponseStatus.SUCCESS_JWT);
         } catch (BaseException exception) {

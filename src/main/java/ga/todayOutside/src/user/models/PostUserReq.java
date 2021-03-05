@@ -12,4 +12,5 @@ public class PostUserReq {
     private String picture;
     private Role role;
     private String status;
+    private Long snsId;
 }

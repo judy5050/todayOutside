@@ -1,5 +1,7 @@
 package ga.todayOutside.src.user;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import ga.todayOutside.config.secret.Secret;
 import ga.todayOutside.utils.AES128;
 import ga.todayOutside.config.BaseException;
@@ -7,9 +9,23 @@ import ga.todayOutside.utils.JwtService;
 import ga.todayOutside.config.BaseResponseStatus;
 import ga.todayOutside.src.user.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,7 +59,7 @@ public class UserInfoProvider {
 
         // 2. UserInfoRes로 변환하여 return
         return userInfoList.stream().map(userInfo -> {
-            int id = userInfo.getId();
+            Long id = userInfo.getId();
             String email = userInfo.getEmail();
             return new GetUsersRes(id, email);
         }).collect(Collectors.toList());
@@ -51,16 +67,16 @@ public class UserInfoProvider {
 
     /**
      * 회원 조회
-     * @param userId
+     * @param snsId
      * @return UserInfoDetailRes
      * @throws BaseException
      */
-    public GetUserRes retrieveUserInfo(int userId) throws BaseException {
+    public GetUserRes retrieveUserInfo(Long snsId) throws BaseException {
         // 1. DB에서 userId로 UserInfo 조회
-        UserInfo userInfo = retrieveUserInfoByUserId(userId);
+        UserInfo userInfo = retrieveUserInfoByUserId(snsId);
 
         // 2. UserInfoRes로 변환하여 return
-        int id = userInfo.getId();
+        Long id = userInfo.getId();
         String email = userInfo.getEmail();
         String nickname = userInfo.getNickname();
 
@@ -75,7 +91,7 @@ public class UserInfoProvider {
      */
     public PostLoginRes login(PostLoginReq postLoginReq) throws BaseException {
         // 1. DB에서 email로 UserInfo 조회
-        UserInfo userInfo = retrieveUserInfoByEmail(postLoginReq.getEmail());
+        UserInfo userInfo = retrieveUserInfoBySnsId(postLoginReq.getSnsId());
 
 //        // 2. UserInfo에서 password 추출
 //        String password;
@@ -94,25 +110,25 @@ public class UserInfoProvider {
         String jwt = jwtService.createJwt(userInfo.getId());
 
         // 4. PostLoginRes 변환하여 return
-        int id = userInfo.getId();
+        Long id = userInfo.getId();
         return new PostLoginRes(id, jwt);
     }
 
     /**
      * 회원 조회
-     * @param userId
+     * @param snsId
      * @return UserInfo
      * @throws BaseException
      */
-    public UserInfo retrieveUserInfoByUserId(int userId) throws BaseException {
+    public UserInfo retrieveUserInfoByUserId(Long snsId) throws BaseException {
         // 1. DB에서 UserInfo 조회
         UserInfo userInfo;
         try {
-            userInfo = userInfoRepository.findById(userId).orElse(null);
+            userInfo = userInfoRepository.findBySnsId(snsId).orElse(null);
         } catch (Exception ignored) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_GET_USER);
         }
-
+        System.out.println(userInfo.getStatus());
         // 2. 존재하는 회원인지 확인
         if (userInfo == null || !userInfo.getStatus().equals("ACTIVE")) {
             throw new BaseException(BaseResponseStatus.NOT_FOUND_USER);
@@ -124,15 +140,15 @@ public class UserInfoProvider {
 
     /**
      * 회원 조회
-     * @param email
+     * @param snsId
      * @return UserInfo
      * @throws BaseException
      */
-    public UserInfo retrieveUserInfoByEmail(String email) throws BaseException {
-        // 1. email을 이용해서 UserInfo DB 접근
+    public UserInfo retrieveUserInfoBySnsId(Long snsId) throws BaseException {
+        // 1. snsId 이용해서 UserInfo DB 접근
         List<UserInfo> existsUserInfoList;
         try {
-            existsUserInfoList = userInfoRepository.findByEmailAndStatus(email, "ACTIVE");
+            existsUserInfoList = userInfoRepository.findBySnsIdAndStatus(snsId, "ACTIVE");
         } catch (Exception ignored) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_GET_USER);
         }
@@ -148,4 +164,7 @@ public class UserInfoProvider {
         // 3. UserInfo를 return
         return userInfo;
     }
+
+
+
 }
