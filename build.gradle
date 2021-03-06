@@ -32,8 +32,9 @@ dependencies {
 
     // DB
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'com.h2database:h2'
-    runtimeOnly 'com.h2database:h2'
+//    implementation 'com.h2database:h2'
+//    runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'mysql:mysql-connector-java'
 
     // Web
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -41,9 +42,10 @@ dependencies {
     implementation('org.apache.httpcomponents:httpclient:4.5')
 
     // Security, Authentication
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-    compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.7.0'
+
+//    implementation 'org.springframework.boot:spring-boot-starter-security'
+//    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.0'
 
     compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
 }

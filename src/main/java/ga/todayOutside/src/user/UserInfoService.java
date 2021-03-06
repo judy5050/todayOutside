@@ -133,6 +133,7 @@ public class UserInfoService {
         }
 
         // 2-2. 해당 UserInfo의 status를 INACTIVE로 설정
+
 //        userInfo.setStatus("INACTIVE");
 //        try {
 //            userInfoRepository.save(userInfo);
@@ -142,3 +143,4 @@ public class UserInfoService {
     }
 
 }
+

@@ -1,3 +1,4 @@
+
 package ga.todayOutside.src;
 
 import ga.todayOutside.src.user.Role;
@@ -20,5 +21,3 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable().headers().frameOptions().disable();
     }
 }
-
-
