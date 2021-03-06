@@ -7,19 +7,11 @@ import ga.todayOutside.config.BaseException;
 import ga.todayOutside.config.BaseResponseStatus;
 import ga.todayOutside.src.user.models.*;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
-import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
-import org.springframework.security.oauth2.core.user.OAuth2User;
+
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Optional;
 
 @Service
 public class UserInfoService {
