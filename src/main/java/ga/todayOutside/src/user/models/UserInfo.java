@@ -59,12 +59,19 @@ public class UserInfo extends BaseEntity {
     @Column(nullable = false)
     private Role role;
 
+
+    @Column(name = "snsId", nullable = false)
+    private Long snsId;
+
+
     @Builder
-    public UserInfo(String email, String nickname, String picture, Role role) {
+    public UserInfo(String email, String nickname, String picture, Role role, String status, Long snsId) {
         this.email = email;
         this.nickname = nickname;
         this.picture = picture;
         this.role = role;
+        this.status = status;
+        this.snsId = snsId;
     }
 
     public UserInfo update(String nickname, String picture) {

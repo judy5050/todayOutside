@@ -1,12 +1,12 @@
 package ga.todayOutside.src.user.models;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-@NoArgsConstructor(access = AccessLevel.PUBLIC)
+@AllArgsConstructor(access = AccessLevel.PUBLIC)
 @Getter
 public class PostLoginReq {
     private String email;
-    private String password;
+    private Long snsId;
 }
