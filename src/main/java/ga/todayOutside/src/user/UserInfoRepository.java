@@ -15,6 +15,8 @@ public interface UserInfoRepository extends CrudRepository<UserInfo, Integer> {
     List<UserInfo> findBySnsIdAndStatus(Long snsId, String status);
     List<UserInfo> findByStatusAndNicknameIsContaining(String status, String word);
     Optional<UserInfo> findBySnsId(Long snsId);
+    Optional<UserInfo> findById(Long id);
+    Integer deleteById(Long userId);
     Optional<UserInfo> save(PatchUserReq patchUserReq);
 
 

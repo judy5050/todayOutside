@@ -81,39 +81,7 @@ public class UserInfoController {
     @ResponseBody
     @PostMapping("")
     public BaseResponse<PostUserRes> postUsers(@RequestBody PostUserReq params) throws JsonProcessingException {
-        // 토큰 검증
-//        String snsId = "";
-//        Map<String, Object> result = kakaoService.accessToken(accessToken);
-//        System.out.println(result.get("body"));
-////
-////        // object의 snsid 값 추출 과정
-////        String [] s1 = result.get("body").toString().split(",");
-////        String [] s2 = s1[0].split("=");
-////        snsId = s1[1];
-//
-//        if (!result.get("status").equals("200")) {
-//            //추후 수정 해야함
-//            return new BaseResponse<>(BaseResponseStatus.INVALID_EMAIL);
-//        }
 
-
-//        // 1. Body Parameter Validation
-//        if (parameters.getEmail() == null || parameters.getEmail().length() == 0) {
-//            return new BaseResponse<>(BaseResponseStatus.EMPTY_EMAIL);
-//        }
-//        if (!ValidationRegex.isRegexEmail(parameters.getEmail())){
-//            return new BaseResponse<>(BaseResponseStatus.INVALID_EMAIL);
-//        }
-//        if (parameters.getNickname() == null || parameters.getNickname().length() == 0) {
-//            return new BaseResponse<>(BaseResponseStatus.EMPTY_PASSWORD);
-//        }
-//        if (parameters.getNickname() == null || parameters.getNickname().length() == 0) {
-//            return new BaseResponse<>(BaseResponseStatus.EMPTY_NICKNAME);
-//        }
-//
-        // 2. Post UserInfo
-
-        System.out.println(params);
         try {
             PostUserRes postUserRes = userInfoService.createUserInfo(params);
             return new BaseResponse<>(BaseResponseStatus.SUCCESS_POST_USER, postUserRes);
@@ -131,25 +99,18 @@ public class UserInfoController {
      */
     @ResponseBody
     @PatchMapping("/{userId}")
-    public BaseResponse<PatchUserRes> patchUsers(@PathVariable Integer userId, @RequestBody PatchUserReq parameters) {
+    public BaseResponse<PatchUserRes> patchUsers(@PathVariable Long userId, @RequestBody PatchUserReq parameters) {
 
-        if (userId == null || userId <= 0) {
-            return new BaseResponse<>(BaseResponseStatus.EMPTY_USERID);
-        }
-
-//        if (!parameters.getPassword().equals(parameters.getConfirmPassword())) {
-//            return new BaseResponse<>(BaseResponseStatus.DO_NOT_MATCH_PASSWORD);
-//        }
-        System.out.println(userId);
+        System.out.println(2);
         try {
+            UserInfo userInfo = userInfoProvider.retrieveUserInfoByUserId(userId);
+            PatchUserRes patchUserRes = userInfoService.updateUserInfo(userId, parameters, userInfo);
 
-            return new BaseResponse<>(BaseResponseStatus.SUCCESS_PATCH_USER, userInfoService.updateUserInfo(userId, parameters));
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS_PATCH_USER, patchUserRes);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
     }
-
-
 
 
     /**

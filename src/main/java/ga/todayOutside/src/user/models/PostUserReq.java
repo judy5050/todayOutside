@@ -13,4 +13,13 @@ public class PostUserReq {
     private Role role;
     private String status;
     private Long snsId;
+
+    @Builder
+    public PostUserReq(String email, String nickname, String picture, Role role, String status) {
+        this.email = email;
+        this.nickname = nickname;
+        this.picture = picture;
+        this.role = role;
+        this.status = status;
+    }
 }

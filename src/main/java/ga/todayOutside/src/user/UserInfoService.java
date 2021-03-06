@@ -19,6 +19,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.Optional;
 
 @Service
 public class UserInfoService {
@@ -91,13 +92,24 @@ public class UserInfoService {
      * @return PatchUserRes
      * @throws BaseException
      */
-    public PatchUserRes updateUserInfo(@NonNull Integer userId, PatchUserReq patchUserReq) throws BaseException {
+    public PatchUserRes updateUserInfo(@NonNull Long userId, PatchUserReq patchUserReq, UserInfo userInfo) throws BaseException {
+        System.out.println(1234);
         try {
             String email = patchUserReq.getEmail().concat("_edited");
             String nickname = patchUserReq.getNickname().concat("_edited");
             String picture = patchUserReq.getPicture().concat("_edited");
+            String status = "ACTIVE";
+            Long id = patchUserReq.getId();
             Role role = patchUserReq.getRole();
-            userInfoRepository.save(patchUserReq);
+
+            userInfo.setStatus(status);
+            userInfo.setEmail(email);
+            userInfo.setNickname(nickname);
+            userInfo.setPicture(picture);
+            userInfo.setRole(role);
+
+            userInfoRepository.save(userInfo);
+
             return new PatchUserRes(email, nickname, picture, role);
         } catch (Exception ignored) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_PATCH_USER);
@@ -114,19 +126,19 @@ public class UserInfoService {
         UserInfo userInfo = userInfoProvider.retrieveUserInfoByUserId(userId);
 
         // 2-1. 해당 UserInfo를 완전히 삭제
-//        try {
-//            userInfoRepository.delete(userInfo);
-//        } catch (Exception exception) {
-//            throw new BaseException(DATABASE_ERROR_USER_INFO);
-//        }
-
-        // 2-2. 해당 UserInfo의 status를 INACTIVE로 설정
-        userInfo.setStatus("INACTIVE");
         try {
-            userInfoRepository.save(userInfo);
-        } catch (Exception ignored) {
+            userInfoRepository.delete(userInfo);
+        } catch (Exception exception) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_DELETE_USER);
         }
+
+        // 2-2. 해당 UserInfo의 status를 INACTIVE로 설정
+//        userInfo.setStatus("INACTIVE");
+//        try {
+//            userInfoRepository.save(userInfo);
+//        } catch (Exception ignored) {
+//            throw new BaseException(BaseResponseStatus.FAILED_TO_DELETE_USER);
+//        }
     }
 
 }

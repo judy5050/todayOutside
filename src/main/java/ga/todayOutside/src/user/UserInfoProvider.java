@@ -116,15 +116,15 @@ public class UserInfoProvider {
 
     /**
      * 회원 조회
-     * @param snsId
+     * @param userId
      * @return UserInfo
      * @throws BaseException
      */
-    public UserInfo retrieveUserInfoByUserId(Long snsId) throws BaseException {
+    public UserInfo retrieveUserInfoByUserId(Long userId) throws BaseException {
         // 1. DB에서 UserInfo 조회
         UserInfo userInfo;
         try {
-            userInfo = userInfoRepository.findBySnsId(snsId).orElse(null);
+            userInfo = userInfoRepository.findById(userId).orElse(null);
         } catch (Exception ignored) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_GET_USER);
         }
@@ -146,25 +146,20 @@ public class UserInfoProvider {
      */
     public UserInfo retrieveUserInfoBySnsId(Long snsId) throws BaseException {
         // 1. snsId 이용해서 UserInfo DB 접근
-        List<UserInfo> existsUserInfoList;
+        UserInfo userInfo;
+
         try {
-            existsUserInfoList = userInfoRepository.findBySnsIdAndStatus(snsId, "ACTIVE");
+            userInfo = userInfoRepository.findById(snsId).orElse(null);
         } catch (Exception ignored) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_GET_USER);
         }
 
-        // 2. 존재하는 UserInfo가 있는지 확인
-        UserInfo userInfo;
-        if (existsUserInfoList != null && existsUserInfoList.size() > 0) {
-            userInfo = existsUserInfoList.get(0);
-        } else {
+        if (userInfo == null ) {
             throw new BaseException(BaseResponseStatus.NOT_FOUND_USER);
         }
-
         // 3. UserInfo를 return
         return userInfo;
     }
-
 
 
 }
