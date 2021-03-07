@@ -20,6 +20,7 @@ import java.net.URLEncoder;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -438,6 +439,7 @@ public class WeatherTest {
     //open api사용 초단기 예보
     //초 단기 예보에서는 시간별 온도
     //sky,pty,t1h 만 파싱해 가져오기
+    //매시간 30분 단위로 조절하기
     @ResponseBody
     @GetMapping("/todayWeather")
     public Map weather() throws IOException, ParseException {
@@ -445,18 +447,33 @@ public class WeatherTest {
 
         //시간을 받아오는 코드
         //조회하는 시간에서 +1 정보만 가져온다.
-        int currentTime= LocalDateTime.now().getHour();
-        int min=LocalDateTime.now().getMinute();
-
-        String time=Integer.toString(currentTime)+Integer.toString(min);
+        Integer currentTime= LocalDateTime.now().getHour();
+        Integer currentYear= LocalDate.now().getYear();
+        Integer currentMonth=LocalDate.now().getMonthValue();
+        Integer currentDate=LocalDate.now().getDayOfMonth();
+        System.out.println("currentDate = " + currentDate);
+        Integer min=LocalDateTime.now().getMinute();
 
         String apiUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService/getUltraSrtFcst";
         // 홈페이지에서 받은 키
         String serviceKey = Secret.WEATHER_OPEN_APIKEY;
         String nx = "60";	//위도
         String ny = "125";	//경도
-        String baseDate = "20210227";	//조회하고싶은 날짜
-        String baseTime = time;	//조회하고싶은 시간
+        String baseTime;
+
+        //분에 따른 baseTime 조절
+       if(min<=30){
+            Integer calTime=currentTime-1;
+            Integer.toString(calTime);
+            String before30Minute=calTime+"30";
+             baseTime = before30Minute;	//조회하고싶은 시간
+        }
+        else
+        {
+            String after30Minute=Integer.toString(currentTime)+Integer.toString(min);
+            baseTime = after30Minute;	//조회하고싶은 시간
+        }
+        String baseDate = "20210306";	//조회하고싶은 날짜
         String dataType = "json";	//타입 xml, json 등등 ..
         String numOfRows = "10000";	//한 페이지 결과 수
 
@@ -509,11 +526,6 @@ public class WeatherTest {
         //JSONObject item = (JSONObject) parse_item.get("item");
 
         System.out.println(data);
-//        for(int i=0;i<parse_item.size();i++) {
-//            System.out.println(parse_item.get(i));
-////            System.out.println("i = " + i);
-//        }
-
 
         for(int i=0;i<parse_item.size();i++){
               element =(JSONObject) parse_item.get(i);
@@ -549,16 +561,38 @@ public class WeatherTest {
 
 
         }
+
         return todayWeahterResult;
     }
 
+    //1시간 단위로 받아올 수 있는 최대 시간을 계산해 반환->3시간 단위로 받을 시각 계산위
+    Integer todayCalHour(String baseTime){
+        Integer returnTimeValue;
+
+        //6시간 더해 반환
+        if(baseTime=="0030"||baseTime=="0330"||baseTime=="0630"||baseTime=="0930"||baseTime=="1230"||baseTime=="1530"||baseTime=="1830"||baseTime=="2130"){
+            returnTimeValue=Integer.parseInt(baseTime);
+        }
+        else if(baseTime=="0130"||baseTime=="0430"||baseTime=="0730"||baseTime=="1030"||baseTime=="1330"||baseTime=="1630"||baseTime=="1930"||baseTime=="2230"){
+
+        }
+        else if(baseTime=="0230"||baseTime=="0530"||baseTime=="0830"||baseTime=="1030"||baseTime=="130"||baseTime=="1530"||baseTime=="1830"||baseTime=="2130"){
+
+        }
+
+        return null;
+    }
+
+
+
+    //오늘의 날씨 1시간 단위로 불러오는 함수
     void today(JSONObject object,String clock,Map clockValue,String clockName){
+
         if(object.get("fcstTime").equals(clock)){
                 if(object.get("category").equals("SKY")){
-//                    System.out.println("SKY = " + object);
                     String skyValue= object.get("fcstValue").toString();
                     clockValue.put("SKY",skyValue);
-//                    System.out.println("today 함수 ");
+
                 }
                 else if(object.get("category").equals("PTY")){
                     String ptyValue= object.get("fcstValue").toString();
@@ -573,6 +607,8 @@ public class WeatherTest {
                 todayWeahterResult.put(clockName,clockValue);
 
         }
+
+
 
 
     }
