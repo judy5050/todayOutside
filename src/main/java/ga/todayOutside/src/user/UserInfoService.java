@@ -26,6 +26,18 @@ public class UserInfoService {
         this.jwtService = jwtService;
     }
 
+    //    /**
+    //     *userInfo 찾기
+    //     * judy 5050 작성
+    //     */
+    ////    public UserInfo findByUserIdx(Long userIdx){
+    ////
+    ////        Optional <UserInfo> userInfo;
+    ////        userInfo= userInfoRepository.findById(userIdx);
+    ////        return userInfo.get();
+    ////
+    ////    }
+
     /**
      * 회원가입
      * @param postUserReq
