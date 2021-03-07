@@ -1,8 +1,6 @@
 package ga.todayOutside.src.weather;
 
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import ga.todayOutside.config.secret.Secret;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.support.ManagedMap;
@@ -12,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -23,24 +20,14 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Stream;
-import java.util.zip.DataFormatException;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import javax.swing.event.CellEditorListener;
-
-
 
 
 @RestController
 public class WeatherTest {
-
 
     //todayWeather 시각별 날씨 관련 변수 선언
 
@@ -151,6 +138,152 @@ public class WeatherTest {
 
 
 
+    //open api사용 초단기 예보
+    //초 단기 예보에서는 시간별 온도
+    //sky,pty,t1h 만 파싱해 가져오기
+    //매시간 30분 단위로 조절하기
+    @ResponseBody
+    @GetMapping("/todayWeather")
+    public Map weather() throws IOException, ParseException {
+
+
+        //시간을 받아오는 코드
+        //조회하는 시간에서 +1 정보만 가져온다.
+        Integer currentTime= LocalDateTime.now().getHour();
+        Integer currentYear= LocalDate.now().getYear();
+        Integer currentMonth=LocalDate.now().getMonthValue();
+        Integer currentDate=LocalDate.now().getDayOfMonth();
+        System.out.println("currentDate = " + currentDate);
+        Integer min=LocalDateTime.now().getMinute();
+
+        String apiUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService/getUltraSrtFcst";
+        // 홈페이지에서 받은 키
+        String serviceKey = Secret.WEATHER_OPEN_APIKEY;
+        String nx = "60";	//위도
+        String ny = "125";	//경도
+        String baseTime=null;
+
+        //분에 따른 baseTime 조절
+        if(min<=30){
+            Integer calTime;
+            if(currentTime==0){
+                calTime=23;
+            }
+            else {
+                calTime=currentTime-1;
+            }
+            if(calTime<10){
+                Integer.toString(calTime);
+                String before30Minute="0"+calTime+"30";
+                baseTime = before30Minute;	//조회하고싶은 시간
+                System.out.println("##########");
+            }
+
+        }
+        else
+        {
+            if(currentTime<10){
+                Integer.toString(currentTime);
+                String before30Minute="0"+currentTime+"30";
+                baseTime = before30Minute;	//조회하고싶은 시간
+
+            }
+            String after30Minute=Integer.toString(currentTime)+"30";
+            baseTime = after30Minute;	//조회하고싶은 시간
+        }
+        String baseDate = "20210308";	//조회하고싶은 날짜
+        String dataType = "json";	//타입 xml, json 등등 ..
+        String numOfRows = "10000";	//한 페이지 결과 수
+
+        //전날 23시 부터 153개의 데이터를 조회하면 오늘과 내일의 날씨를 알 수 있음
+
+        StringBuilder urlBuilder = new StringBuilder(apiUrl);
+        urlBuilder.append("?" + URLEncoder.encode("ServiceKey","UTF-8") + "="+serviceKey);
+        urlBuilder.append("&" + URLEncoder.encode("nx","UTF-8") + "=" + URLEncoder.encode(nx, "UTF-8")); //경도
+        urlBuilder.append("&" + URLEncoder.encode("ny","UTF-8") + "=" + URLEncoder.encode(ny, "UTF-8")); //위도
+        urlBuilder.append("&" + URLEncoder.encode("base_date","UTF-8") + "=" + URLEncoder.encode(baseDate, "UTF-8")); /* 조회하고싶은 날짜*/
+        urlBuilder.append("&" + URLEncoder.encode("base_time","UTF-8") + "=" + URLEncoder.encode(baseTime, "UTF-8")); /* 조회하고싶은 시간 AM 02시부터 3시간 단위 */
+        urlBuilder.append("&" + URLEncoder.encode("dataType","UTF-8") + "=" + URLEncoder.encode(dataType, "UTF-8"));	/* 타입 */
+        urlBuilder.append("&" + URLEncoder.encode("numOfRows","UTF-8") + "=" + URLEncoder.encode(numOfRows, "UTF-8"));	/* 한 페이지 결과 수 */
+
+        // GET방식으로 전송해서 파라미터 받아오기
+        URL url = new URL(urlBuilder.toString());
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Content-type", "application/json");
+
+        BufferedReader rd;
+        if(conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
+            rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        } else {
+            rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+        }
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = rd.readLine()) != null) {
+            sb.append(line);
+        }
+        rd.close();
+        conn.disconnect();
+        String data= sb.toString();
+
+        // Json parser를 만들어 만들어진 문자열 데이터를 객체화
+        JSONParser parser = new JSONParser();
+        JSONObject obj = (JSONObject) parser.parse(data);
+        // response 키를 가지고 데이터를 파싱
+        JSONObject parse_response = (JSONObject) obj.get("response");
+        // response 로 부터 body 찾기
+        JSONObject parse_body = (JSONObject) parse_response.get("body");
+        // body 로 부터 items 찾기
+        JSONObject parse_items = (JSONObject) parse_body.get("items");
+        JSONArray parse_item = (JSONArray) parse_items.get("item");
+
+        //element 변수 선언
+        JSONObject element;
+
+//        System.out.println(data);
+        System.out.println("baseTime = " + baseTime);
+
+        //시간 확인
+        todayCalHour(baseTime);
+
+        for(int i=0;i<parse_item.size();i++){
+            element =(JSONObject) parse_item.get(i);
+
+            //시간 별 날씨 데이터 받아오기 함수 호출
+            today(element,"0000",clock_00,"0시");
+            today(element,"0100",clock_01,"1시");
+            today(element,"0200",clock_02,"2시");
+            today(element,"0300",clock_03,"3시");
+            today(element,"0400",clock_04,"4시");
+            today(element,"0500",clock_05,"5시");
+            today(element,"0600",clock_06,"6시");
+            today(element,"0700",clock_07,"7시");
+            today(element,"0800",clock_08,"8시");
+            today(element,"0900",clock_09,"9시");
+            today(element,"1000",clock_10,"10시");
+            today(element,"1100",clock_11,"11시");
+            today(element,"1200",clock_12,"12시");
+
+            today(element,"1300",clock_13,"13시");
+            today(element,"1400",clock_14,"14시");
+            today(element,"1500",clock_15,"15시");
+            today(element,"1600",clock_16,"16시");
+            today(element,"1700",clock_17,"17시");
+            today(element,"1800",clock_18,"18시");
+            today(element,"1900",clock_19,"19시");
+            today(element,"2000",clock_20,"20시");
+            today(element,"2100",clock_21,"21시");
+            today(element,"2200",clock_22,"22시");
+            today(element,"2300",clock_23,"23시");
+            today(element,"2400",clock_00,"24시");
+
+
+
+        }
+
+        return todayWeahterResult;
+    }
 
     //하늘상태, 강수확률,강수형, 최고 ,최고 기온
     //SKY,POP,PTY
@@ -173,7 +306,7 @@ public class WeatherTest {
 
         String time=Integer.toString(currentTime)+Integer.toString(min);
 
-        String baseDate = "20210304";	//조회하고싶은 날짜
+        String baseDate = "20210307";	//조회하고싶은 날짜
         String baseTime = "2000";    //API 제공 시간
         String dataType = "json";    //타입 xml, json
         String numOfRows = "79";    //한 페이지 결과 수
@@ -233,23 +366,60 @@ public class WeatherTest {
          * 시간 관련
          */
 
-
-
         Calendar cal=Calendar.getInstance();
         cal.setTime(new Date());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
-        //        if(currentTime<6){
-//            cal.add(Calendar.DATE,-1);
-//        }
+                if(currentTime<6){
+            cal.add(Calendar.DATE,-1);
+        }
 
         //시각을 얻는 코드
         int t= LocalDateTime.now().getHour();
         System.out.println("currentTime = " + t);
 
+        //1시간 단위와 동일한 시간 값 가져오기
+        Integer valueMin=LocalDateTime.now().getMinute();
+        String value=null;
+        Integer calTime=null;
 
 
 
+        //분에 따른 baseTime 조절
+        if(valueMin<=30){
+
+            if(t==0){
+                calTime=23;
+            }
+            else {
+                calTime=t-1;
+            }
+            if(calTime<10){
+                Integer.toString(calTime);
+                String before30Minute="0"+calTime+"30";
+                value = before30Minute;	//조회하고싶은 시간
+                System.out.println("##########");
+            }
+
+        }
+        else
+        {
+            if(t<10){
+                Integer.toString(t);
+                String before30Minute="0"+t+"30";
+                value = before30Minute;	//조회하고싶은 시간
+                System.out.println("value = " + value);
+
+            }
+            else{
+                String after30Minute=Integer.toString(currentTime)+"30";
+                value = after30Minute;	//조회하고싶은 시간
+            }
+
+        }
+        System.out.println("value = " + value);
+        String cp=todayCalHour(value);
+        System.out.println("cmp = " + cp);
 
 
         //시간 비교 위해 시간 데이터 변형
@@ -271,316 +441,102 @@ public class WeatherTest {
         for (int i = 0; i < parse_item.size(); i++) {
             object=(JSONObject) parse_item.get(i);
             System.out.println("object "+i+" ="+object);
-            todayPer03(object,"0300",per_03,"3시");
-            todayPer03(object,"0600",per_06,"6시");
-            todayPer03(object,"0900",per_09,"9시");
-            todayPer03(object,"1200",per_12,"11시");
-            todayPer03(object,"1500",per_15,"15시");
-            todayPer03(object,"1800",per_18,"18시");
-            todayPer03(object,"2100",per_21,"21시");
-            todayPer03(object,"0000",per_00,"00시");
-
-        }
-        //            switch (getTime){
-//
-//                case "0100":
-//                    todayPer03(object,"0000",clock_01,"01시");
-//                    System.out.println("0100");
-//                    count ++;
-//                    if(count >=cmp)
-//                        break;
-//                case "0200":
-//                    todayPer03(object,"0000",clock_02,"02시");
-//                    count ++;
-//                    if(count >=cmp)
-//                        break;
-//                case "0300":
-//                    todayPer03(object,"0300",clock_03,"03시");
-//                    count ++;
-//                    if(count >=cmp)
-//                        break;
-//                case "0400":
-//                    todayPer03(object,"0300",clock_04,"04시");
-//                    count ++;
-//                    if(count >=cmp)
-//                        break;
-//                case "0500":
-//                    todayPer03(object,"0300",clock_05,"05시");
-//                    count ++;
-//                    if(count >=cmp)
-//                        break;
-//                case "0600":
-//                    todayPer03(object,"0600",clock_06,"06시");
-//                    count ++;
-//                    if(count >=cmp)
-//                        break;
-//                case "0700":
-//                    todayPer03(object,"0600",clock_07,"07시");
-//                    count ++;
-//                    if(count >=cmp)
-//                        break;
-//                case "0800":
-//                    todayPer03(object,"0600",clock_08,"08시");
-//                    count ++;
-//                    if(count >=cmp)
-//                        break;
-//                case "0900":
-//                    todayPer03(object,"0900",clock_09,"09시");
-//                    count ++;
-//                    if(count >=cmp)
-//                        break;
-//                case "1000":
-//                    todayPer03(object,"0900",clock_10,"10시");
-//                    count ++;
-//                    if(count >=cmp)
-//                        break;
-//                case "1100":
-//                    todayPer03(object,"0900",clock_11,"11시");
-//                    count ++;
-//                    if(count >=cmp)
-//                        break;
-//                case "1200":
-//                    todayPer03(object,"1200",clock_12,"12시");
-//                    count ++;
-//                    if(count >=cmp)
-//                        break;
-//                case "1300":
-//                    todayPer03(object,"1200",clock_13,"13시");
-//                    count ++;
-//                    if(count >=cmp)
-//                        break;
-//                case "1400":
-//                    todayPer03(object,"1200",clock_14,"14시");
-//                    count ++;
-//                    if(count >=cmp)
-//                        break;
-//                case "1500":
-//                    todayPer03(object,"1500",clock_15,"15시");
-//                    count ++;
-//                    if(count >=cmp)
-//                        break;
-//                case "1600":
-//                    todayPer03(object,"1500",clock_16,"16시");
-//                    count ++;
-//                    if(count >=cmp)
-//                        break;
-//                case "1700":
-//                    todayPer03(object,"1500",clock_17,"17시");
-//                    count ++;
-//                    if(count >=cmp)
-//                        break;
-//                case "1800":
-//                    todayPer03(object,"1800",clock_18,"18시");
-//                    count ++;
-//                    if(count >=cmp)
-//                        break;
-//                case "1900":
-//                    todayPer03(object,"1800",clock_19,"19시");
-//                    count ++;
-//                    if(count >=cmp)
-//                        break;
-//                case "2000":
-//                    todayPer03(object,"1800",clock_20,"20시");
-//                    count ++;
-//                    if(count >=cmp)
-//                        break;
-//                case "2100":
-//                    todayPer03(object,"2100",clock_21,"21시");
-//                    count ++;
-//                    if(count >=cmp)
-//                        break;
-//                case "2200":
-//                    todayPer03(object,"2100",clock_22,"22시");
-//                    count ++;
-//                    if(count >=cmp)
-//                        break;
-//                case "2300":
-//                    todayPer03(object,"2100",clock_23,"23시");
-//                    count ++;
-//                    if(count >=cmp)
-//                        break;
-//                case "0000":
-//                    todayPer03(object,"0000",clock_00,"24시");
-//                    count ++;
-//                    getTime="0100";
-//                    if(count >=cmp)
-//                        break;
-//
-//
-//            }
-
-        return todayWeatherPer03Result;
-    }
-
-
-
-    void todayPer03(JSONObject object,String clock,Map clockValue,String clockName){
-        if(object.get("fcstTime").equals(clock)){
-            if(object.get("category").equals("SKY")){
-                String skyValue= object.get("fcstValue").toString();
-                clockValue.put("SKY",skyValue);
-            }
-            else if(object.get("category").equals("PTY")){
-                String ptyValue= object.get("fcstValue").toString();
-                clockValue.put("PTY",ptyValue);
-            }
-            else if(object.get("category").equals("T3H")){
-                String T1H= object.get("fcstValue").toString();
-                clockValue.put("T3H",T1H);
-            }
-            todayWeatherPer03Result.put(clockName,clockValue);
-
-        }
-
-
-    }
-
-
-    //open api사용 초단기 예보
-    //초 단기 예보에서는 시간별 온도
-    //sky,pty,t1h 만 파싱해 가져오기
-    //매시간 30분 단위로 조절하기
-    @ResponseBody
-    @GetMapping("/todayWeather")
-    public Map weather() throws IOException, ParseException {
-
-
-        //시간을 받아오는 코드
-        //조회하는 시간에서 +1 정보만 가져온다.
-        Integer currentTime= LocalDateTime.now().getHour();
-        Integer currentYear= LocalDate.now().getYear();
-        Integer currentMonth=LocalDate.now().getMonthValue();
-        Integer currentDate=LocalDate.now().getDayOfMonth();
-        System.out.println("currentDate = " + currentDate);
-        Integer min=LocalDateTime.now().getMinute();
-
-        String apiUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService/getUltraSrtFcst";
-        // 홈페이지에서 받은 키
-        String serviceKey = Secret.WEATHER_OPEN_APIKEY;
-        String nx = "60";	//위도
-        String ny = "125";	//경도
-        String baseTime;
-
-        //분에 따른 baseTime 조절
-       if(min<=30){
-            Integer calTime=currentTime-1;
-            Integer.toString(calTime);
-            String before30Minute=calTime+"30";
-             baseTime = before30Minute;	//조회하고싶은 시간
-        }
-        else
-        {
-            String after30Minute=Integer.toString(currentTime)+Integer.toString(min);
-            baseTime = after30Minute;	//조회하고싶은 시간
-        }
-        String baseDate = "20210306";	//조회하고싶은 날짜
-        String dataType = "json";	//타입 xml, json 등등 ..
-        String numOfRows = "10000";	//한 페이지 결과 수
-
-        //전날 23시 부터 153개의 데이터를 조회하면 오늘과 내일의 날씨를 알 수 있음
-
-        StringBuilder urlBuilder = new StringBuilder(apiUrl);
-        urlBuilder.append("?" + URLEncoder.encode("ServiceKey","UTF-8") + "="+serviceKey);
-        urlBuilder.append("&" + URLEncoder.encode("nx","UTF-8") + "=" + URLEncoder.encode(nx, "UTF-8")); //경도
-        urlBuilder.append("&" + URLEncoder.encode("ny","UTF-8") + "=" + URLEncoder.encode(ny, "UTF-8")); //위도
-        urlBuilder.append("&" + URLEncoder.encode("base_date","UTF-8") + "=" + URLEncoder.encode(baseDate, "UTF-8")); /* 조회하고싶은 날짜*/
-        urlBuilder.append("&" + URLEncoder.encode("base_time","UTF-8") + "=" + URLEncoder.encode(baseTime, "UTF-8")); /* 조회하고싶은 시간 AM 02시부터 3시간 단위 */
-        urlBuilder.append("&" + URLEncoder.encode("dataType","UTF-8") + "=" + URLEncoder.encode(dataType, "UTF-8"));	/* 타입 */
-        urlBuilder.append("&" + URLEncoder.encode("numOfRows","UTF-8") + "=" + URLEncoder.encode(numOfRows, "UTF-8"));	/* 한 페이지 결과 수 */
-
-        // GET방식으로 전송해서 파라미터 받아오기
-        URL url = new URL(urlBuilder.toString());
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-        conn.setRequestProperty("Content-type", "application/json");
-
-        BufferedReader rd;
-        if(conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
-            rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        } else {
-            rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
-        }
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = rd.readLine()) != null) {
-            sb.append(line);
-        }
-        rd.close();
-        conn.disconnect();
-        String data= sb.toString();
-
-//        System.out.println("기본 데이터 출력 : "+data);
-        // Json parser를 만들어 만들어진 문자열 데이터를 객체화
-        JSONParser parser = new JSONParser();
-        JSONObject obj = (JSONObject) parser.parse(data);
-        // response 키를 가지고 데이터를 파싱
-        JSONObject parse_response = (JSONObject) obj.get("response");
-        // response 로 부터 body 찾기
-        JSONObject parse_body = (JSONObject) parse_response.get("body");
-        // body 로 부터 items 찾기
-        JSONObject parse_items = (JSONObject) parse_body.get("items");
-        JSONArray parse_item = (JSONArray) parse_items.get("item");
-
-        //element 변수 선언
-        JSONObject element;
-        //JSONObject item = (JSONObject) parse_item.get("item");
-
-        System.out.println(data);
-
-        for(int i=0;i<parse_item.size();i++){
-              element =(JSONObject) parse_item.get(i);
-
-            //시간 별 날씨 데이터 받아오기 함수 호출
-            today(element,"0000",clock_00,"0시");
-            today(element,"0100",clock_01,"1시");
-            today(element,"0200",clock_02,"2시");
-            today(element,"0300",clock_03,"3시");
-            today(element,"0400",clock_04,"4시");
-            today(element,"0500",clock_05,"5시");
-            today(element,"0600",clock_06,"6시");
-            today(element,"0700",clock_07,"7시");
-            today(element,"0800",clock_08,"8시");
-            today(element,"0900",clock_09,"9시");
-            today(element,"1000",clock_10,"10시");
-            today(element,"1100",clock_11,"11시");
-            today(element,"1200",clock_12,"12시");
-
-            today(element,"1300",clock_13,"13시");
-            today(element,"1400",clock_14,"14시");
-            today(element,"1500",clock_15,"15시");
-            today(element,"1600",clock_16,"16시");
-            today(element,"1700",clock_17,"17시");
-            today(element,"1800",clock_18,"18시");
-            today(element,"1900",clock_19,"19시");
-            today(element,"2000",clock_20,"20시");
-            today(element,"2100",clock_21,"21시");
-            today(element,"2200",clock_22,"22시");
-            today(element,"2300",clock_23,"23시");
-            today(element,"2400",clock_00,"24시");
-
-
+            todayPer03(object,"0300",per_03,"3시",cp);
+            todayPer03(object,"0600",per_06,"6시",cp);
+            todayPer03(object,"0900",per_09,"9시",cp);
+            todayPer03(object,"1200",per_12,"11시",cp);
+            todayPer03(object,"1500",per_15,"15시",cp);
+            todayPer03(object,"1800",per_18,"18시",cp);
+            todayPer03(object,"2100",per_21,"21시",cp);
+            todayPer03(object,"0000",per_00,"00시",cp);
 
         }
 
         return todayWeahterResult;
     }
 
+
+
+    void todayPer03(JSONObject object,String clock,Map clockValue,String clockName,String clockCmp){
+        System.out.println("clockCmp = " + clockCmp);
+        System.out.println(Integer.parseInt(clockCmp)<Integer.parseInt(clock));
+        if(Integer.parseInt(clockCmp)<Integer.parseInt(clock)){
+
+            if(object.get("fcstTime").equals(clock)){
+                if(object.get("category").equals("SKY")){
+                    String skyValue= object.get("fcstValue").toString();
+                    clockValue.put("SKY",skyValue);
+                }
+                else if(object.get("category").equals("PTY")){
+                    String ptyValue= object.get("fcstValue").toString();
+                    clockValue.put("PTY",ptyValue);
+                }
+                else if(object.get("category").equals("T3H")){
+                    String T1H= object.get("fcstValue").toString();
+                    clockValue.put("T3H",T1H);
+                }
+                todayWeahterResult.put(clockName,clockValue);
+
+            }
+        }
+
+    }
+
+
+
+
     //1시간 단위로 받아올 수 있는 최대 시간을 계산해 반환->3시간 단위로 받을 시각 계산위
-    Integer todayCalHour(String baseTime){
-        Integer returnTimeValue;
-
+    String todayCalHour(String baseTime){
+        String returnTimeValue=null;
+        Integer beforeCalValue=Integer.parseInt(baseTime);
         //6시간 더해 반환
-        if(baseTime=="0030"||baseTime=="0330"||baseTime=="0630"||baseTime=="0930"||baseTime=="1230"||baseTime=="1530"||baseTime=="1830"||baseTime=="2130"){
-            returnTimeValue=Integer.parseInt(baseTime);
-        }
-        else if(baseTime=="0130"||baseTime=="0430"||baseTime=="0730"||baseTime=="1030"||baseTime=="1330"||baseTime=="1630"||baseTime=="1930"||baseTime=="2230"){
+        if(baseTime.equals("0030")||baseTime.equals("0330")||baseTime.equals("0630")||baseTime.equals("0930")||baseTime.equals("1230")||baseTime.equals("1530")||baseTime.equals("1830")||baseTime.equals("2130")){
 
+            Integer afterCalValue=beforeCalValue+400;
+            if(afterCalValue>=2430){
+                afterCalValue=afterCalValue-2400;
+                returnTimeValue="0"+Integer.toString(afterCalValue);
+            }
+            else{
+                if(afterCalValue<1030&&afterCalValue>=0030)
+                    returnTimeValue="0"+Integer.toString(afterCalValue);
+            }
+            System.out.println("returnTimeValue = " + returnTimeValue);
+            return returnTimeValue;
         }
-        else if(baseTime=="0230"||baseTime=="0530"||baseTime=="0830"||baseTime=="1030"||baseTime=="130"||baseTime=="1530"||baseTime=="1830"||baseTime=="2130"){
+        //5시간 더해 변환
+        else if(baseTime.equals("0130")||baseTime.equals("0430")||baseTime.equals("0730")||baseTime.equals("1030")||baseTime.equals("1330")||baseTime.equals("1630")||baseTime.equals("1930")||baseTime.equals("2230")){
 
+            Integer afterCalValue=beforeCalValue+400;
+            if(afterCalValue>=2430){
+                afterCalValue=afterCalValue-2400;
+                returnTimeValue="0"+afterCalValue;
+            }
+            else{
+                if(afterCalValue<1030&&afterCalValue>=0030)
+                returnTimeValue="0"+Integer.toString(afterCalValue);
+            }
+            System.out.println("returnTimeValue = " + returnTimeValue);
+             return returnTimeValue;
         }
 
-        return null;
+        //4시간 더해 변환
+        else if(baseTime.equals("0230")||baseTime.equals("0530")||baseTime.equals("0830")||baseTime.equals("1030")||baseTime.equals("1430")||baseTime.equals("1730")||baseTime.equals("2030")||baseTime.equals("2330")){
+
+            Integer afterCalValue=beforeCalValue+400;
+            if(afterCalValue>=2430){
+                afterCalValue=afterCalValue-2400;
+                returnTimeValue="0"+Integer.toString(afterCalValue);
+            }
+            else{
+                if(afterCalValue<1030&&afterCalValue>=0030)
+                    returnTimeValue="0"+Integer.toString(afterCalValue);
+            }
+            System.out.println("returnTimeValue = " + returnTimeValue);
+            return returnTimeValue;
+        }
+
+       return returnTimeValue;
     }
 
 

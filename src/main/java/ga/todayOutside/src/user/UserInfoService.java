@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 
 @Service
 public class UserInfoService {
@@ -26,17 +28,17 @@ public class UserInfoService {
         this.jwtService = jwtService;
     }
 
-    //    /**
-    //     *userInfo 찾기
-    //     * judy 5050 작성
-    //     */
-    ////    public UserInfo findByUserIdx(Long userIdx){
-    ////
-    ////        Optional <UserInfo> userInfo;
-    ////        userInfo= userInfoRepository.findById(userIdx);
-    ////        return userInfo.get();
-    ////
-    ////    }
+        /**
+         *userInfo 찾기
+         * judy 5050 작성
+         */
+        public UserInfo findByUserIdx(Long userIdx){
+
+            Optional<UserInfo> userInfo;
+            userInfo= userInfoRepository.findById(userIdx);
+            return userInfo.get();
+
+        }
 
     /**
      * 회원가입
