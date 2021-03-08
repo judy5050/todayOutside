@@ -938,17 +938,35 @@ public class WeatherTest {
         weather();
         per3today();
 
-        ArrayList<Map>map =new ArrayList<>();
         Map<String,Map>hashMap1=new LinkedHashMap();
         Map<String,Map>hashMap2=new LinkedHashMap();
         Map<String,Map>hashMap3=new LinkedHashMap();
+
+
+        JSONObject jsonObject1=new JSONObject();
+        JSONObject jsonObject2=new JSONObject();
+        JSONObject jsonObject3=new JSONObject();
+
+        JSONArray jsonArray1=new JSONArray();
+        JSONArray jsonArray2=new JSONArray();
+        JSONArray jsonArray3=new JSONArray();
+
+        jsonObject1.put("오늘",todayWeahterResult);
+        jsonObject2.put("내일",day1Result);
+        jsonObject3.put("모레",day2Result);
+
+
+
         hashMap1.put("오늘",todayWeahterResult);
         hashMap2.put("내일",day1Result);
         hashMap1.putAll(hashMap2);
         if(!day2Result.isEmpty()){
             hashMap3.put("모레",day2Result);
             hashMap1.putAll(hashMap3);
+
         }
+        ArrayList arrayList=new ArrayList();
+        arrayList.add(hashMap1);
 
         return hashMap1;
 
