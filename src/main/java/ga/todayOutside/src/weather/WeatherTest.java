@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -61,6 +62,29 @@ public class WeatherTest {
     static Map<String,String> clock_22=new HashMap<>();
     static Map<String,String> clock_23=new HashMap<>();
 
+    //날씨 14개의 데이터를 제공하기 위해 만든 변수
+    static Map<String,String> day1_00=new HashMap<>();
+    static Map<String,String> day1_03=new HashMap<>();
+    static Map<String,String> day1_06=new HashMap<>();
+    static Map<String,String> day1_09=new HashMap<>();
+    static Map<String,String> day1_12=new HashMap<>();
+    static Map<String,String> day1_15=new HashMap<>();
+    static Map<String,String> day1_18=new HashMap<>();
+    static Map<String,String> day1_21=new HashMap<>();
+    static Map<String,Map> day1Result=new LinkedHashMap<>();
+
+    //day2데이터
+    static Map<String,String> day2_00=new HashMap<>();
+    static Map<String,String> day2_03=new HashMap<>();
+    static Map<String,String> day2_06=new HashMap<>();
+    static Map<String,String> day2_09=new HashMap<>();
+    static Map<String,String> day2_12=new HashMap<>();
+    static Map<String,String> day2_15=new HashMap<>();
+    static Map<String,String> day2_18=new HashMap<>();
+    static Map<String,String> day2_21=new HashMap<>();
+    static Map<String,Map> day2Result=new LinkedHashMap<>();
+
+
     //일주일 단위의 날씨 정보 조회 변수
 
     static Map<String,String> day1_high=new HashMap<>();
@@ -92,30 +116,14 @@ public class WeatherTest {
     //3시간을 1시간 단위로 쪼갬
 
     static Map<String,String> per_00=new HashMap<>();
-    static Map<String,String> per_01=new HashMap<>();
-    static Map<String,String> per_02=new HashMap<>();
     static Map<String,String> per_03=new HashMap<>();
-    static Map<String,String> per_04=new HashMap<>();
-    static Map<String,String> per_05=new HashMap<>();
     static Map<String,String> per_06=new HashMap<>();
-    static Map<String,String> per_07=new HashMap<>();
-    static Map<String,String> per_08=new HashMap<>();
     static Map<String,String> per_09=new HashMap<>();
-    static Map<String,String> per_10=new HashMap<>();
-    static Map<String,String> per_11=new HashMap<>();
     static Map<String,String> per_12=new HashMap<>();
 
-    static Map<String,String> per_13=new HashMap<>();
-    static Map<String,String> per_14=new HashMap<>();
     static Map<String,String> per_15=new HashMap<>();
-    static Map<String,String> per_16=new HashMap<>();
-    static Map<String,String> per_17=new HashMap<>();
     static Map<String,String> per_18=new HashMap<>();
-    static Map<String,String> per_19=new HashMap<>();
-    static Map<String,String> per_20=new HashMap<>();
     static Map<String,String> per_21=new HashMap<>();
-    static Map<String,String> per_22=new HashMap<>();
-    static Map<String,String> per_23=new HashMap<>();
 
 
     //당일~7일 데이터 정보 넘김
@@ -136,24 +144,40 @@ public class WeatherTest {
 
     static Map<String,String> weeklyResult=new LinkedHashMap<>();// 키값 자동정
 
+    //전체 시간 데이터
 
+
+    //합친 코드 확인용 결과값
+    static Map<String,String> concat=new LinkedHashMap<>();
+
+    // 하루용 데이터 총 개수 14개만 넘기기 위한 변수
+    int count;
+
+    //시간 데이터 용
+    Calendar cal;
+    SimpleDateFormat sdf;
+
+    String todayStr;
+    Integer todayInteger;
+
+    String tomorrowStr;
+    Integer tomorrowInteger;
+
+    String afterTomorrowStr;
+    Integer afterTomorrowInteger;
 
     //open api사용 초단기 예보
     //초 단기 예보에서는 시간별 온도
     //sky,pty,t1h 만 파싱해 가져오기
     //매시간 30분 단위로 조절하기
-    @ResponseBody
-    @GetMapping("/todayWeather")
-    public Map weather() throws IOException, ParseException {
-
+//    @ResponseBody
+//    @GetMapping("/todayWeather")
+//    public Map weather() throws IOException, ParseException {
+    public void weather() throws IOException, ParseException {
 
         //시간을 받아오는 코드
         //조회하는 시간에서 +1 정보만 가져온다.
         Integer currentTime= LocalDateTime.now().getHour();
-        Integer currentYear= LocalDate.now().getYear();
-        Integer currentMonth=LocalDate.now().getMonthValue();
-        Integer currentDate=LocalDate.now().getDayOfMonth();
-        System.out.println("currentDate = " + currentDate);
         Integer min=LocalDateTime.now().getMinute();
 
         String apiUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService/getUltraSrtFcst";
@@ -176,8 +200,13 @@ public class WeatherTest {
                 Integer.toString(calTime);
                 String before30Minute="0"+calTime+"30";
                 baseTime = before30Minute;	//조회하고싶은 시간
-                System.out.println("##########");
             }
+            else{
+                Integer.toString(calTime);
+                String before30Minute=calTime+"30";
+                baseTime = before30Minute;	//조회하고싶은 시간
+            }
+
 
         }
         else
@@ -188,12 +217,15 @@ public class WeatherTest {
                 baseTime = before30Minute;	//조회하고싶은 시간
 
             }
-            String after30Minute=Integer.toString(currentTime)+"30";
-            baseTime = after30Minute;	//조회하고싶은 시간
+            else{
+                String after30Minute=Integer.toString(currentTime)+"30";
+                baseTime = after30Minute;	//조회하고싶은 시간
+            }
         }
-        String baseDate = "20210308";	//조회하고싶은 날짜
+        System.out.println("baseTime = " + baseTime);
+        String baseDate = todayStr;	//조회하고싶은 날짜
         String dataType = "json";	//타입 xml, json 등등 ..
-        String numOfRows = "10000";	//한 페이지 결과 수
+        String numOfRows = "50";	//한 페이지 결과 수
 
         //전날 23시 부터 153개의 데이터를 조회하면 오늘과 내일의 날씨를 알 수 있음
 
@@ -243,10 +275,9 @@ public class WeatherTest {
 
 //        System.out.println(data);
         System.out.println("baseTime = " + baseTime);
-
         //시간 확인
         todayCalHour(baseTime);
-
+        System.out.println("parse_body = " + parse_body);
         for(int i=0;i<parse_item.size();i++){
             element =(JSONObject) parse_item.get(i);
 
@@ -282,16 +313,16 @@ public class WeatherTest {
 
         }
 
-        return todayWeahterResult;
+//        return todayWeahterResult;
     }
 
     //하늘상태, 강수확률,강수형, 최고 ,최고 기온
     //SKY,POP,PTY
     //getMapping 네이밍 생각해보기
     //3시간 마다 날씨 정보 제공
-    @ResponseBody
-    @GetMapping("/per3today")
-    public Map<String, Map> per3today() throws IOException, ParseException {
+//    @ResponseBody
+//    @GetMapping("/per3today")
+    public void per3today() throws IOException, ParseException {
 
         String apiUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService/getVilageFcst";    //동네예보조회
 
@@ -306,10 +337,10 @@ public class WeatherTest {
 
         String time=Integer.toString(currentTime)+Integer.toString(min);
 
-        String baseDate = "20210307";	//조회하고싶은 날짜
+        String baseDate = "20210308";	//조회하고싶은 날짜
         String baseTime = "2000";    //API 제공 시간
         String dataType = "json";    //타입 xml, json
-        String numOfRows = "79";    //한 페이지 결과 수
+        String numOfRows = "255";    //한 페이지 결과 수
         //79일경우 딱 겹치지 x는 하루 시간 조회 가능
 
         //동네예보 -- 전날 05시 부터 225개의 데이터를 조회하면 모레까지의 날씨를 알 수 있음
@@ -370,9 +401,11 @@ public class WeatherTest {
         cal.setTime(new Date());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
-                if(currentTime<6){
+        if(currentTime<6){
             cal.add(Calendar.DATE,-1);
         }
+        String todayDate=sdf.format(cal.getTime());
+        System.out.println("str = " + todayDate);
 
         //시각을 얻는 코드
         int t= LocalDateTime.now().getHour();
@@ -399,6 +432,12 @@ public class WeatherTest {
                 String before30Minute="0"+calTime+"30";
                 value = before30Minute;	//조회하고싶은 시간
                 System.out.println("##########");
+            }
+            else{
+                Integer.toString(calTime);
+                String before30Minute=calTime+"30";
+                value = before30Minute;	//조회하고싶은 시간
+
             }
 
         }
@@ -434,36 +473,95 @@ public class WeatherTest {
         System.out.println("getTime = " + getTime);
 
 
-        int count=0;
+
         int cmp=155*11;
         System.out.println("parse_item = " + parse_item.size());
         System.out.println(data);
         for (int i = 0; i < parse_item.size(); i++) {
-            object=(JSONObject) parse_item.get(i);
-            System.out.println("object "+i+" ="+object);
-            todayPer03(object,"0300",per_03,"3시",cp);
-            todayPer03(object,"0600",per_06,"6시",cp);
-            todayPer03(object,"0900",per_09,"9시",cp);
-            todayPer03(object,"1200",per_12,"11시",cp);
-            todayPer03(object,"1500",per_15,"15시",cp);
-            todayPer03(object,"1800",per_18,"18시",cp);
-            todayPer03(object,"2100",per_21,"21시",cp);
-            todayPer03(object,"0000",per_00,"00시",cp);
+            if(count<14){
+
+
+                object=(JSONObject) parse_item.get(i);
+                todayPer03(object,"0000",per_00,"00시",cp);
+                todayPer03(object,"0300",per_03,"3시",cp);
+                todayPer03(object,"0600",per_06,"6시",cp);
+                todayPer03(object,"0900",per_09,"9시",cp);
+                todayPer03(object,"1200",per_12,"12시",cp);
+                todayPer03(object,"1500",per_15,"15시",cp);
+                todayPer03(object,"1800",per_18,"18시",cp);
+                todayPer03(object,"2100",per_21,"21시",cp);
+
+
+
+
+
+
+            }
+
+
+
 
         }
 
-        return todayWeahterResult;
+//        return todayWeahterResult;
     }
 
 
 
     void todayPer03(JSONObject object,String clock,Map clockValue,String clockName,String clockCmp){
-        System.out.println("clockCmp = " + clockCmp);
-        System.out.println(Integer.parseInt(clockCmp)<Integer.parseInt(clock));
-        if(Integer.parseInt(clockCmp)<Integer.parseInt(clock)){
+//        System.out.println("clockCmp = " + clockCmp);
+//        System.out.println(Integer.parseInt(clockCmp)<Integer.parseInt(clock));
+        //오늘 일때
+        if(object.get("fcstDate").equals(todayStr)) {
+            if (Integer.parseInt(clockCmp) < Integer.parseInt(clock)) {
 
+                if (object.get("fcstTime").equals(clock)) {
+                    if (object.get("category").equals("SKY")) {
+                        System.out.println("object = " + object);
+                        count++;
+                        System.out.println("count = " + count);
+                        String skyValue = object.get("fcstValue").toString();
+                        clockValue.put("SKY", skyValue);
+                    } else if (object.get("category").equals("PTY")) {
+                        String ptyValue = object.get("fcstValue").toString();
+                        clockValue.put("PTY", ptyValue);
+                    } else if (object.get("category").equals("T3H")) {
+                        String T1H = object.get("fcstValue").toString();
+                        clockValue.put("T3H", T1H);
+                    }
+                    todayWeahterResult.put(clockName, clockValue);
+                }
+            }
+        }
+
+                else if(object.get("fcstDate").equals(tomorrowStr)){
+                    if(object.get("fcstTime").equals(clock)){
+                        if(object.get("category").equals("SKY")){
+                            System.out.println("tomorrowStr = " + tomorrowStr);
+                            count++;
+                            System.out.println("count = " + count);
+                            String skyValue= object.get("fcstValue").toString();
+                            clockValue.put("SKY",skyValue);
+                        }
+                        else if(object.get("category").equals("PTY")){
+                            String ptyValue= object.get("fcstValue").toString();
+                            clockValue.put("PTY",ptyValue);
+                        }
+                        else if(object.get("category").equals("T3H")){
+                            String T1H= object.get("fcstValue").toString();
+                            clockValue.put("T3H",T1H);
+                        }
+                        day1Result.put(clockName, clockValue);
+                    }
+
+
+                }
+
+        else if(object.get("fcstDate").equals(afterTomorrowStr)){
             if(object.get("fcstTime").equals(clock)){
                 if(object.get("category").equals("SKY")){
+                    count++;
+                    System.out.println("count = " + count);
                     String skyValue= object.get("fcstValue").toString();
                     clockValue.put("SKY",skyValue);
                 }
@@ -475,13 +573,38 @@ public class WeatherTest {
                     String T1H= object.get("fcstValue").toString();
                     clockValue.put("T3H",T1H);
                 }
-                todayWeahterResult.put(clockName,clockValue);
-
+                day2Result.put(clockName, clockValue);
             }
+
         }
+
+
+
 
     }
 
+
+    public  void test(){
+
+        cal=Calendar.getInstance();
+        cal.setTime(new Date());
+        sdf = new SimpleDateFormat("yyyyMMdd");
+        todayStr=sdf.format(cal.getTime());
+        todayInteger=Integer.parseInt(todayStr);
+//        System.out.println("today = " + todayStr);
+
+        cal.add(Calendar.DATE,+1);
+        tomorrowStr=sdf.format(cal.getTime());
+        tomorrowInteger=Integer.parseInt(tomorrowStr);
+//        System.out.println("tomorrow = " + tomorrow);
+
+        cal.add(Calendar.DATE,+1);
+        afterTomorrowStr=sdf.format(cal.getTime());
+        afterTomorrowInteger=Integer.parseInt(afterTomorrowStr);
+//        System.out.println("afterTomorrow = " + afterTomorrow);
+
+//        System.out.println("todayInteger + tomorrowInteger + afterTomorrowInteger = " + todayInteger + tomorrowInteger + afterTomorrowInteger);
+    }
 
 
 
@@ -492,10 +615,15 @@ public class WeatherTest {
         //6시간 더해 반환
         if(baseTime.equals("0030")||baseTime.equals("0330")||baseTime.equals("0630")||baseTime.equals("0930")||baseTime.equals("1230")||baseTime.equals("1530")||baseTime.equals("1830")||baseTime.equals("2130")){
 
-            Integer afterCalValue=beforeCalValue+400;
-            if(afterCalValue>=2430){
+            Integer afterCalValue=beforeCalValue+600;
+            System.out.println("afterCalValue = " + afterCalValue);
+            if(afterCalValue>2430){
                 afterCalValue=afterCalValue-2400;
                 returnTimeValue="0"+Integer.toString(afterCalValue);
+            }
+            else if(afterCalValue==2430){
+                afterCalValue=afterCalValue-2400;
+                returnTimeValue="00"+Integer.toString(afterCalValue);
             }
             else{
                 if(afterCalValue<1030&&afterCalValue>=0030)
@@ -507,14 +635,18 @@ public class WeatherTest {
         //5시간 더해 변환
         else if(baseTime.equals("0130")||baseTime.equals("0430")||baseTime.equals("0730")||baseTime.equals("1030")||baseTime.equals("1330")||baseTime.equals("1630")||baseTime.equals("1930")||baseTime.equals("2230")){
 
-            Integer afterCalValue=beforeCalValue+400;
+            Integer afterCalValue=beforeCalValue+500;
             if(afterCalValue>=2430){
                 afterCalValue=afterCalValue-2400;
                 returnTimeValue="0"+afterCalValue;
             }
-            else{
-                if(afterCalValue<1030&&afterCalValue>=0030)
+            else if(afterCalValue<1030&&afterCalValue>0030){
+
                 returnTimeValue="0"+Integer.toString(afterCalValue);
+            }
+            else{
+                returnTimeValue=Integer.toString(afterCalValue);
+
             }
             System.out.println("returnTimeValue = " + returnTimeValue);
              return returnTimeValue;
@@ -545,10 +677,12 @@ public class WeatherTest {
     void today(JSONObject object,String clock,Map clockValue,String clockName){
 
         if(object.get("fcstTime").equals(clock)){
+
                 if(object.get("category").equals("SKY")){
                     String skyValue= object.get("fcstValue").toString();
                     clockValue.put("SKY",skyValue);
-
+                   // 총 날씨정보 제공 값 조절하기 위한 변수
+                    count++;
                 }
                 else if(object.get("category").equals("PTY")){
                     String ptyValue= object.get("fcstValue").toString();
@@ -561,9 +695,8 @@ public class WeatherTest {
 
 
                 todayWeahterResult.put(clockName,clockValue);
-
+//                concat.put(clockName,clockName);//코드 합쳐보기
         }
-
 
 
 
@@ -795,9 +928,34 @@ public class WeatherTest {
 
     }
 
+    @ResponseBody
+    @GetMapping("/concat")
+    public Map concat() throws IOException, ParseException {
+
+        //오늘 날짜 받아오기
+        test();
+
+        weather();
+        per3today();
+
+        ArrayList<Map>map =new ArrayList<>();
+        Map<String,Map>hashMap1=new LinkedHashMap();
+        Map<String,Map>hashMap2=new LinkedHashMap();
+        Map<String,Map>hashMap3=new LinkedHashMap();
+        hashMap1.put("오늘",todayWeahterResult);
+        hashMap2.put("내일",day1Result);
+        hashMap1.putAll(hashMap2);
+        if(!day2Result.isEmpty()){
+            hashMap3.put("모레",day2Result);
+            hashMap1.putAll(hashMap3);
+        }
+
+        return hashMap1;
 
 
 
+
+    }
 
 
 
