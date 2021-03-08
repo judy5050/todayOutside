@@ -39,3 +39,6 @@ application-oauth.properties
 
 ### VS Code ###
 .vscode/
+
+### java ###
+secret/
