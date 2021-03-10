@@ -31,12 +31,9 @@ public class DisasterController {
     @GetMapping("/info")
     public Map<String, Object> getInfomation() throws ParseException {
         Map<String, Object> result = disasterService.getImfomation();
-        Map<Object, ArrayList<Map<String, JSONObject>>> fileter = new HashMap<>();
 
         Integer status = (Integer) result.get("status");
         String jsonString = (String) result.get("body");
-
-        // string json 형식으로 들어옴
 
         JSONParser parser = new JSONParser();
         Object obj = parser.parse(jsonString);
@@ -45,28 +42,7 @@ public class DisasterController {
         JSONObject row = (JSONObject) disasterMsg.get(1);
         JSONArray messages = (JSONArray) row.get("row");
 
-        for (Object o : messages) {
-            Map<String, JSONObject> msgs = new HashMap<>();
-
-            JSONObject jo = (JSONObject) o;
-            String locationName = (String) jo.get("location_name");
-            String location[] = locationName.split(" ");
-            String state = location[0];
-            String city = location[1];
-
-            ArrayList<Map<String, JSONObject>> regCity = fileter.getOrDefault("state", new ArrayList<Map<String, JSONObject>>());
-            regCity.add(msgs.put(city, jo));
-            fileter.put(state, regCity);
-
-        }
-
-        /**
-         출력 결과 {경기도=[null]}
-         문제점 null 값으로 value가 입력 된다.
-         지역에 다른 필터 메소드를 따로 만드는 것이 좋을 것 같음
-
-         */
-        System.out.println(fileter);
+        disasterService.filter(messages);
         return result;
     }
 }
