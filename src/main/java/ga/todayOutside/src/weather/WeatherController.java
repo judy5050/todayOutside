@@ -23,15 +23,31 @@ public class WeatherController {
     private final WeatherService weatherService;
 
 
+    /**
+     *오늘 날씨 조회 리스트
+     */
     @ResponseBody
-    @GetMapping("/todayWeathers")
-    public BaseResponse<Map> todayWeathers() throws IOException, ParseException {
+    @GetMapping("/todayWeatherList")
+    public BaseResponse<Map> todayWeatherList() throws IOException, ParseException {
 
         Map result =weatherService.getTodayWeatherList();
 
 
 
         return new BaseResponse<>(BaseResponseStatus.SUCCESS,result);
+    }
+
+    /**
+     * 현재 시각 날씨 조회
+     */
+    @ResponseBody
+    @GetMapping("/todayWeatherNow")
+    public BaseResponse<Void> todayWeatherNow() throws IOException, ParseException {
+
+
+        weatherService.getTodayWeatherNow();
+        return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+
     }
 
 }
