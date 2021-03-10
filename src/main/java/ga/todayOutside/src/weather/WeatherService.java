@@ -128,6 +128,9 @@ public class WeatherService {
 
     static Map<String,String> weeklyResult=new LinkedHashMap<>();// 키값 자동정
 
+    //현재 날씨 결과
+    static Map<String,String> nowWeatherResult=new HashMap<>();
+
     //전체 시간 데이터
 
 
@@ -517,7 +520,6 @@ public class WeatherService {
                 Integer.toString(calTime);
                 String before30Minute="0"+calTime+"30";
                 value = before30Minute;	//조회하고싶은 시간
-                System.out.println("##########");
             }
             else{
                 Integer.toString(calTime);
@@ -735,7 +737,7 @@ public class WeatherService {
      * 현재 날씨 조회하기 (초단기 실황 api 작성)
      */
 
-    void getTodayWeatherNow() throws IOException, ParseException {
+    Map getTodayWeatherNow() throws IOException, ParseException {
 
         Date date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
@@ -770,7 +772,6 @@ public class WeatherService {
             }
             else{
                 todayWeatherNowBaseTime=todayWeatherNowHour+"00";
-                System.out.println(" @@@@@@@@@@@@@@@@@");
             }
         }
         else{
@@ -843,12 +844,38 @@ public class WeatherService {
         JSONArray parse_item = (JSONArray) parse_items.get("item");
         //JSONObject item = (JSONObject) parse_item.get("item");
 
-        System.out.println(data);
+        //parsing 용 object
+        JSONObject object=new JSONObject();
+        System.out.println(parse_item);
+        System.out.println("parse_item = " + parse_item.size());
         for(int i=0;i<parse_item.size();i++) {
-            System.out.println(parse_item.get(i));
+            object=(JSONObject) parse_item.get(i);
+            System.out.println("object = " + object);
+            todayNowWeatherParsing(object);
+
+
         }
 
+        return nowWeatherResult;
+    }
 
+
+    /**
+     * 오늘의 날씨 정보(현재 날씨에 대해 원하는 값만 파싱해서 가져오기)
+     */
+    void todayNowWeatherParsing(JSONObject object){
+
+            if(object.get("category").equals("T1H")){
+                String T1H= object.get("obsrValue").toString();
+                nowWeatherResult.put("T1H",T1H);
+
+
+            }
+            else if(object.get("category").equals("PTY")){
+                String ptyValue= object.get("obsrValue").toString();
+                nowWeatherResult.put("PTY",ptyValue);
+
+            }
     }
 
 

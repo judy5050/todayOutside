@@ -34,7 +34,7 @@ public class WeatherController {
 
 
 
-        return new BaseResponse<>(BaseResponseStatus.SUCCESS,result);
+        return new BaseResponse<>(BaseResponseStatus.SUCCESS,result); //TODO: 성공 코드 바꾸기
     }
 
     /**
@@ -42,11 +42,11 @@ public class WeatherController {
      */
     @ResponseBody
     @GetMapping("/todayWeatherNow")
-    public BaseResponse<Void> todayWeatherNow() throws IOException, ParseException {
+    public BaseResponse<Map> todayWeatherNow() throws IOException, ParseException {
+        Map<String,String> nowWeatherResult=weatherService.getTodayWeatherNow();
 
 
-        weatherService.getTodayWeatherNow();
-        return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+        return new BaseResponse<>(BaseResponseStatus.SUCCESS,nowWeatherResult); //TODO:성공 코드 바꾸기
 
     }
 
