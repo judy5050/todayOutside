@@ -39,13 +39,13 @@ public class UserInfoController {
      */
     @ResponseBody
     @GetMapping("") // (GET) 127.0.0.1:9000/users
-    public BaseResponse<List<GetUsersRes>> getUsers(@RequestParam(required = false) String word) {
+    public BaseResponse<List<GetUserReq>> getUsers(@RequestParam(required = false) String word) {
         try {
-            List<GetUsersRes> getUsersResList = userInfoProvider.retrieveUserInfoList(word);
+            List<GetUserReq> getUserReqList = userInfoProvider.retrieveUserInfoList(word);
             if (word == null) {
-                return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_USERS, getUsersResList);
+                return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_USERS, getUserReqList);
             } else {
-                return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_SEARCH_USERS, getUsersResList);
+                return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_SEARCH_USERS, getUserReqList);
             }
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
@@ -93,19 +93,19 @@ public class UserInfoController {
 
     /**
      * 회원 정보 수정 API
-     * [PATCH] /users/:userId
+     * [PATCH] /users/:snsId
      * @PathVariable userId
      * @RequestBody PatchUserReq
      * @return BaseResponse<PatchUserRes>
      */
     @ResponseBody
-    @PatchMapping("/{userId}")
-    public BaseResponse<PatchUserRes> patchUsers(@PathVariable Long userId, @RequestBody PatchUserReq parameters) {
+    @PatchMapping("/{snsId}")
+    public BaseResponse<PatchUserRes> patchUsers(@PathVariable Long snsId, @RequestBody PatchUserReq parameters) {
 
         System.out.println(2);
         try {
-            UserInfo userInfo = userInfoProvider.retrieveUserInfoByUserId(userId);
-            PatchUserRes patchUserRes = userInfoService.updateUserInfo(userId, parameters, userInfo);
+            UserInfo userInfo = userInfoProvider.retrieveUserInfoBySnsId(snsId);
+            PatchUserRes patchUserRes = userInfoService.updateUserInfo(snsId, parameters, userInfo);
 
             return new BaseResponse<>(BaseResponseStatus.SUCCESS_PATCH_USER, patchUserRes);
         } catch (BaseException exception) {

@@ -4,7 +4,7 @@ import lombok.*;
 
 @Getter
 @AllArgsConstructor
-public class GetUsersRes {
+public class GetUserReq {
     private final Long userId;
     private final String email;
 }

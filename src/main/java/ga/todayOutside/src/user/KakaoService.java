@@ -112,13 +112,11 @@ public class KakaoService {
             result.put("statusCode", e.getRawStatusCode());
             result.put("body", e.getStatusText());
             System.out.println(e.toString());
-            //e.toString()
-            return result;
+
         } catch (Exception e) {
             result.put("statusCode", "999");
             System.out.println(e.toString());
 
-            return result;
         }
         //에러 관련 문서 -> 토큰 정보 보기 탭
         // https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api#get-token-info
