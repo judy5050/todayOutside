@@ -876,6 +876,8 @@ public class WeatherService {
                 nowWeatherResult.put("PTY",ptyValue);
 
             }
+
+            
     }
 
 
