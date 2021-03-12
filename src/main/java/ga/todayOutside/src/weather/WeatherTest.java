@@ -988,7 +988,7 @@ public class WeatherTest {
 
         for(int i=0;i<json.size();i++){
             jsonObject=(JSONObject) json.get(i);
-            System.out.println("jsonObject = " + jsonObject);
+//            System.out.println("jsonObject = " + jsonObject);
         }
 
 
