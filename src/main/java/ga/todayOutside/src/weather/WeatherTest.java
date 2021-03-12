@@ -2,29 +2,29 @@ package ga.todayOutside.src.weather;
 
 
 import ga.todayOutside.config.secret.Secret;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.support.ManagedMap;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+
+import org.apache.commons.io.FileUtils;
 
 
 @RestController
@@ -224,7 +224,7 @@ public class WeatherTest {
         }
         System.out.println("baseTime = " + baseTime);
         String baseDate = todayStr;	//조회하고싶은 날짜
-        String dataType = "json";	//타입 xml, json 등등 ..
+        String dataType = "static";	//타입 xml, json 등등 ..
         String numOfRows = "50";	//한 페이지 결과 수
 
         //전날 23시 부터 153개의 데이터를 조회하면 오늘과 내일의 날씨를 알 수 있음
@@ -339,7 +339,7 @@ public class WeatherTest {
 
         String baseDate = "20210308";	//조회하고싶은 날짜
         String baseTime = "2000";    //API 제공 시간
-        String dataType = "json";    //타입 xml, json
+        String dataType = "static";    //타입 xml, json
         String numOfRows = "255";    //한 페이지 결과 수
         //79일경우 딱 겹치지 x는 하루 시간 조회 가능
 
@@ -737,7 +737,7 @@ public class WeatherTest {
         //발표시각 0600 1800시
 
         String tmFc = sdf.format(cal.getTime())+"0600";	//발표시각 입력
-        String dataType = "json";	//타입 xml, json
+        String dataType = "static";	//타입 xml, json
         String numOfRows = "250";	//한 페이지 결과 수
 
         System.out.println("tmFc = " + tmFc);
@@ -972,6 +972,52 @@ public class WeatherTest {
 
 
 
+
+    }
+
+    /**
+     * 중기 예보지역 코드 변경을 위한 코드
+     */
+
+    @ResponseBody
+    @GetMapping("/code")
+    public void check() throws ParseException, IOException {
+        ClassPathResource resource = new ClassPathResource("static/check.json");
+        JSONArray json = (JSONArray) new JSONParser().parse(new InputStreamReader(resource.getInputStream(), "UTF-8")); //json-simple
+        JSONObject jsonObject;
+
+        for(int i=0;i<json.size();i++){
+            jsonObject=(JSONObject) json.get(i);
+            System.out.println("jsonObject = " + jsonObject);
+        }
+
+
+
+//        InputStream inputStream = classPathResource.getInputStream();
+
+
+//        File file=File.createTempFile("check",".json");
+//
+//        System.out.println("inputStream = " + inputStream.toString());
+//
+//        try {
+//            FileUtils.copyInputStreamToFile(inputStream, file);
+//        } finally {
+//            IOUtils.closeQuietly(inputStream);
+//        }
+//        System.out.println("resource = " + resource.getInputStream());
+        // Json parser를 만들어 만들어진 문자열 데이터를 객체화
+//        JSONParser parser = new JSONParser(new FileReader(file));
+//        JSONObject obj = (JSONObject) parser.parse(String.valueOf(resource));
+        // response 키를 가지고 데이터를 파싱
+
+//        JSONObject parse_response = (JSONObject) json.get("response");
+//        // response 로 부터 body 찾기
+//        JSONObject parse_body = (JSONObject) parse_response.get("body");
+//        // body 로 부터 items 찾기
+//        JSONObject parse_items = (JSONObject) parse_body.get("items");
+//        JSONArray parse_item = (JSONArray) parse_items.get("item");
+//        //JSONObject item = (JSONObject) parse_item.get("item");
 
     }
 

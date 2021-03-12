@@ -2,13 +2,9 @@ package ga.todayOutside.src.disaster;
 
 import ga.todayOutside.src.disaster.model.DisasterInfo;
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -42,7 +38,7 @@ public class DisasterService {
             String serviceKey = "BtXq5fRG2%2Bv%2B%2FEVKm3iuwIj%2BjPQnTRsO3yp6ZhtElvdMODumC6aSKDBkKtamNx9yp6YDVxes2fz5bK5FxZJI1Q%3D%3D";
             String pageNo = "1";
             String numOfRows = "30";
-            String type = "json";
+            String type = "static";
             String flag = "y";
 
             UriBuilder uriBuilder = factory.builder();

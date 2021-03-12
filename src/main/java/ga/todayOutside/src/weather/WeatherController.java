@@ -50,4 +50,17 @@ public class WeatherController {
 
     }
 
+    /**
+     * 오늘의 최고 기온 및 최저기온
+     */
+
+    @ResponseBody
+    @GetMapping("/todayWeatherHighAndLow")
+    public BaseResponse<Map> todayWeatherHighAndLow() throws IOException, ParseException {
+        Map<String,String> todayWeatherHighAndLowResult=weatherService.getTodayWeatherHighAndLow();
+
+
+        return new BaseResponse<>(BaseResponseStatus.SUCCESS,todayWeatherHighAndLowResult);
+    }
+
 }

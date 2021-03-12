@@ -11,20 +11,18 @@ import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+
+
 
 @Service
 @Transactional
@@ -140,12 +138,25 @@ public class WeatherService {
     // 하루용 데이터 총 개수 14개만 가져오기 위한 함수
     int count;
 
+    //전날 날씨 데이터와 비교 하기 위한 저장값
+
+
+    //오늘 최고 기온 최저기온 변수
+    static Map<String,String> todayWeatherHighAndResult=new HashMap<>();
+
+
     /**
      * 시간 데이터 용
      */
 
     Calendar cal;
+    Calendar yes;
     SimpleDateFormat sdf;
+
+
+    //어제
+    String yesterdayStr;
+
 
     //오늘
     String todayStr;
@@ -217,7 +228,7 @@ public class WeatherService {
         }
         System.out.println("baseTime = " + baseTime);
         String baseDate = todayStr;	//조회하고싶은 날짜
-        String dataType = "json";	//타입 xml, json 등등 ..
+        String dataType = "static";	//타입 xml, json 등등 ..
         String numOfRows = "50";	//한 페이지 결과 수
 
         //전날 23시 부터 153개의 데이터를 조회하면 오늘과 내일의 날씨를 알 수 있음
@@ -419,6 +430,80 @@ public class WeatherService {
 //    @GetMapping("/per3today")
     public void weatherPer3Hour() throws IOException, ParseException {
 
+        /**
+         * 시간 관련
+         */
+
+        Calendar cal=Calendar.getInstance();
+        cal.setTime(new Date());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+
+        //시각을 얻는 코드
+        int t= LocalDateTime.now().getHour();
+        System.out.println("currentTime = " + t);
+
+        //1시간 단위와 동일한 시간 값 가져오기
+        Integer valueMin=LocalDateTime.now().getMinute();
+        String value=null;
+        Integer calTime=null;
+
+
+
+        //분에 따른 baseTime 조절
+        if(valueMin<=30){
+
+            if(t==0){
+                calTime=23;
+            }
+            else {
+                calTime=t-1;
+            }
+            if(calTime<10){
+                Integer.toString(calTime);
+                String before30Minute="0"+calTime+"30";
+                value = before30Minute;	//조회하고싶은 시간
+            }
+            else{
+                Integer.toString(calTime);
+                String before30Minute=calTime+"30";
+                value = before30Minute;	//조회하고싶은 시간
+
+            }
+
+        }
+        else
+        {
+            if(t<10){
+                Integer.toString(t);
+                String before30Minute="0"+t+"30";
+                value = before30Minute;	//조회하고싶은 시간
+                System.out.println("value = " + value);
+
+            }
+            else{
+                String after30Minute=Integer.toString(t)+"30";
+                value = after30Minute;	//조회하고싶은 시간
+            }
+
+        }
+        System.out.println("value = " + value);
+        String cp=getTodayWeatherMaxHour(value);
+        System.out.println("cmp = " + cp);
+
+        String baseTime = "2300";    //API 제공 시간
+
+        //시간 비교 위해 시간 데이터 변형
+        // 0000~0900 fcstTime 용 데이터 변형
+        String getTime=null;
+        if(t>=0&&t<10){
+            getTime= "0"+t+"00";
+        }
+        else{
+            getTime=t+"00";
+        }
+        System.out.println("getTime = " + getTime);
+
+
         String apiUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService/getVilageFcst";    //동네예보조회
 
         // 홈페이지에서 받은 키
@@ -432,9 +517,8 @@ public class WeatherService {
 
         String time=Integer.toString(currentTime)+Integer.toString(min);
 
-        String baseDate = "20210309";	//조회하고싶은 날짜
-        String baseTime = "2000";    //API 제공 시간
-        String dataType = "json";    //타입 xml, json
+        String baseDate = "20210311";	//조회하고싶은 날짜
+        String dataType = "static";    //타입 xml, json
         String numOfRows = "256";    //한 페이지 결과 수
         //79일경우 딱 겹치지 x는 하루 시간 조회 가능
 
@@ -488,77 +572,6 @@ public class WeatherService {
         JSONObject element=null;
 
 
-        /**
-         * 시간 관련
-         */
-
-        Calendar cal=Calendar.getInstance();
-        cal.setTime(new Date());
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-
-        //시각을 얻는 코드
-        int t= LocalDateTime.now().getHour();
-        System.out.println("currentTime = " + t);
-
-        //1시간 단위와 동일한 시간 값 가져오기
-        Integer valueMin=LocalDateTime.now().getMinute();
-        String value=null;
-        Integer calTime=null;
-
-
-
-        //분에 따른 baseTime 조절
-        if(valueMin<=30){
-
-            if(t==0){
-                calTime=23;
-            }
-            else {
-                calTime=t-1;
-            }
-            if(calTime<10){
-                Integer.toString(calTime);
-                String before30Minute="0"+calTime+"30";
-                value = before30Minute;	//조회하고싶은 시간
-            }
-            else{
-                Integer.toString(calTime);
-                String before30Minute=calTime+"30";
-                value = before30Minute;	//조회하고싶은 시간
-
-            }
-
-        }
-        else
-        {
-            if(t<10){
-                Integer.toString(t);
-                String before30Minute="0"+t+"30";
-                value = before30Minute;	//조회하고싶은 시간
-                System.out.println("value = " + value);
-
-            }
-            else{
-                String after30Minute=Integer.toString(currentTime)+"30";
-                value = after30Minute;	//조회하고싶은 시간
-            }
-
-        }
-        System.out.println("value = " + value);
-        String cp=getTodayWeatherMaxHour(value);
-        System.out.println("cmp = " + cp);
-
-
-        //시간 비교 위해 시간 데이터 변형
-        // 0000~0900 fcstTime 용 데이터 변형
-        String getTime=null;
-        if(t>=0&&t<10){
-            getTime= "0"+t+"00";
-        }
-        else{
-            getTime=t+"00";
-        }
-        System.out.println("getTime = " + getTime);
 
         System.out.println(data);
         for (int i = 0; i < parse_item.size(); i++) {
@@ -673,6 +686,10 @@ public class WeatherService {
 
             cal = Calendar.getInstance();
             cal.setTime(new Date());
+
+            yes=Calendar.getInstance();
+            yes.setTime(new Date());
+
             sdf = new SimpleDateFormat("yyyyMMdd");
             todayStr = sdf.format(cal.getTime());
             todayInteger = Integer.parseInt(todayStr);
@@ -684,6 +701,10 @@ public class WeatherService {
             cal.add(Calendar.DATE, +1);
             afterTomorrowStr = sdf.format(cal.getTime());
             afterTomorrowInteger = Integer.parseInt(afterTomorrowStr);
+
+            yes.add(Calendar.DATE,-1);
+            yesterdayStr=sdf.format(yes.getTime());
+
         }
 
 
@@ -795,9 +816,9 @@ public class WeatherService {
         String serviceKey = Secret.WEATHER_OPEN_APIKEY;
         String nx = "60";	//위도
         String ny = "127";	//경도
-        String baseDate = "20210310";	//조회하고싶은 날짜
+        String baseDate = todayWeatherBaseDate;	//조회하고싶은 날짜
         String baseTime = todayWeatherNowBaseTime;	//API 제공 시간
-        String dataType = "json";	//타입 xml, json
+        String dataType = "static";	//타입 xml, json
         String numOfRows = "250";	//한 페이지 결과 수
 
         //동네예보 -- 전날 05시 부터 225개의 데이터를 조회하면 모레까지의 날씨를 알 수 있음
@@ -878,6 +899,113 @@ public class WeatherService {
             }
 
             
+    }
+
+    /**
+     *오늘 날씨 최고 최저 기온 파싱 하는 함수
+     */
+    //전날 23시 조회 기준
+    //최고기온은 15시 데이터
+    //최저 기온은 6시 데이터
+    void todayWeatherHighAndLowParsing(JSONObject object){
+        if(object.get("fcstDate").equals(tomorrowStr)){
+                    if (object.get("category").equals("TMN")) {
+                        String skyValue = object.get("fcstValue").toString();
+                        todayWeatherHighAndResult.put("TMN", skyValue);
+                    } else if (object.get("category").equals("TMX")) {
+                        String ptyValue = object.get("fcstValue").toString();
+                        todayWeatherHighAndResult.put("TMX", ptyValue);
+
+            }
+        }
+
+    }
+
+    public Map getTodayWeatherHighAndLow() throws IOException, ParseException {
+
+
+        date();
+        System.out.println("yesterdayStr = " + yesterdayStr);
+        String apiUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService/getVilageFcst";    //동네예보조회
+
+        // 홈페이지에서 받은 키
+        String serviceKey = Secret.WEATHER_OPEN_APIKEY;
+        String nx = "60";    //위도
+        String ny = "127";    //경도
+
+        //시간을 받아오는 코드
+        int currentTime= LocalDateTime.now().getHour();
+        int min=LocalDateTime.now().getMinute();
+
+        String time=Integer.toString(currentTime)+Integer.toString(min);
+
+        String baseTime = "2300";    //API 제공 시간
+        String baseDate = "20210311";	//조회하고싶은 날짜
+        String dataType = "static";    //타입 xml, json
+        String numOfRows = "256";    //한 페이지 결과 수
+        //79일경우 딱 겹치지 x는 하루 시간 조회 가능
+
+        //동네예보 -- 전날 05시 부터 225개의 데이터를 조회하면 모레까지의 날씨를 알 수 있음
+
+        StringBuilder urlBuilder = new StringBuilder(apiUrl);
+        urlBuilder.append("?" + URLEncoder.encode("ServiceKey", "UTF-8") + "=" + serviceKey);
+        urlBuilder.append("&" + URLEncoder.encode("nx", "UTF-8") + "=" + URLEncoder.encode(nx, "UTF-8")); //경도
+        urlBuilder.append("&" + URLEncoder.encode("ny", "UTF-8") + "=" + URLEncoder.encode(ny, "UTF-8")); //위도
+        urlBuilder.append("&" + URLEncoder.encode("base_date", "UTF-8") + "=" + URLEncoder.encode(baseDate, "UTF-8")); /* 조회하고싶은 날짜*/
+        urlBuilder.append("&" + URLEncoder.encode("base_time", "UTF-8") + "=" + URLEncoder.encode(baseTime, "UTF-8")); /* 조회하고싶은 시간 AM 02시부터 3시간 단위 */
+        urlBuilder.append("&" + URLEncoder.encode("dataType", "UTF-8") + "=" + URLEncoder.encode(dataType, "UTF-8"));    /* 타입 */
+        urlBuilder.append("&" + URLEncoder.encode("numOfRows", "UTF-8") + "=" + URLEncoder.encode(numOfRows, "UTF-8"));    /* 한 페이지 결과 수 */
+
+        // GET방식으로 전송해서 파라미터 받아오기
+        URL url = new URL(urlBuilder.toString());
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Content-type", "application/json");
+
+        BufferedReader rd;
+        if (conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
+            rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        } else {
+            rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+        }
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = rd.readLine()) != null) {
+            sb.append(line);
+        }
+        rd.close();
+        conn.disconnect();
+        String data = sb.toString();
+
+        // Json parser를 만들어 만들어진 문자열 데이터를 객체화
+        JSONParser parser = new JSONParser();
+        JSONObject obj = (JSONObject) parser.parse(data);
+        // response 키를 가지고 데이터를 파싱
+        JSONObject parse_response = (JSONObject) obj.get("response");
+        // response 로 부터 body 찾기
+        JSONObject parse_body = (JSONObject) parse_response.get("body");
+        // body 로 부터 items 찾기
+        JSONObject parse_items = (JSONObject) parse_body.get("items");
+        JSONArray parse_item = (JSONArray) parse_items.get("item");
+        //JSONObject item = (JSONObject) parse_item.get("item");
+
+        JSONObject object;
+
+        //element 변수 선언
+        JSONObject element=null;
+
+        for (int i = 0; i < parse_item.size(); i++) {
+           {
+                object=(JSONObject) parse_item.get(i);
+                todayWeatherHighAndLowParsing(object);
+            }
+
+
+
+
+        }
+
+        return todayWeatherHighAndResult;
     }
 
 
