@@ -28,12 +28,12 @@ public class UserInfoProvider {
      */
     public List<GetUserReq> retrieveUserInfoList(String word) throws BaseException {
         // 1. DB에서 전체 UserInfo 조회
-        List<UserInfo> userInfoList;
+        List<UserInfo> userInfoList = null;
         try {
             if (word == null) { // 전체 조회
-                userInfoList = userInfoRepository.findByStatus("ACTIVE");
+                //userInfoList = userInfoRepository.findByStatus("ACTIVE");
             } else { // 검색 조회
-                userInfoList = userInfoRepository.findByStatusAndNicknameIsContaining("ACTIVE", word);
+                //userInfoList = userInfoRepository.findByStatusAndNicknameIsContaining("ACTIVE", word);
             }
         } catch (Exception ignored) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_GET_USER);
@@ -97,9 +97,9 @@ public class UserInfoProvider {
         } catch (Exception ignored) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_GET_USER);
         }
-        System.out.println(userInfo.getStatus());
+        System.out.println(userInfo);
         // 2. 존재하는 회원인지 확인
-        if (userInfo == null || !userInfo.getStatus().equals("ACTIVE")) {
+        if (userInfo == null || !userInfo.getIsDeleted().equals("N")) {
             throw new BaseException(BaseResponseStatus.NOT_FOUND_USER);
         }
 

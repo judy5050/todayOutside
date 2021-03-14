@@ -5,13 +5,18 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
+
 @NoArgsConstructor(access = AccessLevel.PUBLIC) // Unit Test 를 위해 PUBLIC
 @Getter
 public class PatchUserReq {
-    private Long id;
-    private String email;
+
     private String nickname;
+    private String email;
+    private String noticeAlarmStatus;
+    private String disasterAlarmStatus;
+    private String userMainLocation;
+    private String userSubLocation;
     private String picture;
-    private Role role;
 
 }

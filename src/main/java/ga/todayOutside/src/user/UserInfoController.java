@@ -120,7 +120,7 @@ public class UserInfoController {
      * @RequestBody PostLoginReq
      * @return BaseResponse<PostLoginRes>
      */
-    @PostMapping("/login")
+    @PostMapping("/login/kakao")
     public BaseResponse<PostLoginRes> login(@RequestParam String accessToken) throws BaseException {
 
         //토큰 유저 정보 조회

@@ -10,5 +10,4 @@ public class PatchUserRes {
     private final String email;
     private final String nickname;
     private String picture;
-    private Role role;
 }
