@@ -50,6 +50,7 @@ public class UserInfoService {
         UserInfo existsUserInfo = null;
         try {
             // 1-1. 이미 존재하는 회원이 있는지 조회
+            System.out.println("회원 조회");
             existsUserInfo = userInfoProvider.retrieveUserInfoBySnsId(postUserReq.getSnsId());
         } catch (BaseException exception) {
             // 1-2. 이미 존재하는 회원이 없다면 그대로 진행
@@ -66,16 +67,28 @@ public class UserInfoService {
         String email = postUserReq.getEmail();
         String nickname = postUserReq.getNickname();
         String picture = postUserReq.getPicture();
-        Role role = postUserReq.getRole();
-        String status = "ACTIVE";
         Long snsId = postUserReq.getSnsId();
+        String mainLocation = postUserReq.getMainLocation();
+        String subLocation = postUserReq.getSubLocation();
+        String noticeAlarmStatus = "Y";
+        String disasterAlarmStatus = "Y";
+        Long heartNum = (long) 0;
+        String isDeleted = "N";
 
         try {
             //password = new AES128(Secret.USER_INFO_PASSWORD_KEY).encrypt(postUserReq.getPassword());
         } catch (Exception ignored) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_POST_USER);
         }
-        UserInfo userInfo = new UserInfo(email, nickname, picture, role, status, snsId);
+        UserInfo userInfo = UserInfo.builder()
+                .email(email).nickname(nickname)
+                .userMainLocation(mainLocation).userSubLocation(subLocation)
+                .picture(picture).snsId(snsId)
+                .noticeAlarmStatus(noticeAlarmStatus).disasterAlarmStatus(disasterAlarmStatus)
+                .heartNum(heartNum).isDeleted(isDeleted)
+                .build();
+
+        System.out.println(userInfo);
 
         // 3. 유저 정보 저장
         try {
@@ -101,22 +114,27 @@ public class UserInfoService {
     public PatchUserRes updateUserInfo(@NonNull Long userId, PatchUserReq patchUserReq, UserInfo userInfo) throws BaseException {
         System.out.println(1234);
         try {
-            String email = patchUserReq.getEmail().concat("_edited");
-            String nickname = patchUserReq.getNickname().concat("_edited");
-            String picture = patchUserReq.getPicture().concat("_edited");
-            String status = "ACTIVE";
-            Long id = patchUserReq.getId();
-            Role role = patchUserReq.getRole();
+            String email = patchUserReq.getEmail();
+            String nickname = patchUserReq.getNickname();
+            String picture = patchUserReq.getPicture();
+            String noticeAlarmStatus = patchUserReq.getNoticeAlarmStatus();
+            String disasterAlarmStatus = patchUserReq.getDisasterAlarmStatus();
+            String userMainLocation = patchUserReq.getUserMainLocation();
+            String userSubLocation = patchUserReq.getUserSubLocation();
 
-            userInfo.setStatus(status);
+
             userInfo.setEmail(email);
             userInfo.setNickname(nickname);
             userInfo.setPicture(picture);
-            userInfo.setRole(role);
+            userInfo.setNoticeAlarmStatus(noticeAlarmStatus);
+            userInfo.setDisasterAlarmStatus(disasterAlarmStatus);
+            userInfo.setUserMainLocation(userMainLocation);
+            userInfo.setUserSubLocation(userSubLocation);
+
 
             userInfoRepository.save(userInfo);
 
-            return new PatchUserRes(email, nickname, picture, role);
+            return new PatchUserRes(email, nickname, picture);
         } catch (Exception ignored) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_PATCH_USER);
         }

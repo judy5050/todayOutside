@@ -17,70 +17,88 @@ public class UserInfo extends BaseEntity {
      * 유저 ID
      * judy 5050작성 코드
      */
-
-//    @Id // PK를 의미하는 어노테이션
-//    @Column(name = "userIdx", nullable = false, updatable = false)
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Long id;
-
-    /**
-     * 유저 ID
-     */
-
     @Id // PK를 의미하는 어노테이션
-    @Column(name = "id", nullable = false, updatable = false)
+    @Column(name = "userIdx", nullable = false, updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-
-    /**
-     * 이메일
-     */
-    @Column(name = "email", nullable = false, length = 100)
-    private String email;
-
 
     /**
      * 닉네임
      */
-    @Column(name = "nickname", nullable = true, length = 30)
+    @Column(name = "userNickname", nullable = false, length = 30)
     private String nickname;
 
     /**
-     * 상태
+     * 이메일
      */
-    @Column(name = "status", nullable = true, length = 10)
-    private String status = "ACTIVE";
+    @Column(name = "userEmail", length = 30)
+    private String email;
 
-    @Column(name = "picture")
+    /**
+     * 게시글알림선택
+     */
+    @Column(name = "noticeAlarmStatus", length = 1)
+    private String noticeAlarmStatus;
+
+    /**
+     * 재난알림선
+     */
+    @Column(name = "disasterAlarmStatus", length = 30)
+    private String disasterAlarmStatus;
+
+    /**
+     * 회원닉네임
+     */
+    @Column(name = "userMainLocation", length = 30)
+    private String userMainLocation;
+
+    /**
+     * 회원메인위치
+     */
+    @Column(name = "userSubLocation", length = 30)
+    private String userSubLocation;
+
+    /**
+     * 유저 사진
+     */
+    @Column(name = "userProfile")
     private String picture;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Role role;
+    /**
+     * 계정 삭제 여부
+     */
+    @Column(name = "isDeleted")
+    private String isDeleted;
 
+    /**
+     * 하트 개수
+     */
+    @Column(name = "heartNum")
+    private Long heartNum;
 
+    /**
+     * 소셜 아이디 아이디
+     */
     @Column(name = "snsId", nullable = false)
     private Long snsId;
 
-
     @Builder
-    public UserInfo(String email, String nickname, String picture, Role role, String status, Long snsId) {
-        this.email = email;
+    public UserInfo(Long id, String nickname,
+                    String email, String noticeAlarmStatus,
+                    String disasterAlarmStatus, String userMainLocation,
+                    String userSubLocation, String picture,
+                    String isDeleted, Long heartNum, Long snsId) {
+        this.id = id;
         this.nickname = nickname;
+        this.email = email;
+        this.noticeAlarmStatus = noticeAlarmStatus;
+        this.disasterAlarmStatus = disasterAlarmStatus;
+        this.userMainLocation = userMainLocation;
+        this.userSubLocation = userSubLocation;
         this.picture = picture;
-        this.role = role;
-        this.status = status;
+        this.isDeleted = isDeleted;
+        this.heartNum = heartNum;
         this.snsId = snsId;
     }
-
-    public UserInfo update(String nickname, String picture) {
-        this.nickname = nickname;
-        this.picture = picture;
-
-        return this;
-    }
-
-    public String getRoleKey() { return this.role.getKey(); }
 
 }

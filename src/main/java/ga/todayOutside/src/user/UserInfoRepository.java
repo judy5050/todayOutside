@@ -10,10 +10,10 @@ import java.util.Optional;
 
 @Repository // => JPA => Hibernate => ORM => Database 객체지향으로 접근하게 해주는 도구이다
 public interface UserInfoRepository extends CrudRepository<UserInfo, Integer> {
-    List<UserInfo> findByStatus(String status);
+//    List<UserInfo> findByStatus(String status);
     Optional<UserInfo> findByEmail(String email);
-    List<UserInfo> findBySnsIdAndStatus(Long snsId, String status);
-    List<UserInfo> findByStatusAndNicknameIsContaining(String status, String word);
+//    List<UserInfo> findBySnsIdAndStatus(Long snsId, String status);
+//    List<UserInfo> findByStatusAndNicknameIsContaining(String status, String word);
     Optional<UserInfo> findBySnsId(Long snsId);
     Optional<UserInfo> findById(Long id);
     Integer deleteById(Long userId);
