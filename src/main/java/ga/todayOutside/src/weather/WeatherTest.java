@@ -737,7 +737,7 @@ public class WeatherTest {
         //발표시각 0600 1800시
 
         String tmFc = sdf.format(cal.getTime())+"0600";	//발표시각 입력
-        String dataType = "static";	//타입 xml, json
+        String dataType = "json";	//타입 xml, json
         String numOfRows = "250";	//한 페이지 결과 수
 
         System.out.println("tmFc = " + tmFc);

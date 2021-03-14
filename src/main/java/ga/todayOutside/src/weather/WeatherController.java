@@ -2,14 +2,14 @@ package ga.todayOutside.src.weather;
 
 import ga.todayOutside.config.BaseResponse;
 import ga.todayOutside.config.BaseResponseStatus;
+import ga.todayOutside.src.weather.model.GetWeeklyReq;
+import ga.todayOutside.src.weather.model.GetWeeklyRes;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -61,6 +61,19 @@ public class WeatherController {
 
 
         return new BaseResponse<>(BaseResponseStatus.SUCCESS,todayWeatherHighAndLowResult);
+    }
+
+    @ResponseBody
+    @GetMapping("/weeklyHighAndLosWeather")
+    public String weekly(@RequestBody GetWeeklyReq getWeeklyReq) throws IOException, ParseException {
+
+        String s = weatherService.convertForWeeklyHighAndLowWeather(getWeeklyReq.getSecondAddressName());
+        weatherService.weeklyHighAndLow(s);
+
+        //        GetWeeklyRes getWeeklyRes=new GetWeeklyRes(s);
+//       return new BaseResponse<>(BaseResponseStatus.SUCCESS,getWeeklyRes);//:TODO 성공 코드 바꾸기
+
+          return  "OK";
     }
 
 }
