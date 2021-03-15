@@ -11,6 +11,7 @@ public class DisasterInfo {
     private String state;
     private String city;
     private String msg;
+    private String createDate;
 
     @Override
     public String toString() {
@@ -18,6 +19,7 @@ public class DisasterInfo {
                 "state='" + state + '\'' +
                 ", city='" + city + '\'' +
                 ", msg='" + msg + '\'' +
+                ", createDate='" + createDate + '\'' +
                 '}';
     }
 }

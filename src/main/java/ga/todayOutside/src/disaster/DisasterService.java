@@ -25,10 +25,12 @@ public class DisasterService {
 
     @Autowired
     private DisasterProvider disasterProvider;
+
     /**
      *  재난 정보 가져오기
      */
     public Map<String, Object> getImfomation() {
+
         HashMap<String, Object> result = new HashMap<>();
 
         try {
@@ -72,24 +74,38 @@ public class DisasterService {
     /**
     재난 필터 로직
      **/
-    public Map<String, Object> filter(JSONArray messages) {
-        Map<String, Object> result = null;
+    public JSONObject filter(JSONArray messages) {
 
-        //도 단위로 필터
+        JSONObject result = new JSONObject();
+        Map<String, ArrayList<DisasterInfo>> stateFilter = null;
+
+        //도 필터
         ArrayList<DisasterInfo> disasterInfos = disasterProvider.makeModel(messages);
-        filterByState(disasterInfos);
-        filterByCity();
-        //시 단위로 필터
+        stateFilter = filterByState(disasterInfos);
+
+        if (disasterInfos == null) {
+            return null;
+        }
+
+        else {
+            for (String key : stateFilter.keySet()) {
+                //시 필터
+                JSONObject cityFilter = filterByCity(stateFilter.get(key));
+
+                result.put(key, cityFilter);
+            }
+        }
 
         return result;
     }
 
     /**
-     * 도 단위의 필터 -> 테스트 완료
+     * 도 단위의 필터
      * @param disasterInfos
      * @return
      */
     public Map<String, ArrayList<DisasterInfo>> filterByState(ArrayList<DisasterInfo> disasterInfos) {
+
         Map<String, ArrayList<DisasterInfo>> result = new HashMap<>();
 
         for (DisasterInfo o : disasterInfos) {
@@ -102,14 +118,6 @@ public class DisasterService {
 
         }
 
-        //결과 테스트 로직 -> 테스트 성공
-//        for (String key : result.keySet()) {
-//            ArrayList<DisasterInfo> al = result.get(key);
-//
-//            for (DisasterInfo d : al)
-//                System.out.println(d);
-//        }
-
         return result;
     }
 
@@ -117,9 +125,39 @@ public class DisasterService {
      * 시 단위의 필터
      * @return
      */
-    public Map<String, Object> filterByCity() {
-        Map<String, Object> result = null;
-        return result;
+    public JSONObject filterByCity(ArrayList<DisasterInfo> disasterInfos) {
+        Map<String, ArrayList<DisasterInfo>> result = new HashMap<>();
+        JSONObject resultMap = new JSONObject();
+
+        /*
+        시 필터링
+         */
+        for (DisasterInfo o : disasterInfos) {
+
+            String city = o.getCity();
+
+            ArrayList<DisasterInfo> infos = result.getOrDefault(city, new ArrayList<DisasterInfo>());
+            infos.add(o);
+            result.put(city, infos);
+
+        }
+
+        /*
+        ArrayList 형식을 JSON 형식으로 변환
+         */
+        for (String key : result.keySet()) {
+
+            ArrayList<DisasterInfo> al = result.get(key);
+            JSONArray ja = new JSONArray();
+
+            for (DisasterInfo d : al)
+                ja.add(d);
+
+            resultMap.put(key, ja);
+
+        }
+
+        return resultMap;
     }
 
 }

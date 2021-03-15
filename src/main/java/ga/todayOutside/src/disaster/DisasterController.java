@@ -42,7 +42,8 @@ public class DisasterController {
         JSONObject row = (JSONObject) disasterMsg.get(1);
         JSONArray messages = (JSONArray) row.get("row");
 
-        disasterService.filter(messages);
+        result = disasterService.filter(messages);
+
         return result;
     }
 }
