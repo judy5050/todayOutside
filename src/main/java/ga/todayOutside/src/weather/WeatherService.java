@@ -188,7 +188,7 @@ public class WeatherService {
     /**
      * 한시간 단위로 날씨 정보를 받아오는 함수
      */
-    public void todayWeatherPer1Hour() throws IOException, ParseException {
+    public void todayWeatherPer1Hour(String x,String y) throws IOException, ParseException {
 
         //시간을 받아오는 코드
         //조회하는 시간에서 +1 정보만 가져온다.
@@ -198,8 +198,8 @@ public class WeatherService {
         String apiUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService/getUltraSrtFcst";
         // 홈페이지에서 받은 키
         String serviceKey = Secret.WEATHER_OPEN_APIKEY;
-        String nx = "60";    //위도
-        String ny = "125";    //경도
+        String nx = x;    //위도
+        String ny = y;    //경도
         String baseTime = null;
 
         //분에 따른 baseTime 조절
@@ -235,7 +235,7 @@ public class WeatherService {
         }
         System.out.println("baseTime = " + baseTime);
         System.out.println("todayStr =  "+ todayStr);
-        String baseDate = "20210316";    //조회하고싶은 날짜
+        String baseDate = todayStr;    //조회하고싶은 날짜
         String dataType = "json";    //타입 xml, json 등등 ..
         String numOfRows = "50";    //한 페이지 결과 수
 
@@ -426,7 +426,7 @@ public class WeatherService {
     //3시간 마다 날씨 정보 제공
 //    @ResponseBody
 //    @GetMapping("/per3today")
-    public void weatherPer3Hour() throws IOException, ParseException {
+    public void weatherPer3Hour(String x,String y) throws IOException, ParseException {
 
         /**
          * 시간 관련
@@ -481,8 +481,18 @@ public class WeatherService {
         System.out.println("value = " + value);
         String cp = getTodayWeatherMaxHour(value);
         System.out.println("cmp = " + cp);
+        String baseDate = "";    //조회하고싶은 날짜
+        String baseTime="";
+        if(t<20){
+            baseTime = "2000";    //API 제공 시간
+            baseDate=yesterdayStr;
+        }
+        else{
+            baseTime="2000";
+            baseDate=todayStr;
 
-        String baseTime = "2000";    //API 제공 시간
+        }
+
 
         //시간 비교 위해 시간 데이터 변형
         // 0000~0900 fcstTime 용 데이터 변형
@@ -499,8 +509,8 @@ public class WeatherService {
 
         // 홈페이지에서 받은 키
         String serviceKey = Secret.WEATHER_OPEN_APIKEY;
-        String nx = "60";    //위도
-        String ny = "127";    //경도
+        String nx = x;    //위도
+        String ny = y;    //경도
 
         //시간을 받아오는 코드
         int currentTime = LocalDateTime.now().getHour();
@@ -508,7 +518,7 @@ public class WeatherService {
 
         String time = Integer.toString(currentTime) + Integer.toString(min);
 
-        String baseDate = yesterdayStr;    //조회하고싶은 날짜
+
         String dataType = "json";    //타입 xml, json
         String numOfRows = "256";    //한 페이지 결과 수
         //79일경우 딱 겹치지 x는 하루 시간 조회 가능
@@ -687,13 +697,13 @@ public class WeatherService {
     }
 
 
-    public Map getTodayWeatherList() throws IOException, ParseException {
+    public Map getTodayWeatherList(String x,String y) throws IOException, ParseException {
 
         //오늘 날짜 받아오기
 
         date();
-        todayWeatherPer1Hour();
-        weatherPer3Hour();
+        todayWeatherPer1Hour(x,y);
+        weatherPer3Hour(x,y);
 
         Map<String, Map> hashMap1 = new LinkedHashMap();
         Map<String, Map> hashMap2 = new LinkedHashMap();
@@ -708,16 +718,16 @@ public class WeatherService {
         JSONArray jsonArray2 = new JSONArray();
         JSONArray jsonArray3 = new JSONArray();
 
-        jsonObject1.put("오늘", todayWeahterResult);
-        jsonObject2.put("내일", day1Result);
-        jsonObject3.put("모레", day2Result);
+        jsonObject1.put("today", todayWeahterResult);
+        jsonObject2.put("tomorrow", day1Result);
+        jsonObject3.put("afterTomorrow", day2Result);
 
 
-        hashMap1.put("오늘", todayWeahterResult);
-        hashMap2.put("내일", day1Result);
+        hashMap1.put("today", todayWeahterResult);
+        hashMap2.put("tomorrow", day1Result);
         hashMap1.putAll(hashMap2);
         if (!day2Result.isEmpty()) {
-            hashMap3.put("모레", day2Result);
+            hashMap3.put("afterTomorrow", day2Result);
             hashMap1.putAll(hashMap3);
 
         }
@@ -1076,11 +1086,13 @@ public class WeatherService {
     //최고기온은 15시 데이터
     //최저 기온은 6시 데이터
     void todayWeatherHighAndLowParsing(JSONObject object) {
-        if (object.get("fcstDate").equals(tomorrowStr)) {
+        if (object.get("fcstDate").equals(todayStr)) {
             if (object.get("category").equals("TMN")) {
+                System.out.println("object = " + object);
                 String skyValue = object.get("fcstValue").toString();
                 todayWeatherHighAndResult.put("TMN", skyValue);
             } else if (object.get("category").equals("TMX")) {
+                System.out.println("object = " + object);
                 String ptyValue = object.get("fcstValue").toString();
                 todayWeatherHighAndResult.put("TMX", ptyValue);
 
@@ -1089,7 +1101,12 @@ public class WeatherService {
 
     }
 
-    public Map getTodayWeatherHighAndLow() throws IOException, ParseException {
+
+    /**
+     * 오늘의 최고기온 최저 기온 조회
+     * 전날 23시를 basetime 으로  그다음 날 최고, 최저 기온을 조회한다.
+     */
+    public Map getTodayWeatherHighAndLow(String x,String y) throws IOException, ParseException {
 
 
         date();
@@ -1098,8 +1115,8 @@ public class WeatherService {
 
         // 홈페이지에서 받은 키
         String serviceKey = Secret.WEATHER_OPEN_APIKEY;
-        String nx = "60";    //위도
-        String ny = "127";    //경도
+        String nx = x;    //위도
+        String ny = y;    //경도
 
         //시간을 받아오는 코드
         int currentTime = LocalDateTime.now().getHour();
@@ -1108,7 +1125,8 @@ public class WeatherService {
         String time = Integer.toString(currentTime) + Integer.toString(min);
 
         String baseTime = "2300";    //API 제공 시간
-        String baseDate = "20210315";    //조회하고싶은 날짜
+        String baseDate = yesterdayStr;    //조회하고싶은 날짜
+        System.out.println("yesterdayStr = " + yesterdayStr);
         String dataType = "json";    //타입 xml, json
         String numOfRows = "256";    //한 페이지 결과 수
         //79일경우 딱 겹치지 x는 하루 시간 조회 가능

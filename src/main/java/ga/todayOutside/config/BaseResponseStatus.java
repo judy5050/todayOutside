@@ -21,6 +21,8 @@ public enum BaseResponseStatus {
     SUCCESS_DELETE_ADDRESS(true, 1201, "주소 삭제를 성공하였습니다."),
     SUCCESS_READ_ADDRESS(true,1202,"주소 목록 조회에 성공하였습니다."),
     SUCCESS_READ_NOW_WEATHER(true,1203,"현재 날씨 조회에 성공하였습니다."),
+    SUCCESS_READ_TODAY_LOW_HIGH(true,1204,"오늘의 최저기온과 최고기온 조회에 성공하였습니다."),
+    SUCCESS_READ_TIME_WEATHER(true,1205,"시간별 날씨예보 조회에 성공하였습니다."),
 
     // 2000 : Request 오류
     REQUEST_ERROR(false, 2000, "입력값을 확인해주세요."),
