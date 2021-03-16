@@ -215,6 +215,7 @@ public class WeatherService {
                 Integer.toString(calTime);
                 String before30Minute = calTime + "30";
                 baseTime = before30Minute;    //조회하고싶은 시간
+                System.out.println("##########");
             }
 
 
@@ -230,8 +231,9 @@ public class WeatherService {
             }
         }
         System.out.println("baseTime = " + baseTime);
-        String baseDate = todayStr;    //조회하고싶은 날짜
-        String dataType = "static";    //타입 xml, json 등등 ..
+        System.out.println("todayStr =  "+ todayStr);
+        String baseDate = "20210316";    //조회하고싶은 날짜
+        String dataType = "json";    //타입 xml, json 등등 ..
         String numOfRows = "50";    //한 페이지 결과 수
 
         //전날 23시 부터 153개의 데이터를 조회하면 오늘과 내일의 날씨를 알 수 있음
@@ -395,7 +397,7 @@ public class WeatherService {
         }
 
         //4시간 더해 변환
-        else if (baseTime.equals("0230") || baseTime.equals("0530") || baseTime.equals("0830") || baseTime.equals("1030") || baseTime.equals("1430") || baseTime.equals("1730") || baseTime.equals("2030") || baseTime.equals("2330")) {
+        else if (baseTime.equals("0230") || baseTime.equals("0530") || baseTime.equals("0830") || baseTime.equals("1130") || baseTime.equals("1430") || baseTime.equals("1730") || baseTime.equals("2030") || baseTime.equals("2330")) {
 
             Integer afterCalValue = beforeCalValue + 400;
             if (afterCalValue >= 2430) {
@@ -477,7 +479,7 @@ public class WeatherService {
         String cp = getTodayWeatherMaxHour(value);
         System.out.println("cmp = " + cp);
 
-        String baseTime = "2300";    //API 제공 시간
+        String baseTime = "2000";    //API 제공 시간
 
         //시간 비교 위해 시간 데이터 변형
         // 0000~0900 fcstTime 용 데이터 변형
@@ -503,8 +505,8 @@ public class WeatherService {
 
         String time = Integer.toString(currentTime) + Integer.toString(min);
 
-        String baseDate = "20210311";    //조회하고싶은 날짜
-        String dataType = "static";    //타입 xml, json
+        String baseDate = yesterdayStr;    //조회하고싶은 날짜
+        String dataType = "json";    //타입 xml, json
         String numOfRows = "256";    //한 페이지 결과 수
         //79일경우 딱 겹치지 x는 하루 시간 조회 가능
 
@@ -557,7 +559,7 @@ public class WeatherService {
         //element 변수 선언
         JSONObject element = null;
 
-
+        System.out.println("cp = " + cp);
         System.out.println(data);
         for (int i = 0; i < parse_item.size(); i++) {
             if (count < 14) {
