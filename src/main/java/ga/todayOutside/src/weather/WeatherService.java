@@ -776,17 +776,14 @@ public class WeatherService {
 
 
         String apiUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService/getUltraSrtNcst";    //초단기실황조회
-        //String apiUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService/getUltraSrtFcst";	//초단기예보조회
-//        String apiUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService/getVilageFcst";	//동네예보조회
-
-
+        
         // 홈페이지에서 받은 키
         String serviceKey = Secret.WEATHER_OPEN_APIKEY;
         String nx = "60";    //위도
         String ny = "127";    //경도
         String baseDate = todayWeatherBaseDate;    //조회하고싶은 날짜
         String baseTime = todayWeatherNowBaseTime;    //API 제공 시간
-        String dataType = "static";    //타입 xml, json
+        String dataType = "json";    //타입 xml, json
         String numOfRows = "250";    //한 페이지 결과 수
 
         //동네예보 -- 전날 05시 부터 225개의 데이터를 조회하면 모레까지의 날씨를 알 수 있음
