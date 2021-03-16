@@ -21,10 +21,12 @@ public class DisasterService {
 
     @Autowired
     private DisasterProvider disasterProvider;
+
     /**
      *  재난 정보 가져오기
      */
     public Map<String, Object> getImfomation() {
+
         HashMap<String, Object> result = new HashMap<>();
 
         try {
@@ -68,24 +70,54 @@ public class DisasterService {
     /**
     재난 필터 로직
      **/
-    public Map<String, Object> filter(JSONArray messages) {
-        Map<String, Object> result = null;
+    public JSONObject filter(JSONArray messages) {
 
-        //도 단위로 필터
+        JSONObject resultState = new JSONObject();
+
+        JSONObject resultDisaster = new JSONObject();
+
+        Map<String, ArrayList<DisasterInfo>> stateFilter = null;
+
+        //도 필터
         ArrayList<DisasterInfo> disasterInfos = disasterProvider.makeModel(messages);
-        filterByState(disasterInfos);
-        filterByCity();
-        //시 단위로 필터
+        stateFilter = filterByState(disasterInfos);
 
-        return result;
+        if (disasterInfos == null) {
+            return null;
+        }
+
+        else {
+            for (String key : stateFilter.keySet()) {
+                //시 필터
+                Map<String, ArrayList<DisasterInfo>> cityFilter = filterByCity(stateFilter.get(key));
+                JSONObject resultCity = new JSONObject();
+
+
+                for (String cityKey : cityFilter.keySet()) {
+
+                    //재난 필터
+                    Map<String, ArrayList<DisasterInfo>> disasterFilter = filterByDisaster(cityFilter.get(cityKey));
+                    resultDisaster = disasterProvider.MapToJSON(disasterFilter);
+
+                    resultCity.put(cityKey, resultDisaster);
+
+                }
+
+                resultState.put(key, resultCity);
+
+            }
+        }
+
+        return resultState;
     }
 
     /**
-     * 도 단위의 필터 -> 테스트 완료
+     * 도 단위의 필터
      * @param disasterInfos
      * @return
      */
     public Map<String, ArrayList<DisasterInfo>> filterByState(ArrayList<DisasterInfo> disasterInfos) {
+
         Map<String, ArrayList<DisasterInfo>> result = new HashMap<>();
 
         for (DisasterInfo o : disasterInfos) {
@@ -98,14 +130,6 @@ public class DisasterService {
 
         }
 
-        //결과 테스트 로직 -> 테스트 성공
-//        for (String key : result.keySet()) {
-//            ArrayList<DisasterInfo> al = result.get(key);
-//
-//            for (DisasterInfo d : al)
-//                System.out.println(d);
-//        }
-
         return result;
     }
 
@@ -113,8 +137,45 @@ public class DisasterService {
      * 시 단위의 필터
      * @return
      */
-    public Map<String, Object> filterByCity() {
-        Map<String, Object> result = null;
+    public Map<String, ArrayList<DisasterInfo>> filterByCity(ArrayList<DisasterInfo> disasterInfos) {
+        Map<String, ArrayList<DisasterInfo>> result = new HashMap<>();
+
+        /*
+        시 필터링
+         */
+        for (DisasterInfo o : disasterInfos) {
+
+            String city = o.getCity();
+
+            ArrayList<DisasterInfo> infos = result.getOrDefault(city, new ArrayList<DisasterInfo>());
+            infos.add(o);
+            result.put(city, infos);
+
+        }
+
+        return result;
+
+    }
+
+    /**
+     * 재난 필터링
+     * @param disasterInfos
+     * @return
+     */
+    public Map<String, ArrayList<DisasterInfo>> filterByDisaster(ArrayList<DisasterInfo> disasterInfos) {
+
+        Map<String, ArrayList<DisasterInfo>> result = new HashMap<>();
+
+        for (DisasterInfo o : disasterInfos) {
+
+            String msg = o.getMsg();
+            String disaster = disasterProvider.findKeyword(msg);
+
+            ArrayList<DisasterInfo> infos = result.getOrDefault(disaster, new ArrayList<DisasterInfo>());
+            infos.add(o);
+            result.put(disaster, infos);
+        }
+
         return result;
     }
 
