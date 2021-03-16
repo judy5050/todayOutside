@@ -56,7 +56,7 @@ public class WeatherController {
         }
 
         // 시,도 구 정보 받아 nx ny로 좌표 변경
-        Map<String, String> nxNy = weatherService.converNxNy(address.getFirstAddressName(), address.getSecondAddressName());
+        Map<String, String> nxNy = weatherService.convertNxNy(address.getFirstAddressName(), address.getSecondAddressName());
 
         //x,y 값 얻기
         String nx=nxNy.get("x");
@@ -101,7 +101,7 @@ public class WeatherController {
         }
 
         // 시,도 구 정보 받아 nx ny로 좌표 변경
-        Map<String, String> nxNy = weatherService.converNxNy(address.getFirstAddressName(), address.getSecondAddressName());
+        Map<String, String> nxNy = weatherService.convertNxNy(address.getFirstAddressName(), address.getSecondAddressName());
 
         //x,y 값 얻기
         String nx=nxNy.get("x");
@@ -149,7 +149,7 @@ public class WeatherController {
         }
 
         // 시,도 구 정보 받아 nx ny로 좌표 변경
-        Map<String, String> nxNy = weatherService.converNxNy(address.getFirstAddressName(), address.getSecondAddressName());
+        Map<String, String> nxNy = weatherService.convertNxNy(address.getFirstAddressName(), address.getSecondAddressName());
 
         //x,y 값 얻기
         String nx=nxNy.get("x");
@@ -162,15 +162,44 @@ public class WeatherController {
 
     /**
      *주간 날씨 데이터 조회
+     * 최고 기온 및 최저 기온 조회
      */
     @ResponseBody
-    @GetMapping("/weeklyHighAndLosWeather")
-    public BaseResponse<Map> weekly(@RequestBody GetWeeklyReq getWeeklyReq) throws IOException, ParseException {
+    @GetMapping("/address/{addressIdx}/weekly-highAndLowWeathers")
+    public BaseResponse<Map> weekly(@PathVariable  Long addressIdx) throws IOException, ParseException {
 
-        String s = weatherService.convertForWeeklyHighAndLowWeather(getWeeklyReq.getSecondAddressName());
+        //jwt 토큰 에서 userIdx 얻기
+
+        Long userIdx;
+        Address address;
+
+        try {
+            userIdx = jwtService.getUserId();
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+
+        //user idx 와 입력받은 addressIdx 일치 여부 확인 및 address 반환
+        try {
+            address = addressService.findByAddress(addressIdx, userIdx);
+        }
+        catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+
+        // 시,도 구 정보 받아 nx ny로 좌표 변경
+        Map<String, String> nxNy = weatherService.convertNxNy(address.getFirstAddressName(), address.getSecondAddressName());
+
+        //x,y 값 얻기
+        String nx=nxNy.get("x");
+        String ny=nxNy.get("y");
+
+        String s = weatherService.convertForWeeklyHighAndLowWeather(address.getFirstAddressName(),address.getSecondAddressName());
+
+        weatherService.getDay1WeatherHighAndLow(nx,ny);
         Map result = weatherService.weeklyHighAndLow(s);
 
-          return  new BaseResponse<>(BaseResponseStatus.SUCCESS,result);//:TODO 성공 코드 바꾸기
+          return  new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_WEEKLY_HIGH_LOW_VALUE,result);//:TODO 성공 코드 바꾸기
     }
 
 

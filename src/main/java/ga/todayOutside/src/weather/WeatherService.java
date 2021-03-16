@@ -1198,22 +1198,39 @@ public class WeatherService {
      */
 
 
-    public String convertForWeeklyHighAndLowWeather(String req) throws ParseException, IOException {
+    public String convertForWeeklyHighAndLowWeather(String firstAddressName,String secondAddressName) throws ParseException, IOException {
         date();
         System.out.println("todayDate = " + todayDate);
         ClassPathResource resource = new ClassPathResource("static/check.json");
         JSONArray json = (JSONArray) new JSONParser().parse(new InputStreamReader(resource.getInputStream(), "UTF-8")); //json-simple
         JSONObject jsonObject;
         String localCode = null;
-
+        String firstSub3=firstAddressName.substring(0,2);
+        String firstSub2=firstAddressName.substring(0,1);
+        String secondSub3=secondAddressName.substring(0,2);
+        String secondSub2=secondAddressName.substring(0,1);
         for (int i = 0; i < json.size(); i++) {
+
             jsonObject = (JSONObject) json.get(i);
-            if (jsonObject.get("도시").toString().matches(".*" + req + ".*")) {
+            if (jsonObject.get("도시").toString().matches(".*" + firstSub2 + ".*")) {
                 localCode = jsonObject.get("코드").toString();
+                break;
+            } else if (jsonObject.get("도시").toString().matches(".*" + firstSub3 + ".*")) {
+                localCode = jsonObject.get("코드").toString();
+                break;
+
             }
+            else if (jsonObject.get("도시").toString().matches(".*" + secondSub2 + ".*")) {
+                localCode = jsonObject.get("코드").toString();
+                break;
 
+            }
+            else if (jsonObject.get("도시").toString().matches(".*" + secondSub3 + ".*")) {
+                localCode = jsonObject.get("코드").toString();
+                break;
+
+            }
         }
-
         return localCode;
     }
 
@@ -1469,17 +1486,17 @@ public class WeatherService {
      * 중기 기온 최고, 최저 파싱 함수
      */
     void weekForecastParsing(JSONObject object) {
-        String day2RnResult = object.get("rnSt3Am").toString();
-        weeklyRnForecastResult.put("rnSt2Am", day2RnResult);
+        String day2RnResult = object.get("rnSt3Pm").toString();
+        weeklyRnForecastResult.put("rnSt2", day2RnResult);
 
-        String day3RnResult = object.get("rnSt4Am").toString();
-        weeklyRnForecastResult.put("rnSt3Am", day3RnResult);
+        String day3RnResult = object.get("rnSt4Pm").toString();
+        weeklyRnForecastResult.put("rnSt3", day3RnResult);
 
-        String day4RnResult = object.get("rnSt5Am").toString();
-        weeklyRnForecastResult.put("rnSt4Am", day4RnResult);
+        String day4RnResult = object.get("rnSt5Pm").toString();
+        weeklyRnForecastResult.put("rnSt4", day4RnResult);
 
         String day5RnResult = object.get("rnSt6Am").toString();
-        weeklyRnForecastResult.put("rnSt5Am", day5RnResult);
+        weeklyRnForecastResult.put("rnSt5", day5RnResult);
 
         String day6RnResult = object.get("rnSt7Am").toString();
         weeklyRnForecastResult.put("rnSt6Am", day6RnResult);
@@ -1517,7 +1534,7 @@ public class WeatherService {
 
     //사용자 위치 값 nx,ny로 변경
 
-    public Map<String, String> converNxNy(String firstAddressName, String secondAddressName) throws IOException, ParseException {
+    public Map<String, String> convertNxNy(String firstAddressName, String secondAddressName) throws IOException, ParseException {
 
 //        String test="금천구";
              String result;
@@ -1542,9 +1559,10 @@ public class WeatherService {
         JSONArray jArr;
         JSONObject jobj;
 
+
         //시 검색
         result=null;
-        url = new URL("http://www.kma.go.kr/DFSROOT/POINT/DATA/top.json.txt");
+        url = new URL("https://www.kma.go.kr/DFSROOT/POINT/DATA/top.json.txt");
         conn = url.openConnection();
         br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         try {
@@ -1576,7 +1594,7 @@ public class WeatherService {
         }
 
         //구 검색
-        url = new URL("http://www.kma.go.kr/DFSROOT/POINT/DATA/mdl."+code+".json.txt");
+        url = new URL("https://www.kma.go.kr/DFSROOT/POINT/DATA/mdl."+code+".json.txt");
         conn = url.openConnection();
         br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         result = br.readLine().toString();
@@ -1598,7 +1616,7 @@ public class WeatherService {
 
         System.out.println("code = " + code);
         //동 검색
-        url = new URL("http://www.kma.go.kr/DFSROOT/POINT/DATA/leaf."+code+".json.txt");
+        url = new URL("https://www.kma.go.kr/DFSROOT/POINT/DATA/leaf."+code+".json.txt");
         conn = url.openConnection();
         br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         result = br.readLine().toString();
@@ -1648,6 +1666,122 @@ public class WeatherService {
         return  returnValue;
     }
 
+
+    /**
+     * 일주일 단위  최고 최저 기온 중 그 다음날 최고 최저 파싱 하는 함수
+     */
+    //전날 23시 조회 기준
+    //최고기온은 15시 데이터
+    //최저 기온은 6시 데이터
+    void weeklyDay1HighAndLowParsing(JSONObject object) {
+
+        if (object.get("fcstDate").equals(tomorrowStr)) {
+            if (object.get("category").equals("TMN")) {
+                System.out.println("object = " + object);
+                String skyValue = object.get("fcstValue").toString();
+                weeklyHighAndLowResult.put("taMin1", skyValue);
+            } else if (object.get("category").equals("TMX")) {
+                System.out.println("object = " + object);
+                String ptyValue = object.get("fcstValue").toString();
+                weeklyHighAndLowResult.put("taMax1", ptyValue);
+
+            }
+        }
+
+    }
+
+
+    /**
+     * 오늘 기준 그 다음날의 최고 최저 기온 조회
+     * 전날 23시를 basetime 으로  모레의  최고, 최저 기온을 조회한다.
+     */
+    public void getDay1WeatherHighAndLow(String x,String y) throws IOException, ParseException {
+
+
+        date();
+        System.out.println("yesterdayStr = " + yesterdayStr);
+        String apiUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService/getVilageFcst";    //동네예보조회
+
+        // 홈페이지에서 받은 키
+        String serviceKey = Secret.WEATHER_OPEN_APIKEY;
+        String nx = x;    //위도
+        String ny = y;    //경도
+
+        //시간을 받아오는 코드
+        int currentTime = LocalDateTime.now().getHour();
+        int min = LocalDateTime.now().getMinute();
+
+        String time = Integer.toString(currentTime) + Integer.toString(min);
+
+        String baseTime = "2300";    //API 제공 시간
+        String baseDate = yesterdayStr;    //조회하고싶은 날짜
+        System.out.println("yesterdayStr = " + yesterdayStr);
+        String dataType = "json";    //타입 xml, json
+        String numOfRows = "256";    //한 페이지 결과 수
+        //79일경우 딱 겹치지 x는 하루 시간 조회 가능
+
+        //동네예보 -- 전날 05시 부터 225개의 데이터를 조회하면 모레까지의 날씨를 알 수 있음
+
+        StringBuilder urlBuilder = new StringBuilder(apiUrl);
+        urlBuilder.append("?" + URLEncoder.encode("ServiceKey", "UTF-8") + "=" + serviceKey);
+        urlBuilder.append("&" + URLEncoder.encode("nx", "UTF-8") + "=" + URLEncoder.encode(nx, "UTF-8")); //경도
+        urlBuilder.append("&" + URLEncoder.encode("ny", "UTF-8") + "=" + URLEncoder.encode(ny, "UTF-8")); //위도
+        urlBuilder.append("&" + URLEncoder.encode("base_date", "UTF-8") + "=" + URLEncoder.encode(baseDate, "UTF-8")); /* 조회하고싶은 날짜*/
+        urlBuilder.append("&" + URLEncoder.encode("base_time", "UTF-8") + "=" + URLEncoder.encode(baseTime, "UTF-8")); /* 조회하고싶은 시간 AM 02시부터 3시간 단위 */
+        urlBuilder.append("&" + URLEncoder.encode("dataType", "UTF-8") + "=" + URLEncoder.encode(dataType, "UTF-8"));    /* 타입 */
+        urlBuilder.append("&" + URLEncoder.encode("numOfRows", "UTF-8") + "=" + URLEncoder.encode(numOfRows, "UTF-8"));    /* 한 페이지 결과 수 */
+
+        // GET방식으로 전송해서 파라미터 받아오기
+        URL url = new URL(urlBuilder.toString());
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Content-type", "application/json");
+
+        BufferedReader rd;
+        if (conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
+            rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        } else {
+            rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+        }
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = rd.readLine()) != null) {
+            sb.append(line);
+        }
+        rd.close();
+        conn.disconnect();
+        String data = sb.toString();
+
+        // Json parser를 만들어 만들어진 문자열 데이터를 객체화
+        JSONParser parser = new JSONParser();
+        JSONObject obj = (JSONObject) parser.parse(data);
+        // response 키를 가지고 데이터를 파싱
+        JSONObject parse_response = (JSONObject) obj.get("response");
+        // response 로 부터 body 찾기
+        JSONObject parse_body = (JSONObject) parse_response.get("body");
+        // body 로 부터 items 찾기
+        JSONObject parse_items = (JSONObject) parse_body.get("items");
+        JSONArray parse_item = (JSONArray) parse_items.get("item");
+        //JSONObject item = (JSONObject) parse_item.get("item");
+
+        JSONObject object;
+
+        //element 변수 선언
+        JSONObject element = null;
+
+        for (int i = 0; i < parse_item.size(); i++) {
+            {
+
+                object = (JSONObject) parse_item.get(i);
+                weeklyDay1HighAndLowParsing(object);
+                System.out.println("object = " + object);
+            }
+
+
+        }
+
+//        return weeklyHighAndLowResult;
+    }
 
 
 
