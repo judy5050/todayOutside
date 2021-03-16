@@ -63,17 +63,27 @@ public class WeatherController {
         return new BaseResponse<>(BaseResponseStatus.SUCCESS,todayWeatherHighAndLowResult);
     }
 
+    /**
+     *주간 날씨 데이터 조회
+     */
     @ResponseBody
     @GetMapping("/weeklyHighAndLosWeather")
-    public String weekly(@RequestBody GetWeeklyReq getWeeklyReq) throws IOException, ParseException {
+    public BaseResponse<Map> weekly(@RequestBody GetWeeklyReq getWeeklyReq) throws IOException, ParseException {
 
         String s = weatherService.convertForWeeklyHighAndLowWeather(getWeeklyReq.getSecondAddressName());
-        weatherService.weeklyHighAndLow(s);
+        Map result = weatherService.weeklyHighAndLow(s);
 
-        //        GetWeeklyRes getWeeklyRes=new GetWeeklyRes(s);
-//       return new BaseResponse<>(BaseResponseStatus.SUCCESS,getWeeklyRes);//:TODO 성공 코드 바꾸기
+          return  new BaseResponse<>(BaseResponseStatus.SUCCESS,result);//:TODO 성공 코드 바꾸기
+    }
 
-          return  "OK";
+
+    @ResponseBody
+    @GetMapping("/weeklyForecast")
+    public BaseResponse<Map> data(@RequestBody GetWeeklyReq getWeeklyReq) throws IOException, ParseException {
+        String s= weatherService.convertForWeeklyWeatherForeCast(getWeeklyReq.getSecondAddressName());
+        Map weeklyForecastResult = weatherService.weeklyForecastResult(s);
+
+        return new BaseResponse<>(BaseResponseStatus.SUCCESS,weeklyForecastResult);
     }
 
 }

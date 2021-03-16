@@ -127,7 +127,7 @@ public class WeatherService {
     static Map<String, String> day_07_high = new HashMap<>();
     static Map<String, String> day_07_low = new HashMap<>();
 
-    static Map<String, String> weeklyResult = new LinkedHashMap<>();// 키값 자동정
+    static Map<String, String> weeklyHighAndLowResult = new LinkedHashMap<>();// 키값 자동정
 
     //현재 날씨 결과
     static Map<String, String> nowWeatherResult = new HashMap<>();
@@ -147,6 +147,10 @@ public class WeatherService {
     //오늘 최고 기온 최저기온 변수
     static Map<String, String> todayWeatherHighAndResult = new HashMap<>();
 
+    //3~7일의 강수 확률 &날씨예보 결과 반환 코드
+    static Map<String,String> weeklyWeatherForecastResult=new LinkedHashMap<>();
+    static Map<String,String> weeklyRnForecastResult=new LinkedHashMap<>();
+    static Map<String,String> weeklyForecastResult=new LinkedHashMap<>();
 
     /**
      * 시간 데이터 용
@@ -901,8 +905,8 @@ public class WeatherService {
         String time = Integer.toString(currentTime) + Integer.toString(min);
 
         String baseTime = "2300";    //API 제공 시간
-        String baseDate = "20210311";    //조회하고싶은 날짜
-        String dataType = "static";    //타입 xml, json
+        String baseDate = "20210315";    //조회하고싶은 날짜
+        String dataType = "json";    //타입 xml, json
         String numOfRows = "256";    //한 페이지 결과 수
         //79일경우 딱 겹치지 x는 하루 시간 조회 가능
 
@@ -969,8 +973,9 @@ public class WeatherService {
 
 
     /**
-     * 중기 예보지역 코드 변경을 위한 코드
+     * 중기 최고, 최저 기온 조회를 위한 예보지역 코드 변경을 위한 코드
      */
+
 
     public String convertForWeeklyHighAndLowWeather(String req) throws ParseException, IOException {
         date();
@@ -992,10 +997,14 @@ public class WeatherService {
     }
 
     /**
-     * 중기 기온예보구역 코드 정보
+     * 중기 최고 최저 기온
+     * 그 다음날 6시가 되기 이전에는 그 전날의 날 기준 3~10일 데이터 값을 받아옴
+     *
      */
 
-    public void weeklyHighAndLow(String localCode) throws IOException, ParseException {
+    public Map weeklyHighAndLow(String localCode) throws IOException, ParseException {
+        int index=0;// currentTime 에 따른 일주일 값 받아오는 코드의 차이를 위해 추가한 코드
+                    //currentTime<6일경우 전날의 데이터 값을 받아오기 때문에 +1개의 데이터 필요
 
 
 
@@ -1068,12 +1077,226 @@ public class WeatherService {
         JSONObject parse_items = (JSONObject) parse_body.get("items");
         JSONArray parse_item = (JSONArray) parse_items.get("item");
         //JSONObject item = (JSONObject) parse_item.get("item");
-
+        JSONObject object;
+        System.out.println("parse_items = " + parse_items);
         for (int i=0;i<parse_item.size();i++){
+             object = (JSONObject) parse_item.get(i);
             System.out.println("parse_item = " + parse_item.get(0));
+            weekHighAndLowParsing(object);
+
         }
 
+        return weeklyHighAndLowResult;
 
 
     }
+
+    /**
+     * 중기 기온 최고, 최저 파싱 함수
+     */
+    void weekHighAndLowParsing(JSONObject object) {
+        String day2HighResult = object.get("taMax3").toString();
+        weeklyHighAndLowResult.put("taMax2", day2HighResult);
+        String day2LowResult = object.get("taMin3").toString();
+        weeklyHighAndLowResult.put("taMin2", day2LowResult);
+
+        String day3HighResult = object.get("taMax4").toString();
+        weeklyHighAndLowResult.put("taMax3", day3HighResult);
+        String day3LowResult = object.get("taMin4").toString();
+        weeklyHighAndLowResult.put("taMin3", day3LowResult);
+
+        String day4HighResult = object.get("taMax5").toString();
+        weeklyHighAndLowResult.put("taMax4", day4HighResult);
+        String day4LowResult = object.get("taMin5").toString();
+        weeklyHighAndLowResult.put("taMin4", day4LowResult);
+
+        String day5HighResult = object.get("taMax6").toString();
+        weeklyHighAndLowResult.put("taMax5", day5HighResult);
+        String day5LowResult = object.get("taMin6").toString();
+        weeklyHighAndLowResult.put("taMin5", day5LowResult);
+
+
+        String day6HighResult = object.get("taMax7").toString();
+        weeklyHighAndLowResult.put("taMax6", day6HighResult);
+        String day6LowResult = object.get("taMin7").toString();
+        weeklyHighAndLowResult.put("taMin6", day6LowResult);
+
+
+        String day7HighResult = object.get("taMax8").toString();
+        weeklyHighAndLowResult.put("taMax7", day7HighResult);
+        String day7LowResult = object.get("taMin8").toString();
+        weeklyHighAndLowResult.put("taMin7", day7LowResult);
+
+
+    }
+
+    /**
+     * 중기 강수량 및 일기예보 조회를 위한 예보지역 코드 변경을 위한 코드
+     */
+
+
+    public String convertForWeeklyWeatherForeCast(String req) throws ParseException, IOException {
+        date();
+        System.out.println("todayDate = " + todayDate);
+        ClassPathResource resource = new ClassPathResource("static/forecastAreaCode.json");
+        JSONArray json = (JSONArray) new JSONParser().parse(new InputStreamReader(resource.getInputStream(), "UTF-8")); //json-simple
+        JSONObject jsonObject;
+        String localCode = null;
+
+        for (int i = 0; i < json.size(); i++) {
+            jsonObject = (JSONObject) json.get(i);
+            if (jsonObject.get("구역").toString().matches(".*" + req + ".*")) {
+                localCode = jsonObject.get("예보구역코드").toString();
+            }
+
+        }
+
+        return localCode;
+    }
+
+    /**
+     * 중기 강수확률 및 날씨 예보 정보 가져오기
+     */
+
+
+    public Map weeklyForecastResult(String localCode) throws IOException, ParseException {
+
+        //시각을 얻는 코드
+        int currentTime = LocalDateTime.now().getHour();
+        System.out.println("currentTime = " + currentTime);
+
+        String date;
+        if(currentTime<6){
+            date=yesterdayStr;
+        }
+        else{
+            date=todayStr;
+        }
+
+
+        //날짜 값 빼기 연산
+//        cal.add(Calendar.DATE,-1);
+
+        String apiUrl = "http://apis.data.go.kr/1360000/MidFcstInfoService/getMidLandFcst";    //중기기온조회
+        System.out.println("localCode = " + localCode);
+        // 홈페이지에서 받은 키
+        String serviceKey = Secret.WEATHER_OPEN_APIKEY;
+        String regId = localCode;    //예보 구역 코드
+
+        //발표시각 0600 1800시
+
+        String tmFc = date+ "0600";    //발표시각 입력
+        String dataType = "json";    //타입 xml, json
+        String numOfRows = "250";    //한 페이지 결과 수
+
+        System.out.println("tmFc = " + tmFc);
+
+        StringBuilder urlBuilder = new StringBuilder(apiUrl);
+        urlBuilder.append("?" + URLEncoder.encode("ServiceKey", "UTF-8") + "=" + serviceKey);
+        urlBuilder.append("&" + URLEncoder.encode("regId", "UTF-8") + "=" + URLEncoder.encode(regId, "UTF-8"));
+        urlBuilder.append("&" + URLEncoder.encode("tmFc", "UTF-8") + "=" + URLEncoder.encode(tmFc, "UTF-8")); /* 조회하고싶은 날짜*/
+        urlBuilder.append("&" + URLEncoder.encode("numOfRows", "UTF-8") + "=" + URLEncoder.encode(numOfRows, "UTF-8")); /* 조회하고싶은 시간 AM 02시부터 3시간 단위 */
+        urlBuilder.append("&" + URLEncoder.encode("dataType", "UTF-8") + "=" + URLEncoder.encode(dataType, "UTF-8"));    /* 타입 */
+
+        // GET방식으로 전송해서 파라미터 받아오기
+        URL url = new URL(urlBuilder.toString());
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Content-type", "application/json");
+
+        BufferedReader rd;
+        if (conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
+            rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        } else {
+            rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+        }
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = rd.readLine()) != null) {
+            sb.append(line);
+        }
+        rd.close();
+        conn.disconnect();
+        String data = sb.toString();
+
+        // Json parser를 만들어 만들어진 문자열 데이터를 객체화
+        JSONParser parser = new JSONParser();
+        JSONObject obj = (JSONObject) parser.parse(data);
+        // response 키를 가지고 데이터를 파싱
+        JSONObject parse_response = (JSONObject) obj.get("response");
+        // response 로 부터 body 찾기
+        JSONObject parse_body = (JSONObject) parse_response.get("body");
+        // body 로 부터 items 찾기
+        JSONObject parse_items = (JSONObject) parse_body.get("items");
+        JSONArray parse_item = (JSONArray) parse_items.get("item");
+        //JSONObject item = (JSONObject) parse_item.get("item");
+        JSONObject object;
+        System.out.println("parse_items = " + parse_items);
+        for (int i=0;i<parse_item.size();i++){
+            object = (JSONObject) parse_item.get(i);
+            System.out.println("parse_item = " + parse_item.get(0));
+            weekForecastParsing(object);
+
+        }
+
+        return weeklyForecastResult;
+
+
+    }
+
+    /**
+     * 중기 기온 최고, 최저 파싱 함수
+     */
+    void weekForecastParsing(JSONObject object) {
+        String day2RnResult = object.get("rnSt3Am").toString();
+        weeklyRnForecastResult.put("rnSt2Am", day2RnResult);
+
+        String day3RnResult = object.get("rnSt4Am").toString();
+        weeklyRnForecastResult.put("rnSt3Am", day3RnResult);
+
+        String day4RnResult = object.get("rnSt5Am").toString();
+        weeklyRnForecastResult.put("rnSt4Am", day4RnResult);
+
+        String day5RnResult = object.get("rnSt6Am").toString();
+        weeklyRnForecastResult.put("rnSt5Am", day5RnResult);
+
+        String day6RnResult = object.get("rnSt7Am").toString();
+        weeklyRnForecastResult.put("rnSt6Am", day6RnResult);
+
+        String day7RnResult = object.get("rnSt8").toString();
+        weeklyRnForecastResult.put("rnSt8Am", day7RnResult);
+
+
+        //날씨 예보
+        String day2WeatherResult = object.get("wf3Am").toString();
+        weeklyWeatherForecastResult.put("wf2Am", day2WeatherResult);
+
+        String day3WeatherResult = object.get("wf4Am").toString();
+        weeklyWeatherForecastResult.put("wf3Am", day3WeatherResult);
+
+        String day4WeatherResult = object.get("wf5Am").toString();
+        weeklyWeatherForecastResult.put("wf4Am", day4WeatherResult);
+
+        String day5WeatherResult = object.get("wf6Am").toString();
+        weeklyWeatherForecastResult.put("wf5Am", day5WeatherResult);
+
+        String day6WeatherResult = object.get("wf7Am").toString();
+        weeklyWeatherForecastResult.put("wf6Am", day6WeatherResult);
+
+        String day7WeatherResult = object.get("wf8").toString();
+        weeklyWeatherForecastResult.put("wf7Am", day7WeatherResult);
+
+
+
+        weeklyForecastResult.putAll(weeklyWeatherForecastResult);
+        weeklyForecastResult.putAll(weeklyRnForecastResult);
+
+
+    }
+
+
+
+
+
+
 }
