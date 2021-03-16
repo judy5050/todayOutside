@@ -113,4 +113,42 @@ public class AddressService {
 
         return  address;
     }
+
+    public  Address findByAddress(Long addressIdx,Long userIdx)throws BaseException{
+        boolean check=false;
+        UserInfo userInfo;
+        Address address;
+
+        try {
+            userInfo=userInfoRepository.findById(userIdx).get();
+        }catch (Exception exception){
+            throw new BaseException(BaseResponseStatus.NOT_FOUND_USER);
+        }
+
+
+        try {
+            List<Address> addressList = addressRepository.findByUserIdxAndAddressIdx(userIdx, addressIdx);
+            for (Address address1 : addressList) {
+                if(address1.getId().equals(addressIdx)){
+                    check=true;
+                }
+            }
+            if (check==false){
+                throw  new BaseException(BaseResponseStatus.HAVE_NOT_ADDRESS);
+            }
+            address=addressRepository.findById(addressIdx).orElse(null);
+
+            if(address==null){
+                throw  new BaseException(BaseResponseStatus.NOT_FOUND_ADDRESS);
+            }
+        }catch (BaseException exception){
+            throw new BaseException(exception.getStatus());//TODO 오류 값 바꾸기
+        }
+
+
+
+        return address;
+
+
+    }
 }

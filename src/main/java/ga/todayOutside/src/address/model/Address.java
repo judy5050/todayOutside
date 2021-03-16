@@ -75,4 +75,6 @@ public class Address  extends BaseEntity {
         this.thirdAddressName=thirdAddressName;
         this.addressType=addressType;
     }
+
+
 }

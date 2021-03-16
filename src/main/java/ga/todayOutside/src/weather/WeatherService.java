@@ -182,6 +182,9 @@ public class WeatherService {
     //나중에 유저에서 시 군 구.. 주소 값을 가져오기 위해 의존관계 주입
     private final UserInfoRepository userInfoRepository;
 
+    //초단기 예보에서 최근 시간 정보만 받기 위한 값
+    int todayWeatherNowCount=0;
+
     /**
      * 한시간 단위로 날씨 정보를 받아오는 함수
      */
@@ -729,64 +732,218 @@ public class WeatherService {
 
     /**
      * 현재 날씨 조회하기 (초단기 실황 api 작성)
+     * 변경
      */
 
-    Map getTodayWeatherNow() throws IOException, ParseException {
+//    Map getTodayWeatherNow() throws IOException, ParseException {
+//
+//        Date date = new Date();
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+//        LocalDateTime time = LocalDateTime.now();
+//        System.out.println("time = " + time.getHour());
+//        String todayWeatherBaseDate = sdf.format(date);
+//        System.out.println("todayWeatherBaseDate = " + todayWeatherBaseDate);
+//
+//        Integer todayWeatherNowHour = LocalDateTime.now().getHour();
+//        Integer todayWeatherNowMinute = LocalDateTime.now().getMinute();
+//        String todayWeatherNowBaseTime = null;
+//
+//
+//        //api 제공 시간이 매 시간 40분 이후 부터
+//        //넉넉하게 5분 여유 시간
+//        //45분 전 일경우 한시간 전을 baseTime으로 사용
+//        System.out.println("todayWeatherNowMinute = " + todayWeatherNowMinute);
+//        if (todayWeatherNowMinute < 45) {
+//            if (todayWeatherNowHour == 0) {
+//                todayWeatherNowHour = 23;
+//
+//            } else {
+//                System.out.println("todayWeatherNowHour = " + todayWeatherNowHour);
+//                todayWeatherNowHour -= 1;
+//                System.out.println("todayWeatherNowHour = " + todayWeatherNowHour);
+//            }
+////            System.out.println("todayWeatherNowHour = " + todayWeatherNowHour);
+//
+//            if (todayWeatherNowHour < 10) {
+//                todayWeatherNowBaseTime = "0" + todayWeatherNowHour + "00";
+//            } else {
+//                todayWeatherNowBaseTime = todayWeatherNowHour + "00";
+//            }
+//        } else {
+//            if (todayWeatherNowHour < 10) {
+//                todayWeatherNowBaseTime = "0" + todayWeatherNowHour + "00";
+//            } else {
+//                todayWeatherNowBaseTime = todayWeatherNowHour + "00";
+//            }
+//        }
+//        System.out.println("todayWeatherNowBaseTime = " + todayWeatherNowBaseTime);
+//
+//
+//        String apiUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService/getUltraSrtNcst";    //초단기실황조회
+//
+//        // 홈페이지에서 받은 키
+//        String serviceKey = Secret.WEATHER_OPEN_APIKEY;
+//        String nx = "60";    //위도
+//        String ny = "127";    //경도
+//        String baseDate = todayWeatherBaseDate;    //조회하고싶은 날짜
+//        String baseTime = todayWeatherNowBaseTime;    //API 제공 시간
+//        String dataType = "json";    //타입 xml, json
+//        String numOfRows = "250";    //한 페이지 결과 수
+//
+//        //동네예보 -- 전날 05시 부터 225개의 데이터를 조회하면 모레까지의 날씨를 알 수 있음
+//
+//        StringBuilder urlBuilder = new StringBuilder(apiUrl);
+//        urlBuilder.append("?" + URLEncoder.encode("ServiceKey", "UTF-8") + "=" + serviceKey);
+//        urlBuilder.append("&" + URLEncoder.encode("nx", "UTF-8") + "=" + URLEncoder.encode(nx, "UTF-8")); //경도
+//        urlBuilder.append("&" + URLEncoder.encode("ny", "UTF-8") + "=" + URLEncoder.encode(ny, "UTF-8")); //위도
+//        urlBuilder.append("&" + URLEncoder.encode("base_date", "UTF-8") + "=" + URLEncoder.encode(baseDate, "UTF-8")); /* 조회하고싶은 날짜*/
+//        urlBuilder.append("&" + URLEncoder.encode("base_time", "UTF-8") + "=" + URLEncoder.encode(baseTime, "UTF-8")); /* 조회하고싶은 시간 AM 02시부터 3시간 단위 */
+//        urlBuilder.append("&" + URLEncoder.encode("dataType", "UTF-8") + "=" + URLEncoder.encode(dataType, "UTF-8"));    /* 타입 */
+//        urlBuilder.append("&" + URLEncoder.encode("numOfRows", "UTF-8") + "=" + URLEncoder.encode(numOfRows, "UTF-8"));    /* 한 페이지 결과 수 */
+//
+//        // GET방식으로 전송해서 파라미터 받아오기
+//        URL url = new URL(urlBuilder.toString());
+//        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//        conn.setRequestMethod("GET");
+//        conn.setRequestProperty("Content-type", "application/json");
+//
+//        BufferedReader rd;
+//        if (conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
+//            rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+//        } else {
+//            rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+//        }
+//        StringBuilder sb = new StringBuilder();
+//        String line;
+//        while ((line = rd.readLine()) != null) {
+//            sb.append(line);
+//        }
+//        rd.close();
+//        conn.disconnect();
+//        String data = sb.toString();
+//
+//        // Json parser를 만들어 만들어진 문자열 데이터를 객체화
+//        JSONParser parser = new JSONParser();
+//        JSONObject obj = (JSONObject) parser.parse(data);
+//        // response 키를 가지고 데이터를 파싱
+//        JSONObject parse_response = (JSONObject) obj.get("response");
+//        // response 로 부터 body 찾기
+//        JSONObject parse_body = (JSONObject) parse_response.get("body");
+//        // body 로 부터 items 찾기
+//        JSONObject parse_items = (JSONObject) parse_body.get("items");
+//        JSONArray parse_item = (JSONArray) parse_items.get("item");
+//        //JSONObject item = (JSONObject) parse_item.get("item");
+//
+//        //parsing 용 object
+//        JSONObject object = new JSONObject();
+//        System.out.println(parse_item);
+//        System.out.println("parse_item = " + parse_item.size());
+//        for (int i = 0; i < parse_item.size(); i++) {
+//            object = (JSONObject) parse_item.get(i);
+//            System.out.println("object = " + object);
+//            todayNowWeatherParsing(object);
+//
+//
+//        }
+//
+//        return nowWeatherResult;
+//    }
+//전
 
-        Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-        LocalDateTime time = LocalDateTime.now();
-        System.out.println("time = " + time.getHour());
-        String todayWeatherBaseDate = sdf.format(date);
-        System.out.println("todayWeatherBaseDate = " + todayWeatherBaseDate);
-
-        Integer todayWeatherNowHour = LocalDateTime.now().getHour();
-        Integer todayWeatherNowMinute = LocalDateTime.now().getMinute();
-        String todayWeatherNowBaseTime = null;
+    /**
+     * 현재 날씨 조회하기(초단기 예보) 변경후
+     */
 
 
-        //api 제공 시간이 매 시간 40분 이후 부터
-        //넉넉하게 5분 여유 시간
-        //45분 전 일경우 한시간 전을 baseTime으로 사용
-        System.out.println("todayWeatherNowMinute = " + todayWeatherNowMinute);
-        if (todayWeatherNowMinute < 45) {
-            if (todayWeatherNowHour == 0) {
-                todayWeatherNowHour = 23;
-
-            } else {
-                System.out.println("todayWeatherNowHour = " + todayWeatherNowHour);
-                todayWeatherNowHour -= 1;
-                System.out.println("todayWeatherNowHour = " + todayWeatherNowHour);
-            }
-//            System.out.println("todayWeatherNowHour = " + todayWeatherNowHour);
-
-            if (todayWeatherNowHour < 10) {
-                todayWeatherNowBaseTime = "0" + todayWeatherNowHour + "00";
-            } else {
-                todayWeatherNowBaseTime = todayWeatherNowHour + "00";
-            }
-        } else {
-            if (todayWeatherNowHour < 10) {
-                todayWeatherNowBaseTime = "0" + todayWeatherNowHour + "00";
-            } else {
-                todayWeatherNowBaseTime = todayWeatherNowHour + "00";
-            }
-        }
-        System.out.println("todayWeatherNowBaseTime = " + todayWeatherNowBaseTime);
+    Map getTodayWeatherNow(String x,String y) throws IOException, ParseException {
 
 
-        String apiUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService/getUltraSrtNcst";    //초단기실황조회
-        
+        date();
+        String fcstTime=null;
+        //시간을 받아오는 코드
+        //조회하는 시간에서 +1 정보만 가져온다.
+        Integer currentTime = LocalDateTime.now().getHour();
+        Integer min = LocalDateTime.now().getMinute();
+
+
+        String apiUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService/getUltraSrtFcst";
         // 홈페이지에서 받은 키
         String serviceKey = Secret.WEATHER_OPEN_APIKEY;
-        String nx = "60";    //위도
-        String ny = "127";    //경도
-        String baseDate = todayWeatherBaseDate;    //조회하고싶은 날짜
-        String baseTime = todayWeatherNowBaseTime;    //API 제공 시간
-        String dataType = "json";    //타입 xml, json
-        String numOfRows = "250";    //한 페이지 결과 수
+        String nx = x;    //위도
+        String ny = y;    //경도
+        String baseTime = null;
 
-        //동네예보 -- 전날 05시 부터 225개의 데이터를 조회하면 모레까지의 날씨를 알 수 있음
+        //분에 따른 baseTime 조절
+        if (min <= 45) {
+            Integer calTime;
+            if (currentTime == 0) {
+                calTime = 23;
+            } else {
+                calTime = currentTime - 1;
+            }
+            if (calTime < 10) {
+                Integer.toString(calTime);
+                String before30Minute = "0" + calTime + "30";
+                baseTime = before30Minute;    //조회하고싶은 시간
+                fcstTime="0"+currentTime.toString()+"00";
+            } else {
+                Integer.toString(calTime);
+                String before30Minute = calTime + "30";
+                baseTime = before30Minute;    //조회하고싶은 시간
+                fcstTime=currentTime.toString()+"00";
+            }
+
+
+        } else {
+            if (currentTime < 10) {
+                Integer currentTimePlus=currentTime+1;
+                Integer.toString(currentTime);
+                String before30Minute = "0" + currentTime + "30";
+                baseTime = before30Minute;    //조회하고싶은 시간
+                fcstTime="0"+currentTime.toString()+"00";
+
+            } else {
+                String after30Minute = Integer.toString(currentTime) + "30";
+                baseTime = after30Minute;    //조회하고싶은 시간
+                fcstTime=currentTime.toString()+"00";
+            }
+        }
+
+        //분에 따른 fcstTime 조절
+        Integer convertFcstTime=currentTime;
+        if (min <30) {
+
+            if (currentTime == 0) {
+                convertFcstTime = 24;
+            } else {
+                convertFcstTime = currentTime;
+            }
+            if (convertFcstTime < 10) {
+                fcstTime="0"+convertFcstTime+"00";
+            } else {
+                fcstTime=convertFcstTime+"00";
+            }
+
+
+        } else {
+            convertFcstTime=currentTime+1;
+            if (convertFcstTime < 10) {
+
+                fcstTime="0"+currentTime+"00";
+
+            } else {
+                fcstTime=convertFcstTime+"00";
+            }
+        }
+
+        System.out.println("fcstTime = " + fcstTime);
+        System.out.println("baseTime = " + baseTime);
+        System.out.println("todayStr =  "+ todayStr);
+        String baseDate = todayStr;    //조회하고싶은 날짜
+        String dataType = "json";    //타입 xml, json 등등 ..
+        String numOfRows = "50";    //한 페이지 결과 수
+
+        //전날 23시 부터 153개의 데이터를 조회하면 오늘과 내일의 날씨를 알 수 있음
 
         StringBuilder urlBuilder = new StringBuilder(apiUrl);
         urlBuilder.append("?" + URLEncoder.encode("ServiceKey", "UTF-8") + "=" + serviceKey);
@@ -828,17 +985,25 @@ public class WeatherService {
         // body 로 부터 items 찾기
         JSONObject parse_items = (JSONObject) parse_body.get("items");
         JSONArray parse_item = (JSONArray) parse_items.get("item");
-        //JSONObject item = (JSONObject) parse_item.get("item");
 
-        //parsing 용 object
-        JSONObject object = new JSONObject();
-        System.out.println(parse_item);
-        System.out.println("parse_item = " + parse_item.size());
+        //element 변수 선언
+        JSONObject element;
+
+        //시간 확인
+        getTodayWeatherMaxHour(baseTime);
+        System.out.println("fcstTime = " + fcstTime);
+        System.out.println("parse_body = " + parse_body);
         for (int i = 0; i < parse_item.size(); i++) {
-            object = (JSONObject) parse_item.get(i);
-            System.out.println("object = " + object);
-            todayNowWeatherParsing(object);
+            element = (JSONObject) parse_item.get(i);
 
+            //시간 별 날씨 데이터 받아오기 함수 호출
+            System.out.println("element = " + element);
+            todayNowWeatherParsing(element,fcstTime);
+
+            //최신 값 하나만 받고 끝내기 위한 변수 와 로직
+            if(todayWeatherNowCount>=1){
+                break;
+            }
 
         }
 
@@ -846,21 +1011,60 @@ public class WeatherService {
     }
 
 
+
     /**
      * 오늘의 날씨 정보(현재 날씨에 대해 원하는 값만 파싱해서 가져오기)
+     * 변경전 (초단기 실황)
      */
-    void todayNowWeatherParsing(JSONObject object) {
 
-        if (object.get("category").equals("T1H")) {
-            String T1H = object.get("obsrValue").toString();
-            nowWeatherResult.put("T1H", T1H);
+//    void todayNowWeatherParsing(JSONObject object) {
+//
+//        if (object.get("category").equals("T1H")) {
+//            String T1H = object.get("obsrValue").toString();
+//            nowWeatherResult.put("T1H", T1H);
+//
+//
+//        } else if (object.get("category").equals("PTY")) {
+//            String ptyValue = object.get("obsrValue").toString();
+//            nowWeatherResult.put("PTY", ptyValue);
+//
+//        }
+//
+//
+//    }
 
 
-        } else if (object.get("category").equals("PTY")) {
-            String ptyValue = object.get("obsrValue").toString();
-            nowWeatherResult.put("PTY", ptyValue);
+    /**
+     * 오늘의 날씨 정보(현재 날씨에 대해 원하는 값만 파싱해서 가져오기)
+     * 변경후 (초단기 예보)
+     */
+    void todayNowWeatherParsing(JSONObject object,String fcstTime) {
 
-        }
+            if(object.get("fcstTime").equals(fcstTime))
+            {
+                if (object.get("category").equals("T1H")) {
+                    String T1H = object.get("fcstValue").toString();
+                    nowWeatherResult.put("T1H", T1H);
+                    todayWeatherNowCount++;
+                    System.out.println("todayWeatherNowCount = " + todayWeatherNowCount);
+
+
+
+                } else if (object.get("category").equals("PTY")) {
+                    String ptyValue = object.get("fcstValue").toString();
+                    nowWeatherResult.put("PTY", ptyValue);
+
+                }
+
+                else if (object.get("category").equals("SKY")) {
+                    String ptyValue = object.get("fcstValue").toString();
+                    nowWeatherResult.put("SKY", ptyValue);
+
+                }
+            }
+
+
+
 
 
     }
@@ -1293,7 +1497,138 @@ public class WeatherService {
 
     }
 
+    //사용자 위치 값 nx,ny로 변경
 
+    public Map<String, String> converNxNy(String firstAddressName, String secondAddressName) throws IOException, ParseException {
+
+//        String test="금천구";
+             String result;
+//        String areaTop="서울특별시";	//지역
+//        String areaMdl="금천구";
+//        String areaLeaf="종로1가동";
+        String areaTop=firstAddressName;	//지역
+        String areaMdl=secondAddressName;
+
+        String code="";	//지역 코드
+        String x="";
+        String y="";
+
+        Map<String,String> returnValue=new HashMap<>();
+
+
+        URL url;
+        BufferedReader br;
+        URLConnection conn;
+
+        JSONParser parser;
+        JSONArray jArr;
+        JSONObject jobj;
+
+        //시 검색
+        result=null;
+        url = new URL("http://www.kma.go.kr/DFSROOT/POINT/DATA/top.json.txt");
+        conn = url.openConnection();
+        br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        try {
+            result = br.readLine().toString();
+            br.close();
+        }catch (NullPointerException e){
+            System.out.println(e);
+        }
+
+        System.out.println(result);
+
+        jArr=null;
+        //시에 맞는 코드를 가져오는 코드
+        parser = new JSONParser();
+        try{
+            jArr = (JSONArray) parser.parse(result);
+        }catch (NullPointerException e){
+            System.out.println("e = " + e);
+        }
+
+
+        for(int i = 0 ; i < jArr.size(); i++) {
+            jobj = (JSONObject) jArr.get(i);
+            if(jobj.get("value").equals(areaTop)) {
+                code=(String)jobj.get("code");
+                System.out.println(areaTop+"코드 : "+code);
+                break;
+            }
+        }
+
+        //구 검색
+        url = new URL("http://www.kma.go.kr/DFSROOT/POINT/DATA/mdl."+code+".json.txt");
+        conn = url.openConnection();
+        br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        result = br.readLine().toString();
+        br.close();
+        //System.out.println(result);
+
+        parser = new JSONParser();
+        jArr = (JSONArray) parser.parse(result);
+
+        for(int i = 0 ; i < jArr.size(); i++) {
+            jobj = (JSONObject) jArr.get(i);
+            if(jobj.get("value").equals(areaMdl)) {
+                code=(String)jobj.get("code");
+                System.out.println("jobj = " + jobj);
+                System.out.println(areaMdl+"코드 : "+code);
+                break;
+            }
+        }
+
+        System.out.println("code = " + code);
+        //동 검색
+        url = new URL("http://www.kma.go.kr/DFSROOT/POINT/DATA/leaf."+code+".json.txt");
+        conn = url.openConnection();
+        br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        result = br.readLine().toString();
+        br.close();
+        //System.out.println(result);
+
+        parser = new JSONParser();
+        jArr = (JSONArray) parser.parse(result);
+
+//        if(areaMdl.equals(test)) {
+        for(int i = 0 ; i < jArr.size(); i++) {
+            jobj = (JSONObject) jArr.get(i);
+//                System.out.println("jArr.size() = " + jArr.size());
+            System.out.println("jobj = " + jobj);
+//                String leaf1=areaLeaf.substring(0,areaLeaf.length()-3);
+//                String leaf2=areaLeaf.substring(areaLeaf.length()-3,areaLeaf.length()-2);
+//                String leaf3=areaLeaf.substring(areaLeaf.length()-2,areaLeaf.length());
+
+//                Pattern pattern = Pattern.compile(leaf1+"[1-9.]{0,8}"+leaf2+"[1-9.]{0,8}"+leaf3);
+//                Matcher matcher = pattern.matcher((String) jobj.get("value"));
+//                if(matcher.find()) {
+            x=(String)jobj.get("x");
+            y=(String)jobj.get("y");
+
+            System.out.println("x값 : "+x+", y값 :"+y);
+            break;
+        }
+
+        //리턴 값에 nx ny값 추가
+        returnValue.put("x",x);
+        returnValue.put("y",y);
+//            }
+//        }else {
+//            for(int i = 0 ; i < jArr.size(); i++) {
+//                jobj = (JSONObject) jArr.get(i);
+//                if(jobj.get("value").equals(areaLeaf)) {
+//                    x=(String)jobj.get("x");
+//                    y=(String)jobj.get("y");
+//                    System.out.println(areaLeaf+"의 x값 : "+x+", y값 :"+y);
+//                    break;
+//                }
+//            }
+//        }
+
+
+        //좌표값 반환
+        return  returnValue;
+    }
 
 
 

@@ -1,9 +1,14 @@
 package ga.todayOutside.src.weather;
 
+import ga.todayOutside.config.BaseException;
 import ga.todayOutside.config.BaseResponse;
 import ga.todayOutside.config.BaseResponseStatus;
+import ga.todayOutside.src.address.AddressService;
+import ga.todayOutside.src.address.model.Address;
+import ga.todayOutside.src.weather.model.GetTodayNowRes;
 import ga.todayOutside.src.weather.model.GetWeeklyReq;
 import ga.todayOutside.src.weather.model.GetWeeklyRes;
+import ga.todayOutside.utils.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -21,7 +26,8 @@ import java.util.Map;
 public class WeatherController {
 
     private final WeatherService weatherService;
-
+    private  final JwtService jwtService;
+    private final AddressService addressService;
 
     /**
      *오늘 날씨 조회 리스트
@@ -41,12 +47,45 @@ public class WeatherController {
      * 현재 시각 날씨 조회
      */
     @ResponseBody
-    @GetMapping("/todayWeatherNow")
-    public BaseResponse<Map> todayWeatherNow() throws IOException, ParseException {
-        Map<String,String> nowWeatherResult=weatherService.getTodayWeatherNow();
+    @GetMapping("/address/{addressIdx}/now-weather")
+    public BaseResponse<Map> todayWeatherNow(@PathVariable Long addressIdx) throws IOException, ParseException {
+
+        //jwt 토큰 에서 userIdx 얻기
+
+        Long userIdx;
+        Address address;
+
+        try {
+            userIdx = jwtService.getUserId();
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+
+        //user idx 와 입력받은 addressIdx 일치 여부 확인 및 address 반환
+        try {
+             address = addressService.findByAddress(addressIdx, userIdx);
+        }
+        catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+
+        // 시,도 구 정보 받아 nx ny로 좌표 변경
+        Map<String, String> nxNy = weatherService.converNxNy(address.getFirstAddressName(), address.getSecondAddressName());
+
+        //x,y 값 얻기
+        String nx=nxNy.get("x");
+        String ny=nxNy.get("y");
+
+        //nx, ny,userIdx 확인
+        System.out.println("nx = " + nx);
+        System.out.println("ny = " + ny);
+        System.out.println("userIdx :"+userIdx);
+        Map res;
+
+        res = weatherService.getTodayWeatherNow(nx, ny);
 
 
-        return new BaseResponse<>(BaseResponseStatus.SUCCESS,nowWeatherResult); //TODO:성공 코드 바꾸기
+        return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_NOW_WEATHER,res); //TODO:성공 코드 바꾸기
 
     }
 

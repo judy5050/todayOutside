@@ -17,9 +17,10 @@ public enum BaseResponseStatus {
     SUCCESS_DELETE_USER(true, 1015, "회원 탈퇴에 성공하였습니다."),
     SUCCESS_PATCH_USER(true, 1016, "회원정보 수정에 성공하였습니다."),
     SUCCESS_READ_SEARCH_USERS(true, 1017, "회원 검색 조회에 성공하였습니다."),
-    SUCCESS_POST_ADDRESS(true, 1200, "주소 등록에 성공하였습니다"),
-    SUCCESS_DELETE_ADDRESS(true, 1201, "주소 삭제를 성공하였습니다"),
-    SUCCESS_READ_ADDRESS(true,1202,"주소 목록 조회에 성공하였습니다"),
+    SUCCESS_POST_ADDRESS(true, 1200, "주소 등록에 성공하였습니다."),
+    SUCCESS_DELETE_ADDRESS(true, 1201, "주소 삭제를 성공하였습니다."),
+    SUCCESS_READ_ADDRESS(true,1202,"주소 목록 조회에 성공하였습니다."),
+    SUCCESS_READ_NOW_WEATHER(true,1203,"현재 날씨 조회에 성공하였습니다."),
 
     // 2000 : Request 오류
     REQUEST_ERROR(false, 2000, "입력값을 확인해주세요."),
@@ -35,6 +36,7 @@ public enum BaseResponseStatus {
     EMPTY_NICKNAME(false, 2040, "닉네임을 입력해주세요."),
 
 
+
     // 3000 : Response 오류
     RESPONSE_ERROR(false, 3000, "값을 불러오는데 실패하였습니다."),
     NOT_FOUND_USER(false, 3010, "존재하지 않는 회원입니다."),
@@ -47,7 +49,7 @@ public enum BaseResponseStatus {
     FAILED_TO_POST_ADDRESS(false, 3200, "최대 주소 등록 개수를 초과했습니다"),
     NOT_FOUND_ADDRESS(false, 3201, "존재하지 않는 주소 인덱스 입니다."),
     FAILED_TO_GET_ADDRESS(false, 3202, "주소 리스트 조회에 실패하였습니다."),
-
+    HAVE_NOT_ADDRESS(false, 3203, "유저가 갖고 있지 않은 주소 인덱스입니다."),
 
 
     // 4000 : Database 오류
