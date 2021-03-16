@@ -1,10 +1,13 @@
 package ga.todayOutside.src.user.models;
 
 import ga.todayOutside.config.BaseEntity;
+import ga.todayOutside.src.address.model.Address;
 import ga.todayOutside.src.user.Role;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PUBLIC) // Unit Test 를 위해 PUBLIC
 @EqualsAndHashCode(callSuper = false)
@@ -81,6 +84,12 @@ public class UserInfo extends BaseEntity {
      */
     @Column(name = "snsId", nullable = false)
     private Long snsId;
+
+    /**
+     *주소 조회
+     */
+    @OneToMany(mappedBy = "userInfo")
+    List<Address> addressList=new ArrayList<>();
 
     @Builder
     public UserInfo(Long id, String nickname,
