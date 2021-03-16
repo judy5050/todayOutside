@@ -76,7 +76,10 @@ public class DisasterService {
      **/
     public JSONObject filter(JSONArray messages) {
 
-        JSONObject result = new JSONObject();
+        JSONObject resultState = new JSONObject();
+
+        JSONObject resultDisaster = new JSONObject();
+
         Map<String, ArrayList<DisasterInfo>> stateFilter = null;
 
         //도 필터
@@ -90,13 +93,26 @@ public class DisasterService {
         else {
             for (String key : stateFilter.keySet()) {
                 //시 필터
-                JSONObject cityFilter = filterByCity(stateFilter.get(key));
+                Map<String, ArrayList<DisasterInfo>> cityFilter = filterByCity(stateFilter.get(key));
+                JSONObject resultCity = new JSONObject();
 
-                result.put(key, cityFilter);
+
+                for (String cityKey : cityFilter.keySet()) {
+
+                    //재난 필터
+                    Map<String, ArrayList<DisasterInfo>> disasterFilter = filterByDisaster(cityFilter.get(cityKey));
+                    resultDisaster = disasterProvider.MapToJSON(disasterFilter);
+
+                    resultCity.put(cityKey, resultDisaster);
+
+                }
+
+                resultState.put(key, resultCity);
+
             }
         }
 
-        return result;
+        return resultState;
     }
 
     /**
@@ -125,9 +141,8 @@ public class DisasterService {
      * 시 단위의 필터
      * @return
      */
-    public JSONObject filterByCity(ArrayList<DisasterInfo> disasterInfos) {
+    public Map<String, ArrayList<DisasterInfo>> filterByCity(ArrayList<DisasterInfo> disasterInfos) {
         Map<String, ArrayList<DisasterInfo>> result = new HashMap<>();
-        JSONObject resultMap = new JSONObject();
 
         /*
         시 필터링
@@ -142,22 +157,30 @@ public class DisasterService {
 
         }
 
-        /*
-        ArrayList 형식을 JSON 형식으로 변환
-         */
-        for (String key : result.keySet()) {
+        return result;
 
-            ArrayList<DisasterInfo> al = result.get(key);
-            JSONArray ja = new JSONArray();
+    }
 
-            for (DisasterInfo d : al)
-                ja.add(d);
+    /**
+     * 재난 필터링
+     * @param disasterInfos
+     * @return
+     */
+    public Map<String, ArrayList<DisasterInfo>> filterByDisaster(ArrayList<DisasterInfo> disasterInfos) {
 
-            resultMap.put(key, ja);
+        Map<String, ArrayList<DisasterInfo>> result = new HashMap<>();
 
+        for (DisasterInfo o : disasterInfos) {
+
+            String msg = o.getMsg();
+            String disaster = disasterProvider.findKeyword(msg);
+
+            ArrayList<DisasterInfo> infos = result.getOrDefault(disaster, new ArrayList<DisasterInfo>());
+            infos.add(o);
+            result.put(disaster, infos);
         }
 
-        return resultMap;
+        return result;
     }
 
 }
