@@ -146,7 +146,7 @@ public class DisasterProvider {
             result = "건조";
         } else if (pattern15.matcher(msg).matches()) {
             result = "황사";
-        } else if (pattern16.matcher(msg).matches() || pattern16.matcher(msg).matches() ) {
+        } else if (pattern16.matcher(msg).matches() || pattern16_1.matcher(msg).matches() ) {
             result = "화재";
         } else if (pattern17.matcher(msg).matches()) {
             result = "미세먼지";

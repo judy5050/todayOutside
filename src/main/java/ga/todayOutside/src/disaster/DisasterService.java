@@ -77,8 +77,8 @@ public class DisasterService {
     public JSONObject filter(JSONArray messages) {
 
         JSONObject resultState = new JSONObject();
-
         JSONObject resultDisaster = new JSONObject();
+        JSONObject result = new JSONObject();
 
         Map<String, ArrayList<DisasterInfo>> stateFilter = null;
 
@@ -112,7 +112,8 @@ public class DisasterService {
             }
         }
 
-        return resultState;
+        result.put("result", resultState);
+        return result;
     }
 
     /**
