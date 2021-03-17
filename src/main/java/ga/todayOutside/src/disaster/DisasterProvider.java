@@ -34,6 +34,11 @@ public class DisasterProvider {
             String msgIdx = (String) jo.get("md101_sn");
 
             /**
+             *  저장 된 메세지면 return
+             */
+
+
+            /**
              * 세종시는 특별자치시 - 도, 시가 나뉘지 않는다.
              */
             if (location.length == 1) {
