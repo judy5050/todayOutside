@@ -31,6 +31,7 @@ public class DisasterProvider {
             String city = "";
             String msg = (String) jo.get("msg");
             String createDate = (String) jo.get("create_date");
+            String msgIdx = (String) jo.get("md101_sn");
 
             /**
              * 세종시는 특별자치시 - 도, 시가 나뉘지 않는다.
@@ -44,7 +45,7 @@ public class DisasterProvider {
                 city = location[1];
             }
 
-            result.add(new DisasterInfo(state, city, msg, createDate));
+            result.add(new DisasterInfo(state, city, msg, createDate, msgIdx));
         }
 
         return result;

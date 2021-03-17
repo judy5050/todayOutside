@@ -12,14 +12,13 @@ public class DisasterInfo {
     private String city;
     private String msg;
     private String createDate;
+    private String msgIdx;
 
-    @Override
-    public String toString() {
-        return "DisasterInfo{" +
-                "state='" + state + '\'' +
-                ", city='" + city + '\'' +
-                ", msg='" + msg + '\'' +
-                ", createDate='" + createDate + '\'' +
-                '}';
+    public DisasterInfo(String state, String city, String msg, String createDate, String msgIdx) {
+        this.state = state;
+        this.city = city;
+        this.msg = msg;
+        this.createDate = createDate;
+        this.msgIdx = msgIdx;
     }
 }

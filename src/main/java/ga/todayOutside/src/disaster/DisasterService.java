@@ -43,7 +43,7 @@ public class DisasterService {
 
             String serviceKey = "BtXq5fRG2%2Bv%2B%2FEVKm3iuwIj%2BjPQnTRsO3yp6ZhtElvdMODumC6aSKDBkKtamNx9yp6YDVxes2fz5bK5FxZJI1Q%3D%3D";
             String pageNo = "1";
-            String numOfRows = "30";
+            String numOfRows = "3";
             String type = "json";
             String flag = "y";
 
