@@ -88,8 +88,6 @@ public class UserInfoService {
                 .heartNum(heartNum).isDeleted(isDeleted)
                 .build();
 
-        System.out.println(userInfo);
-
         // 3. 유저 정보 저장
         try {
             userInfo = userInfoRepository.save(userInfo);
@@ -112,7 +110,7 @@ public class UserInfoService {
      * @throws BaseException
      */
     public PatchUserRes updateUserInfo(@NonNull Long userId, PatchUserReq patchUserReq, UserInfo userInfo) throws BaseException {
-        System.out.println(1234);
+
         try {
             String email = patchUserReq.getEmail();
             String nickname = patchUserReq.getNickname();
@@ -122,7 +120,6 @@ public class UserInfoService {
             String userMainLocation = patchUserReq.getUserMainLocation();
             String userSubLocation = patchUserReq.getUserSubLocation();
 
-
             userInfo.setEmail(email);
             userInfo.setNickname(nickname);
             userInfo.setPicture(picture);
@@ -131,10 +128,10 @@ public class UserInfoService {
             userInfo.setUserMainLocation(userMainLocation);
             userInfo.setUserSubLocation(userSubLocation);
 
-
+            String jwt = jwtService.createJwt(userInfo.getId());
             userInfoRepository.save(userInfo);
 
-            return new PatchUserRes(email, nickname, picture);
+            return new PatchUserRes(userId, jwt);
         } catch (Exception ignored) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_PATCH_USER);
         }

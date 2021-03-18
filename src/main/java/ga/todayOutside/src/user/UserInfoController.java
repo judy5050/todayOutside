@@ -93,19 +93,19 @@ public class UserInfoController {
 
     /**
      * 회원 정보 수정 API
-     * [PATCH] /users/kakao/:snsId
+     * [PATCH] /jwt
      * @PathVariable userId
      * @RequestBody PatchUserReq
      * @return BaseResponse<PatchUserRes>
      */
     @ResponseBody
-    @PatchMapping("/kakao/{snsId}")
-    public BaseResponse<PatchUserRes> patchUsers(@PathVariable Long snsId, @RequestBody PatchUserReq parameters) {
+    @PatchMapping("/jwt")
+    public BaseResponse<PatchUserRes> patchUsers(@RequestBody PatchUserReq parameters) throws BaseException {
 
-        System.out.println(2);
+        Long id = jwtService.getUserId();
         try {
-            UserInfo userInfo = userInfoProvider.retrieveUserInfoBySnsId(snsId);
-            PatchUserRes patchUserRes = userInfoService.updateUserInfo(snsId, parameters, userInfo);
+            UserInfo userInfo = userInfoProvider.retrieveUserInfoByUserId(id);
+            PatchUserRes patchUserRes = userInfoService.updateUserInfo(id, parameters, userInfo);
 
             return new BaseResponse<>(BaseResponseStatus.SUCCESS_PATCH_USER, patchUserRes);
         } catch (BaseException exception) {
@@ -116,7 +116,7 @@ public class UserInfoController {
 
     /**
      * 로그인 API
-     * [POST] /users/login
+     * [POST] /users/login/kakao
      * @RequestBody PostLoginReq
      * @return BaseResponse<PostLoginRes>
      */
@@ -144,12 +144,13 @@ public class UserInfoController {
 
     /**
      * 회원 탈퇴 API
-     * [DELETE] /users/:userId
+     * [DELETE] /users/jwt
      * @PathVariable userId
      * @return BaseResponse<Void>
      */
-    @DeleteMapping("/{userId}")
-    public BaseResponse<Void> deleteUsers(@PathVariable Long userId) {
+    @DeleteMapping("/jwt")
+    public BaseResponse<Void> deleteUsers() throws BaseException {
+        Long userId = jwtService.getUserId();
         if (userId == null || userId <= 0) {
             return new BaseResponse<>(BaseResponseStatus.EMPTY_USERID);
         }
