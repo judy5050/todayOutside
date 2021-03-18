@@ -5,6 +5,7 @@ import ga.todayOutside.config.BaseException;
 import ga.todayOutside.config.BaseResponse;
 import ga.todayOutside.config.BaseResponseStatus;
 import ga.todayOutside.src.address.model.*;
+import ga.todayOutside.src.user.UserInfoRepository;
 import ga.todayOutside.src.user.models.UserInfo;
 import ga.todayOutside.utils.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,7 +24,7 @@ public class AddressController {
 
     private final AddressService addressService;
     private final JwtService jwtService;
-
+    private final UserInfoRepository userInfoRepository;
 
     /**
      *
@@ -231,7 +233,7 @@ public class AddressController {
 
         Long userIdx;
         Address address;
-
+        UserInfo userInfo;
 
         try {
             //jwt 토큰값으로 유저 확인
@@ -239,6 +241,11 @@ public class AddressController {
             //addressIdx 와 유저의 addressIdx 가 같은지 확인
             address = addressService.findByAddress(addressIdx, userIdx);
             addressService.postThirdAddressName(addressIdx,postThirdAddressNameReq);
+            userInfo = userInfoRepository.findById(userIdx).orElse(null);
+
+            //게시글 참여로 유저 상태 수정
+            userInfo.setMessageBoardStatus(1);
+            userInfoRepository.save(userInfo);
 
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
