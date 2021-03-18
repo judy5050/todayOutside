@@ -49,9 +49,8 @@ public class AddressController {
         try {
             userIdx= jwtService.getUserId();
             Address address;
-            System.out.println("postAddressReq = " + postAddressReq.getFirstAddressName());
             address= addressService.createAddress(userIdx,postAddressReq);
-            PostAddressRes postAddressRes =new PostAddressRes(address.getId());
+            PostAddressRes postAddressRes =new PostAddressRes(address.getId(),address.getAddressOrder());
             return new BaseResponse<>(BaseResponseStatus.SUCCESS_POST_ADDRESS, postAddressRes);
         }
         catch (BaseException exception){
@@ -93,7 +92,7 @@ public class AddressController {
      * 회원 동네 삭제
      */
      @ResponseBody
-     @DeleteMapping("user/address/{addressIdx}")
+     @DeleteMapping("/user/address/{addressIdx}")
     public BaseResponse deleteAddress(@PathVariable Long addressIdx){
 
          System.out.println("addressIdx = " + addressIdx);
@@ -108,6 +107,19 @@ public class AddressController {
         return new BaseResponse(BaseResponseStatus.SUCCESS_DELETE_ADDRESS);
      }
 
+    /**
+     * 회원 동네 수정
+     */
+
+    @ResponseBody
+    @PatchMapping("/address/{addressIdx}")
+    public BaseResponse patchAddress(@PathVariable Long addressIdx){
+
+
+
+
+        return new BaseResponse(BaseResponseStatus.SUCCESS);//
+    }
 
 
 

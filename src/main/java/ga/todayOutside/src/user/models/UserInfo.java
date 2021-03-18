@@ -49,17 +49,17 @@ public class UserInfo extends BaseEntity {
     @Column(name = "disasterAlarmStatus", length = 30)
     private String disasterAlarmStatus;
 
-    /**
-     * 회원닉네임
-     */
-    @Column(name = "userMainLocation", length = 30)
-    private String userMainLocation;
+//    /**
+//     * 회원닉네임
+//     */
+//    @Column(name = "userMainLocation", length = 30)
+//    private String userMainLocation;
 
-    /**
-     * 회원메인위치
-     */
-    @Column(name = "userSubLocation", length = 30)
-    private String userSubLocation;
+//    /**
+//     * 회원메인위치
+//     */
+//    @Column(name = "userSubLocation", length = 30)
+//    private String userSubLocation;
 
     /**
      * 유저 사진
@@ -91,19 +91,35 @@ public class UserInfo extends BaseEntity {
     @OneToMany(mappedBy = "userInfo")
     List<Address> addressList=new ArrayList<>();
 
+//    @Builder
+//    public UserInfo(Long id, String nickname,
+//                    String email, String noticeAlarmStatus,
+//                    String disasterAlarmStatus, String userMainLocation,
+//                    String userSubLocation, String picture,
+//                    String isDeleted, Long heartNum, Long snsId) {
+//        this.id = id;
+//        this.nickname = nickname;
+//        this.email = email;
+//        this.noticeAlarmStatus = noticeAlarmStatus;
+//        this.disasterAlarmStatus = disasterAlarmStatus;
+////        this.userMainLocation = userMainLocation;
+////        this.userSubLocation = userSubLocation;
+//        this.picture = picture;
+//        this.isDeleted = isDeleted;
+//        this.heartNum = heartNum;
+//        this.snsId = snsId;
+//    }
+
     @Builder
     public UserInfo(Long id, String nickname,
                     String email, String noticeAlarmStatus,
-                    String disasterAlarmStatus, String userMainLocation,
-                    String userSubLocation, String picture,
+                    String disasterAlarmStatus,String picture,
                     String isDeleted, Long heartNum, Long snsId) {
         this.id = id;
         this.nickname = nickname;
         this.email = email;
         this.noticeAlarmStatus = noticeAlarmStatus;
         this.disasterAlarmStatus = disasterAlarmStatus;
-        this.userMainLocation = userMainLocation;
-        this.userSubLocation = userSubLocation;
         this.picture = picture;
         this.isDeleted = isDeleted;
         this.heartNum = heartNum;

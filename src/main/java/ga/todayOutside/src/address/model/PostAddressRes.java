@@ -8,7 +8,7 @@ import lombok.Getter;
 public class PostAddressRes {
 
     private Long addressIdx;
-
+    private Integer addressOrder;
 
 
 }

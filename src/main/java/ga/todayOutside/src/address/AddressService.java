@@ -50,7 +50,7 @@ public class AddressService {
 
         //addressList 가 저장된 것이 없는 경우 ->그 다음 저장 주소는 main
          if(addressList.size()==0){
-             address=new Address(userInfo,postAddressReq.getFirstAddressName(), postAddressReq.getSecondAddressName(), postAddressReq.getThirdAddressName(),AddressType.MAIN);
+             address=new Address(userInfo,postAddressReq.getFirstAddressName(), postAddressReq.getSecondAddressName(),1);
             System.out.println("address = " + address.getFirstAddressName());
             addressRepository.save(address);
 
@@ -58,7 +58,7 @@ public class AddressService {
 
         //addressList 가 이미 저장된 것이 있는 경우 ->그 다음 저장 주소는 sub
         else if(addressList.size()==1){
-            address=new Address(userInfo,postAddressReq.getFirstAddressName(), postAddressReq.getSecondAddressName(), postAddressReq.getThirdAddressName(), AddressType.SUB);
+            address=new Address(userInfo,postAddressReq.getFirstAddressName(), postAddressReq.getSecondAddressName(),2);
             addressRepository.save(address);
 
         }
@@ -91,6 +91,9 @@ public class AddressService {
             addressRepository.delete(addressCheck);
     }
 
+    /**
+     *주소 리스트 조회
+     */
     public List<GetAddressRes> addressByUserIdx(Long userIdx) throws BaseException{
 
         List<GetAddressRes> address;

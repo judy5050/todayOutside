@@ -242,4 +242,6 @@ public class WeatherController {
         return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_WEEKLY_RAIN_WEATHER,weeklyForecastResult);
     }
 
+
+
 }
