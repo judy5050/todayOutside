@@ -13,6 +13,6 @@ public class DisasterInfo {
     private String city;
     private String msg;
     private String createDate;
-    private String msgIdx;
+    private Long msgIdx;
 
 }

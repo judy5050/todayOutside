@@ -16,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriBuilder;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +26,8 @@ public class DisasterService {
 
     @Autowired
     private DisasterProvider disasterProvider;
+    @Autowired
+    private DisasterRepository disasterRepository;
 
     /**
      *  재난 정보 가져오기
@@ -82,8 +85,13 @@ public class DisasterService {
 
         Map<String, ArrayList<DisasterInfo>> stateFilter = null;
 
-        //도 필터
+        //모델 매핑
         ArrayList<DisasterInfo> disasterInfos = disasterProvider.makeModel(messages);
+
+        //DB 등록
+        disasterProvider.postMsg(disasterInfos);
+
+        //도 필터
         stateFilter = filterByState(disasterInfos);
 
         if (disasterInfos == null) {
@@ -179,6 +187,27 @@ public class DisasterService {
             ArrayList<DisasterInfo> infos = result.getOrDefault(disaster, new ArrayList<DisasterInfo>());
             infos.add(o);
             result.put(disaster, infos);
+        }
+
+        return result;
+    }
+
+    public Map<String, ArrayList<DisasterInfo>> filterByDate() {
+
+        Map<String, ArrayList<DisasterInfo>> result = new HashMap<>();
+
+        Timestamp start = Timestamp.valueOf("2021-03-18 00:00:00");
+        Timestamp end = Timestamp.valueOf("2021-03-20 10:20:30");
+
+        String s = "2021-03-18 00:00:00";
+        String e = "2021-03-20 00:00:00";
+
+        ArrayList<DisasterInfoEntity> resultDate = disasterRepository.findAllByCreateDateBetween(s, e);
+
+        //3
+        for (DisasterInfoEntity o : resultDate) {
+
+            System.out.println(o);
         }
 
         return result;

@@ -93,13 +93,13 @@ public class UserInfoController {
 
     /**
      * 회원 정보 수정 API
-     * [PATCH] /users/:snsId
+     * [PATCH] /users/kakao/:snsId
      * @PathVariable userId
      * @RequestBody PatchUserReq
      * @return BaseResponse<PatchUserRes>
      */
     @ResponseBody
-    @PatchMapping("/{snsId}")
+    @PatchMapping("/kakao/{snsId}")
     public BaseResponse<PatchUserRes> patchUsers(@PathVariable Long snsId, @RequestBody PatchUserReq parameters) {
 
         System.out.println(2);

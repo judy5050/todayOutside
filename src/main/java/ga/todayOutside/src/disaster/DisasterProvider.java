@@ -3,15 +3,20 @@ package ga.todayOutside.src.disaster;
 import ga.todayOutside.src.disaster.model.DisasterInfo;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
 public class DisasterProvider {
+
+    @Autowired
+    DisasterRepository disasterRepository;
 
     /**
      * 재난 정보 모델 만들기
@@ -31,7 +36,7 @@ public class DisasterProvider {
             String city = "";
             String msg = (String) jo.get("msg");
             String createDate = (String) jo.get("create_date");
-            String msgIdx = (String) jo.get("md101_sn");
+            Long msgIdx = Long.parseLong( (String)jo.get("md101_sn") );
 
             /**
              *  저장 된 메세지면 return
@@ -79,6 +84,41 @@ public class DisasterProvider {
 
         return resultMap;
     }
+
+    /**
+     * DB등록
+     * @param disasterInfos
+     * @return
+     */
+    public void postMsg(ArrayList<DisasterInfo> disasterInfos) {
+
+        ArrayList<DisasterInfo> result = new ArrayList<>();
+        DisasterInfoEntity resultInfo = null;
+
+        for (DisasterInfo info : disasterInfos) {
+
+            resultInfo = disasterRepository.findByMsgIdx(info.getMsgIdx()).orElse(null);
+            //등록 되지 않은 데이터만 등록
+            if (resultInfo != null) return;
+
+            DisasterInfoEntity saveInfo = DisasterInfoEntity.builder()
+                    .msg(info.getMsg()).msgIdx(info.getMsgIdx())
+                    .state(info.getState()).city(info.getCity())
+                    .createDate(info.getCreateDate())
+                    .build();
+
+            disasterRepository.save(saveInfo);
+
+        }
+
+        return;
+    }
+
+    /**
+     * 필터 키워드
+     * @param msg
+     * @return
+     */
 
     public String findKeyword(String msg) {
         String result = "";
