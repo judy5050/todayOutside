@@ -4,10 +4,7 @@ package ga.todayOutside.src.address;
 import ga.todayOutside.config.BaseException;
 import ga.todayOutside.config.BaseResponse;
 import ga.todayOutside.config.BaseResponseStatus;
-import ga.todayOutside.src.address.model.Address;
-import ga.todayOutside.src.address.model.GetAddressRes;
-import ga.todayOutside.src.address.model.PostAddressReq;
-import ga.todayOutside.src.address.model.PostAddressRes;
+import ga.todayOutside.src.address.model.*;
 import ga.todayOutside.src.user.models.UserInfo;
 import ga.todayOutside.utils.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +40,7 @@ public class AddressController {
      * 회원 동네 등록
      */
     @ResponseBody
-    @PostMapping("/user/address")
+    @PostMapping("/address")
     public BaseResponse<PostAddressRes> postAddress(@RequestBody PostAddressReq postAddressReq){
         Long userIdx;
         try {
@@ -64,7 +61,7 @@ public class AddressController {
      * 회원 동네 조회
      */
     @ResponseBody
-    @GetMapping("/user/address")
+    @GetMapping("/addresses")
     public BaseResponse<List<GetAddressRes>> getAddressList(){
 
         Long userIdx;
@@ -92,33 +89,72 @@ public class AddressController {
      * 회원 동네 삭제
      */
      @ResponseBody
-     @DeleteMapping("/user/address/{addressIdx}")
+     @DeleteMapping("/addresses/{addressIdx}")
     public BaseResponse deleteAddress(@PathVariable Long addressIdx){
 
-         System.out.println("addressIdx = " + addressIdx);
+
+         Long userIdx;
+
+
+         try {
+             userIdx = jwtService.getUserId();
+         } catch (BaseException exception) {
+             return new BaseResponse<>(exception.getStatus());
+         }
+
+         //user idx 와 입력받은 addressIdx 일치 여부 확인 및 address 반환
+         try {
+               addressService.findByAddress(addressIdx, userIdx);
+         }
+         catch (BaseException exception){
+             return new BaseResponse<>(exception.getStatus());
+         }
+
          try{
              addressService.deleteAddress(addressIdx);
+             addressService.bulkAddressOrder(userIdx);
          }
          catch (BaseException exception){
             return new BaseResponse(exception.getStatus());
          }
+         //삭제 후 addressOrder 의 모든 행들 -1 해주기
 
 
         return new BaseResponse(BaseResponseStatus.SUCCESS_DELETE_ADDRESS);
      }
 
     /**
-     * 회원 동네 수정
+     * 회원 동네 이름 수정
      */
 
     @ResponseBody
-    @PatchMapping("/address/{addressIdx}")
-    public BaseResponse patchAddress(@PathVariable Long addressIdx){
+    @PatchMapping("/addresses/{addressIdx}")
+    public BaseResponse patchAddress(@PathVariable Long addressIdx, @RequestBody PatchAddressNameReq patchAddressNameReq){
+
+        Long userIdx;
+        Address address;
+
+        try {
+            userIdx = jwtService.getUserId();
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+
+        //user idx 와 입력받은 addressIdx 일치 여부 확인 및 address 반환
+        try {
+            address = addressService.findByAddress(addressIdx, userIdx);
+        }
+        catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+
+        addressService.patchAddressName(address,patchAddressNameReq);
 
 
 
 
-        return new BaseResponse(BaseResponseStatus.SUCCESS);//
+
+        return new BaseResponse(BaseResponseStatus.SUCCESS_PATCH_ADDRESS_NAME);
     }
 
 

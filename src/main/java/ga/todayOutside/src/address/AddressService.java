@@ -4,10 +4,7 @@ package ga.todayOutside.src.address;
 
 import ga.todayOutside.config.BaseException;
 import ga.todayOutside.config.BaseResponseStatus;
-import ga.todayOutside.src.address.model.Address;
-import ga.todayOutside.src.address.model.AddressType;
-import ga.todayOutside.src.address.model.GetAddressRes;
-import ga.todayOutside.src.address.model.PostAddressReq;
+import ga.todayOutside.src.address.model.*;
 import ga.todayOutside.src.user.UserInfoRepository;
 import ga.todayOutside.src.user.UserInfoService;
 import ga.todayOutside.src.user.models.UserInfo;
@@ -117,6 +114,10 @@ public class AddressService {
         return  address;
     }
 
+
+    /**
+     *회원이 갖고 있는 addressIdx 와 파라미터로 받은 addressIdx 가 일치하는지 확인
+     */
     public  Address findByAddress(Long addressIdx,Long userIdx)throws BaseException{
         boolean check=false;
         UserInfo userInfo;
@@ -145,7 +146,7 @@ public class AddressService {
                 throw  new BaseException(BaseResponseStatus.NOT_FOUND_ADDRESS);
             }
         }catch (BaseException exception){
-            throw new BaseException(exception.getStatus());//TODO 오류 값 바꾸기
+            throw new BaseException(exception.getStatus());
         }
 
 
@@ -154,4 +155,48 @@ public class AddressService {
 
 
     }
+
+    /**
+     *주소 이름 수정
+     */
+    @Transactional
+    public void patchAddressName(Address address,PatchAddressNameReq patchAddressNameReq){
+        Address address1;
+        address1 = addressRepository.findById(address.getId()).orElse(null);
+        if(patchAddressNameReq.getFirstAddressName()!=null){
+            address1.setFirstAddressName(patchAddressNameReq.getFirstAddressName());
+        }
+        if(patchAddressNameReq.getSecondAddressName()!=null){
+            address1.setSecondAddressName(patchAddressNameReq.getSecondAddressName());
+        }
+
+        addressRepository.save(address1);
+
+    }
+
+    /**
+     * 주소 삭제 후 남은 address 의 addressOrder 수정하기
+     */
+
+    @Transactional
+    public  void bulkAddressOrder(Long userIdx)throws BaseException{
+        boolean check=false;
+        Address address;
+
+         List<Address> addressList = addressRepository.findByUserIdx(userIdx);
+            if(addressList.size()>=1){
+                for(int i=0;i<addressList.size();i++){
+                   address = addressList.get(i);
+                   addressRepository.bulkAddressOrder(address.getId());
+
+
+                }
+        }
+
+
+
+
+    }
+
+
 }

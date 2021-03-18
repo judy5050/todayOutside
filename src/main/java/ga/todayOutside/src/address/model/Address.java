@@ -74,4 +74,10 @@ public class Address  extends BaseEntity {
     }
 
 
+//    public Address(UserInfo userInfo,String firstAddressName, String secondAddressName, Integer addressOrder) {
+//        this.userInfo=userInfo;
+//        this.firstAddressName=firstAddressName;
+//        this.secondAddressName=secondAddressName;
+//        this.addressOrder=addressOrder;
+//    }
 }
