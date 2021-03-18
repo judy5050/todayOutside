@@ -910,7 +910,7 @@ public class WeatherTest {
                     x=(String)jobj.get("x");
                     y=(String)jobj.get("y");
                     System.out.println("x값 : "+x+", y값 :"+y);
-                    break;
+//                    break;
                 }
 //            }
 //        }else {

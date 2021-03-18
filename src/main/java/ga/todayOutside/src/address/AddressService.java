@@ -180,23 +180,46 @@ public class AddressService {
 
     @Transactional
     public  void bulkAddressOrder(Long userIdx)throws BaseException{
-        boolean check=false;
         Address address;
 
          List<Address> addressList = addressRepository.findByUserIdx(userIdx);
             if(addressList.size()>=1){
                 for(int i=0;i<addressList.size();i++){
                    address = addressList.get(i);
-                   addressRepository.bulkAddressOrder(address.getId());
+                   addressRepository.subBulkAddressOrder(address.getId());
 
 
                 }
         }
+    }
+
+    @Transactional
+    public void patchAddressOrder(Long userIdx, Long addressIdx, PatchAddressOrder patchAddressOrder,Integer maxAddress) {
+
+        Address address;
+        Address address1;
+
+        address1 = addressRepository.findById(addressIdx).orElse(null);
+        //순서 수정
+        address1.setAddressOrder(patchAddressOrder.getAddressOrder());
+        //update
+        addressRepository.save(address1);
 
 
+        List<Address> addressList = addressRepository.findByUserIdx(userIdx);
+        if(addressList.size()>=1){
+            for(int i=0;i<addressList.size();i++){
+                address = addressList.get(i);
+                //변경하고자 하는 addressOrder 값 보다 같거나 클 경우 addressOrder 을 +1씩 해준다.
+                if(address.getId()!=addressIdx&&address.getAddressOrder()>= patchAddressOrder.getAddressOrder()&&address.getAddressOrder() <maxAddress)
+                addressRepository.plusBulkAddressOrder(address.getId());
+                else if(address.getId()!=addressIdx&&address.getAddressOrder()>= patchAddressOrder.getAddressOrder()&&address.getAddressOrder() >=maxAddress){
+                    addressRepository.subBulkAddressOrder(address.getId());
+                }
+
+            }
+        }
 
 
     }
-
-
 }

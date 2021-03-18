@@ -157,6 +157,45 @@ public class AddressController {
         return new BaseResponse(BaseResponseStatus.SUCCESS_PATCH_ADDRESS_NAME);
     }
 
+    /**
+     * 회원 동네 순서 수정
+     */
+    @ResponseBody
+    @PatchMapping("/address/{addressIdx}/addressOrder")
+    public BaseResponse<Void>patchAddressOrder(@PathVariable Long addressIdx,@RequestBody PatchAddressOrder patchAddressOrder){
+
+        Long userIdx;
+        Address address;
+        Integer maxAddressNum=2;
+
+        try {
+            //jwt 토큰값으로 유저 확인
+            userIdx = jwtService.getUserId();
+            //addressIdx 와 유저의 addressIdx 가 같은지 확인
+            address = addressService.findByAddress(addressIdx, userIdx);
+//            if(patchAddressOrder==null){
+//                //patchAddressOrder 이 공백일 경우
+//                return new BaseResponse<>(BaseResponseStatus.EMPTY_ADDRESS_ORDER);
+//            }
+            //순서 변경 요청값이 0일 경우 또는 최대 주소 등록개수를 초과할 경우 (현재는 2개가 최대)//TODO 주소 최대 등록개수 증가할 경우 값 변경하기
+             if(patchAddressOrder.getAddressOrder()==0||patchAddressOrder.getAddressOrder()>maxAddressNum){
+                return new BaseResponse<>(BaseResponseStatus.INVALID_ADDRESS_ORDER);
+            }
+            else{
+                addressService.patchAddressOrder(userIdx,addressIdx,patchAddressOrder,maxAddressNum);
+            }
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+
+
+
+
+
+
+
+        return new BaseResponse<>(BaseResponseStatus.SUCCESS_PATCH_ADDRESS_ORDER);
+    }
 
 
 
