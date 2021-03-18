@@ -331,4 +331,15 @@ public class AddressService {
 //        System.out.println("thirdAddressResult = " + thirdAddressResult);
         return jsonArray;
     }
+
+    @Transactional
+    public void postThirdAddressName(Long addressIdx,PostThirdAddressNameReq postThirdAddressNameReq) {
+
+        Address address = addressRepository.findById(addressIdx).orElse(null);
+        address.setThirdAddressName(postThirdAddressNameReq.getThirdAddressName());
+        addressRepository.save(address);
+
+
+
+    }
 }

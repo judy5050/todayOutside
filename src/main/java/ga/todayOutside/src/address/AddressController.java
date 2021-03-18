@@ -222,8 +222,31 @@ public class AddressController {
     }
 
     /**
-     *
+     * 구 정보에 맞는 동네 등록 API
      */
+
+    @ResponseBody
+    @PostMapping("/address/{addressIdx}/thirdAddressName")
+    public BaseResponse<Void>postThirdAddressName(@PathVariable Long addressIdx,@RequestBody PostThirdAddressNameReq postThirdAddressNameReq){
+
+        Long userIdx;
+        Address address;
+
+
+        try {
+            //jwt 토큰값으로 유저 확인
+            userIdx = jwtService.getUserId();
+            //addressIdx 와 유저의 addressIdx 가 같은지 확인
+            address = addressService.findByAddress(addressIdx, userIdx);
+            addressService.postThirdAddressName(addressIdx,postThirdAddressNameReq);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+
+
+        return new BaseResponse<>(BaseResponseStatus.SUCCESS_POST_THIRD_ADDRESS_NAME);
+    }
 
 
 
