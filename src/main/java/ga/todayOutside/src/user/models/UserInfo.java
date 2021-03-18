@@ -110,6 +110,11 @@ public class UserInfo extends BaseEntity {
 //        this.snsId = snsId;
 //    }
 
+    //0이면 참여 x 1이면 참여
+    @Column(name="messageBoardStatus")
+    private Integer messageBoardStatus;
+
+
     @Builder
     public UserInfo(Long id, String nickname,
                     String email, String noticeAlarmStatus,
