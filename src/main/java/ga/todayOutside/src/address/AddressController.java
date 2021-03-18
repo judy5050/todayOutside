@@ -8,8 +8,11 @@ import ga.todayOutside.src.address.model.*;
 import ga.todayOutside.src.user.models.UserInfo;
 import ga.todayOutside.utils.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.ParseException;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -188,13 +191,34 @@ public class AddressController {
             return new BaseResponse<>(exception.getStatus());
         }
 
-
-
-
-
-
-
         return new BaseResponse<>(BaseResponseStatus.SUCCESS_PATCH_ADDRESS_ORDER);
+    }
+
+
+    /**
+     * 회원 구 정보에 맞는 동네 목록 조회
+     */
+    @ResponseBody
+    @GetMapping("/address/{addressIdx}/thirdAddressNameList")
+    public BaseResponse<JSONArray>getThirdAddressNameList(@PathVariable Long addressIdx) throws IOException, ParseException {
+
+        Long userIdx;
+        Address address;
+        JSONArray thirdAddressesName;
+
+        try {
+            //jwt 토큰값으로 유저 확인
+            userIdx = jwtService.getUserId();
+            //addressIdx 와 유저의 addressIdx 가 같은지 확인
+            address = addressService.findByAddress(addressIdx, userIdx);
+
+            //동네 리스트 조회
+             thirdAddressesName = addressService.getThirdAddressesName(address.getFirstAddressName(), address.getSecondAddressName());
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+
+        return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_THIRD_ADDRESS_NAME,thirdAddressesName);
     }
 
 

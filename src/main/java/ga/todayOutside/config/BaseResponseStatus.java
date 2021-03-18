@@ -27,6 +27,7 @@ public enum BaseResponseStatus {
     SUCCESS_READ_WEEKLY_RAIN_WEATHER(true,1207,"주간 강수확률과 날씨예보 조회를 성공하였습니다."),
     SUCCESS_PATCH_ADDRESS_NAME(true,1208,"회원주소 수정에 성공하였습니다."),
     SUCCESS_PATCH_ADDRESS_ORDER(true,1209,"회원주소 순서 수정에 성공하였습니다."),
+    SUCCESS_READ_THIRD_ADDRESS_NAME(true,1210,"동 정보 전체 정보 조회에 성공하였습니다"),
 
     // 2000 : Request 오류
     REQUEST_ERROR(false, 2000, "입력값을 확인해주세요."),

@@ -831,7 +831,7 @@ public class WeatherTest {
 
         //시 검색
         result=null;
-        url = new URL("http://www.kma.go.kr/DFSROOT/POINT/DATA/top.json.txt");
+        url = new URL("https://www.kma.go.kr/DFSROOT/POINT/DATA/top.json.txt");
         conn = url.openConnection();
         br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         try {
@@ -863,7 +863,7 @@ public class WeatherTest {
         }
 
         //구 검색
-        url = new URL("http://www.kma.go.kr/DFSROOT/POINT/DATA/mdl."+code+".json.txt");
+        url = new URL("https://www.kma.go.kr/DFSROOT/POINT/DATA/mdl."+code+".json.txt");
         conn = url.openConnection();
         br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         result = br.readLine().toString();
@@ -885,7 +885,7 @@ public class WeatherTest {
 
         System.out.println("code = " + code);
         //동 검색
-        url = new URL("http://www.kma.go.kr/DFSROOT/POINT/DATA/leaf."+code+".json.txt");
+        url = new URL("https://www.kma.go.kr/DFSROOT/POINT/DATA/leaf."+code+".json.txt");
         conn = url.openConnection();
         br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         result = br.readLine().toString();

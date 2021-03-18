@@ -9,6 +9,10 @@ import ga.todayOutside.src.user.UserInfoRepository;
 import ga.todayOutside.src.user.UserInfoService;
 import ga.todayOutside.src.user.models.UserInfo;
 import lombok.RequiredArgsConstructor;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -16,9 +20,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -29,6 +36,9 @@ public class AddressService {
     final AddressRepository addressRepository;
     final UserInfoService userInfoService;
     final UserInfoRepository userInfoRepository;
+     Map<String,String> thirdAddressResult =new LinkedHashMap<>();
+     JSONObject jsonObject=new JSONObject();
+     JSONArray jsonArray=new JSONArray();
     /**
      *회원 주소 등록
      */
@@ -221,5 +231,104 @@ public class AddressService {
         }
 
 
+    }
+
+    /**
+     * 구 정보에 맞는 동네 목록 조회 API
+     */
+    public JSONArray getThirdAddressesName(String firstAddressName,String secondAddressName) throws IOException, ParseException {
+
+        String result;
+        String areaTop=firstAddressName;
+        String areaMdl=secondAddressName;
+        String code="";	//지역 코드
+
+        URL url;
+        BufferedReader br;
+        URLConnection conn;
+
+        JSONParser parser;
+        JSONArray jArr;
+        JSONObject jobj;
+
+        //시 검색
+        result=null;
+        url = new URL("https://www.kma.go.kr/DFSROOT/POINT/DATA/top.json.txt");
+        conn = url.openConnection();
+        br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        try {
+            result = br.readLine().toString();
+            br.close();
+        }catch (NullPointerException e){
+            System.out.println(e);
+        }
+
+        System.out.println(result);
+
+        jArr=null;
+        //시에 맞는 코드를 가져오는 코드
+        parser = new JSONParser();
+        try{
+            jArr = (JSONArray) parser.parse(result);
+        }catch (NullPointerException e){
+            System.out.println("e = " + e);
+        }
+
+
+        for(int i = 0 ; i < jArr.size(); i++) {
+            jobj = (JSONObject) jArr.get(i);
+            if(jobj.get("value").equals(areaTop)) {
+                code=(String)jobj.get("code");
+                System.out.println(areaTop+"코드 : "+code);
+                break;
+            }
+        }
+
+        //구 검색
+        url = new URL("https://www.kma.go.kr/DFSROOT/POINT/DATA/mdl."+code+".json.txt");
+        conn = url.openConnection();
+        br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        result = br.readLine().toString();
+        br.close();
+        //System.out.println(result);
+
+        parser = new JSONParser();
+        jArr = (JSONArray) parser.parse(result);
+
+        for(int i = 0 ; i < jArr.size(); i++) {
+            jobj = (JSONObject) jArr.get(i);
+            if(jobj.get("value").equals(areaMdl)) {
+                code=(String)jobj.get("code");
+                System.out.println("jobj = " + jobj);
+                System.out.println(areaMdl+"코드 : "+code);
+                break;
+            }
+        }
+
+        System.out.println("code = " + code);
+        //동 검색
+        url = new URL("https://www.kma.go.kr/DFSROOT/POINT/DATA/leaf."+code+".json.txt");
+        conn = url.openConnection();
+        br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        result = br.readLine().toString();
+        br.close();
+        //System.out.println(result);
+
+        parser = new JSONParser();
+        jArr = (JSONArray) parser.parse(result);
+
+        for(int i = 0 ; i < jArr.size(); i++) {
+            jobj = (JSONObject) jArr.get(i);
+//            System.out.println("jobj = " + jobj);
+
+//            thirdAddressResult.put("thirdAddressName",jobj.get("value").toString());
+            jsonObject.put("thirdAddressName",jobj.get("value"));
+            jsonArray.add(jsonObject.clone());//TODO 해당부분 jsonArray.add(jsonObject)와 해당 코드와의 차이 찾아보기
+//            System.out.println("동네목록 = " + jobj.get("value"));
+
+        }
+//        System.out.println("jsonArray = " + jsonArray);
+//        System.out.println("thirdAddressResult = " + thirdAddressResult);
+        return jsonArray;
     }
 }
