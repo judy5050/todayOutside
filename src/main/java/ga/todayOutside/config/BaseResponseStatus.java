@@ -24,6 +24,7 @@ public enum BaseResponseStatus {
     SUCCESS_READ_TODAY_LOW_HIGH(true,1204,"오늘의 최저기온과 최고기온 조회에 성공하였습니다."),
     SUCCESS_READ_TIME_WEATHER(true,1205,"시간별 날씨예보 조회에 성공하였습니다."),
     SUCCESS_READ_WEEKLY_HIGH_LOW_VALUE(true,1206,"주간 최고 최저 기온조회에 성공하였습니다."),
+    SUCCESS_READ_WEEKLY_RAIN_WEATHER(true,1207,"주간 강수확률과 날씨예보 조회를 성공하였습니다."),
 
     // 2000 : Request 오류
     REQUEST_ERROR(false, 2000, "입력값을 확인해주세요."),

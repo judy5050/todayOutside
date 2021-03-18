@@ -204,12 +204,42 @@ public class WeatherController {
 
 
     @ResponseBody
-    @GetMapping("/weeklyForecast")
-    public BaseResponse<Map> data(@RequestBody GetWeeklyReq getWeeklyReq) throws IOException, ParseException {
-        String s= weatherService.convertForWeeklyWeatherForeCast(getWeeklyReq.getSecondAddressName());
+    @GetMapping("/address/{addressIdx}/weekly-weathers")
+    public BaseResponse<Map> data(@PathVariable  Long addressIdx) throws IOException, ParseException {
+
+        Long userIdx;
+        Address address;
+
+        try {
+            userIdx = jwtService.getUserId();
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+
+        //user idx 와 입력받은 addressIdx 일치 여부 확인 및 address 반환
+        try {
+            address = addressService.findByAddress(addressIdx, userIdx);
+        }
+        catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+
+        // 시,도 구 정보 받아 nx ny로 좌표 변경
+        Map<String, String> nxNy = weatherService.convertNxNy(address.getFirstAddressName(), address.getSecondAddressName());
+
+        //x,y 값 얻기
+        String nx=nxNy.get("x");
+        String ny=nxNy.get("y");
+
+        //
+        String s = weatherService.convertForWeeklyWeatherForeCast(address.getFirstAddressName(),address.getSecondAddressName());
+        System.out.println("s = " + s);
+        weatherService.getDay1Weather(nx,ny);
+//        String s= weatherService.convertForWeeklyWeatherForeCast(getWeeklyReq.getSecondAddressName());
         Map weeklyForecastResult = weatherService.weeklyForecastResult(s);
 
-        return new BaseResponse<>(BaseResponseStatus.SUCCESS,weeklyForecastResult);
+
+        return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_WEEKLY_RAIN_WEATHER,weeklyForecastResult);
     }
 
 }

@@ -150,7 +150,7 @@ public class WeatherService {
     //3~7일의 강수 확률 &날씨예보 결과 반환 코드
     static Map<String,String> weeklyWeatherForecastResult=new LinkedHashMap<>();
     static Map<String,String> weeklyRnForecastResult=new LinkedHashMap<>();
-    static Map<String,String> weeklyForecastResult=new LinkedHashMap<>();
+    static Map<String,Map> weeklyForecastResult=new LinkedHashMap<>();
 
     /**
      * 시간 데이터 용
@@ -1205,10 +1205,10 @@ public class WeatherService {
         JSONArray json = (JSONArray) new JSONParser().parse(new InputStreamReader(resource.getInputStream(), "UTF-8")); //json-simple
         JSONObject jsonObject;
         String localCode = null;
-        String firstSub3=firstAddressName.substring(0,2);
-        String firstSub2=firstAddressName.substring(0,1);
-        String secondSub3=secondAddressName.substring(0,2);
-        String secondSub2=secondAddressName.substring(0,1);
+        String firstSub3=firstAddressName.substring(0,3);
+        String firstSub2=firstAddressName.substring(0,2);
+        String secondSub3=secondAddressName.substring(0,3);
+        String secondSub2=secondAddressName.substring(0,2);
         for (int i = 0; i < json.size(); i++) {
 
             jsonObject = (JSONObject) json.get(i);
@@ -1373,22 +1373,50 @@ public class WeatherService {
      */
 
 
-    public String convertForWeeklyWeatherForeCast(String req) throws ParseException, IOException {
+    public String convertForWeeklyWeatherForeCast(String firstAddressName,String secondAddressName) throws ParseException, IOException {
         date();
         System.out.println("todayDate = " + todayDate);
         ClassPathResource resource = new ClassPathResource("static/forecastAreaCode.json");
         JSONArray json = (JSONArray) new JSONParser().parse(new InputStreamReader(resource.getInputStream(), "UTF-8")); //json-simple
+
         JSONObject jsonObject;
         String localCode = null;
+        String fistSub2 = firstAddressName.substring(0, 2);
+        String fistSub3 = firstAddressName.substring(0, 3);
+        String fistSub4 = firstAddressName.substring(0, 4);
+
+        String secondSub2 = secondAddressName.substring(0, 2);
+        System.out.println("fistSub2 = " + fistSub2);
 
         for (int i = 0; i < json.size(); i++) {
             jsonObject = (JSONObject) json.get(i);
-            if (jsonObject.get("구역").toString().matches(".*" + req + ".*")) {
-                localCode = jsonObject.get("예보구역코드").toString();
+            if (firstAddressName.matches(".*강원도.*")) {
+                if (secondSub2.matches(".*고성.*") || (secondSub2.matches(".*속초.*"))
+                        || (secondSub2.matches(".*양양.*")) || (secondSub2.matches(".*강릉.*"))
+                        || (secondSub2.matches(".*동해.*")) || (secondSub2.matches(".*삼척.*"))
+                        || (secondSub2.matches(".*태백.*"))) {
+                    if (jsonObject.get("구역").toString().matches(".*" + "강원도영동" + ".*")) {
+                        localCode = jsonObject.get("예보구역코드").toString();
+                        break;
+                    }
+                } else {
+                    if (jsonObject.get("구역").toString().matches(".*" + "강원도영" + ".*")) {
+                        localCode = jsonObject.get("예보구역코드").toString();
+                        break;
+                    }
+                }
             }
-
+            if (jsonObject.get("구역").toString().matches(".*" + fistSub2 + ".*")) {
+                localCode = jsonObject.get("예보구역코드").toString();
+                break;
+            } else if (jsonObject.get("구역").toString().matches(".*" + fistSub3 + ".*")) {
+                localCode = jsonObject.get("예보구역코드").toString();
+                break;
+            } else if (jsonObject.get("구역").toString().matches(".*" + fistSub4 + ".*")) {
+                localCode = jsonObject.get("예보구역코드").toString();
+                break;
+            }
         }
-
         return localCode;
     }
 
@@ -1495,39 +1523,39 @@ public class WeatherService {
         String day4RnResult = object.get("rnSt5Pm").toString();
         weeklyRnForecastResult.put("rnSt4", day4RnResult);
 
-        String day5RnResult = object.get("rnSt6Am").toString();
+        String day5RnResult = object.get("rnSt6Pm").toString();
         weeklyRnForecastResult.put("rnSt5", day5RnResult);
 
-        String day6RnResult = object.get("rnSt7Am").toString();
-        weeklyRnForecastResult.put("rnSt6Am", day6RnResult);
+        String day6RnResult = object.get("rnSt7Pm").toString();
+        weeklyRnForecastResult.put("rnSt6", day6RnResult);
 
         String day7RnResult = object.get("rnSt8").toString();
-        weeklyRnForecastResult.put("rnSt8Am", day7RnResult);
+        weeklyRnForecastResult.put("rnSt7", day7RnResult);
 
 
         //날씨 예보
-        String day2WeatherResult = object.get("wf3Am").toString();
-        weeklyWeatherForecastResult.put("wf2Am", day2WeatherResult);
+        String day2WeatherResult = object.get("wf3Pm").toString();
+        weeklyWeatherForecastResult.put("wf2", day2WeatherResult);
 
-        String day3WeatherResult = object.get("wf4Am").toString();
-        weeklyWeatherForecastResult.put("wf3Am", day3WeatherResult);
+        String day3WeatherResult = object.get("wf4Pm").toString();
+        weeklyWeatherForecastResult.put("wf3", day3WeatherResult);
 
-        String day4WeatherResult = object.get("wf5Am").toString();
-        weeklyWeatherForecastResult.put("wf4Am", day4WeatherResult);
+        String day4WeatherResult = object.get("wf5Pm").toString();
+        weeklyWeatherForecastResult.put("wf4", day4WeatherResult);
 
-        String day5WeatherResult = object.get("wf6Am").toString();
-        weeklyWeatherForecastResult.put("wf5Am", day5WeatherResult);
+        String day5WeatherResult = object.get("wf6Pm").toString();
+        weeklyWeatherForecastResult.put("wf5", day5WeatherResult);
 
-        String day6WeatherResult = object.get("wf7Am").toString();
-        weeklyWeatherForecastResult.put("wf6Am", day6WeatherResult);
+        String day6WeatherResult = object.get("wf7Pm").toString();
+        weeklyWeatherForecastResult.put("wf6", day6WeatherResult);
 
         String day7WeatherResult = object.get("wf8").toString();
-        weeklyWeatherForecastResult.put("wf7Am", day7WeatherResult);
+        weeklyWeatherForecastResult.put("wf7", day7WeatherResult);
 
 
 
-        weeklyForecastResult.putAll(weeklyWeatherForecastResult);
-        weeklyForecastResult.putAll(weeklyRnForecastResult);
+        weeklyForecastResult.put("weather",weeklyWeatherForecastResult);
+        weeklyForecastResult.put("rain",weeklyRnForecastResult);
 
 
     }
@@ -1713,8 +1741,15 @@ public class WeatherService {
 
         String time = Integer.toString(currentTime) + Integer.toString(min);
 
+        String baseDate=null;
         String baseTime = "2300";    //API 제공 시간
-        String baseDate = yesterdayStr;    //조회하고싶은 날짜
+        if(currentTime<23){
+             baseDate = yesterdayStr;    //조회하고싶은 날짜
+        }
+      else
+        {
+            baseDate = todayStr;
+        }
         System.out.println("yesterdayStr = " + yesterdayStr);
         String dataType = "json";    //타입 xml, json
         String numOfRows = "256";    //한 페이지 결과 수
@@ -1784,5 +1819,170 @@ public class WeatherService {
     }
 
 
+    /**
+     * 오늘 기준 그 다음날의 최고 최저 기온 조회
+     * 전날 23시를 basetime 으로  모레의  sky,  강수확률 조회한다.
+     */
+    public void getDay1Weather(String x,String y) throws IOException, ParseException {
 
+
+        date();
+        System.out.println("yesterdayStr = " + yesterdayStr);
+        String apiUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService/getVilageFcst";    //동네예보조회
+
+        // 홈페이지에서 받은 키
+        String serviceKey = Secret.WEATHER_OPEN_APIKEY;
+        String nx = x;    //위도
+        String ny = y;    //경도
+
+        //시간을 받아오는 코드
+        int currentTime = LocalDateTime.now().getHour();
+        int min = LocalDateTime.now().getMinute();
+
+
+        if(currentTime<23){
+
+
+        }
+        String baseTime = "2300";    //API 제공 시간
+        String baseDate = yesterdayStr;    //조회하고싶은 날짜
+        System.out.println("yesterdayStr = " + yesterdayStr);
+        String dataType = "json";    //타입 xml, json
+        String numOfRows = "256";    //한 페이지 결과 수
+        //79일경우 딱 겹치지 x는 하루 시간 조회 가능
+
+        //동네예보 -- 전날 05시 부터 225개의 데이터를 조회하면 모레까지의 날씨를 알 수 있음
+
+        StringBuilder urlBuilder = new StringBuilder(apiUrl);
+        urlBuilder.append("?" + URLEncoder.encode("ServiceKey", "UTF-8") + "=" + serviceKey);
+        urlBuilder.append("&" + URLEncoder.encode("nx", "UTF-8") + "=" + URLEncoder.encode(nx, "UTF-8")); //경도
+        urlBuilder.append("&" + URLEncoder.encode("ny", "UTF-8") + "=" + URLEncoder.encode(ny, "UTF-8")); //위도
+        urlBuilder.append("&" + URLEncoder.encode("base_date", "UTF-8") + "=" + URLEncoder.encode(baseDate, "UTF-8")); /* 조회하고싶은 날짜*/
+        urlBuilder.append("&" + URLEncoder.encode("base_time", "UTF-8") + "=" + URLEncoder.encode(baseTime, "UTF-8")); /* 조회하고싶은 시간 AM 02시부터 3시간 단위 */
+        urlBuilder.append("&" + URLEncoder.encode("dataType", "UTF-8") + "=" + URLEncoder.encode(dataType, "UTF-8"));    /* 타입 */
+        urlBuilder.append("&" + URLEncoder.encode("numOfRows", "UTF-8") + "=" + URLEncoder.encode(numOfRows, "UTF-8"));    /* 한 페이지 결과 수 */
+
+        // GET방식으로 전송해서 파라미터 받아오기
+        URL url = new URL(urlBuilder.toString());
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Content-type", "application/json");
+
+        BufferedReader rd;
+        if (conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
+            rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        } else {
+            rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+        }
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = rd.readLine()) != null) {
+            sb.append(line);
+        }
+        rd.close();
+        conn.disconnect();
+        String data = sb.toString();
+
+        // Json parser를 만들어 만들어진 문자열 데이터를 객체화
+        JSONParser parser = new JSONParser();
+        JSONObject obj = (JSONObject) parser.parse(data);
+        // response 키를 가지고 데이터를 파싱
+        JSONObject parse_response = (JSONObject) obj.get("response");
+        // response 로 부터 body 찾기
+        JSONObject parse_body = (JSONObject) parse_response.get("body");
+        // body 로 부터 items 찾기
+        JSONObject parse_items = (JSONObject) parse_body.get("items");
+        JSONArray parse_item = (JSONArray) parse_items.get("item");
+        //JSONObject item = (JSONObject) parse_item.get("item");
+
+        JSONObject object;
+
+        //element 변수 선언
+        JSONObject element = null;
+
+        for (int i = 0; i < parse_item.size(); i++) {
+            {
+
+                object = (JSONObject) parse_item.get(i);
+                weeklyDay1WeatherParsing(object);
+                System.out.println("object = " + object);
+            }
+
+
+        }
+
+//        return weeklyHighAndLowResult;
+    }
+
+
+    /**
+     * 일주일 단위  하늘, 강수확률 가져오기 (그 다음날 데이터만)
+     */
+    //전날 23시 조회 기준
+    //최고기온은 15시 데이터
+    //최저 기온은 6시 데이터
+    void weeklyDay1WeatherParsing(JSONObject object) {
+
+            int index=0;
+            String ptyValue = "";
+            if (object.get("fcstDate").equals(tomorrowStr)) {
+                if (object.get("fcstTime").equals("1500")) {
+                    if (object.get("category").equals("POP")) {
+                        System.out.println("object = " + object);
+                        String rnValue = object.get("fcstValue").toString();
+                        weeklyRnForecastResult.put("rnSt1", rnValue);
+                    } else if (object.get("category").equals("PTY")) {
+                        if(object.get("fcstValue").toString().equals("0")){
+                            index=0;
+                        }
+                        else if ((object.get("fcstValue").toString().equals("1")) || (object.get("fcstValue").toString().equals("5"))) {
+                            ptyValue = "비";
+                            index=1;
+                        }
+                        else if ((object.get("fcstValue").toString().equals("2")) || (object.get("fcstValue").toString().equals("6"))) {
+                            ptyValue = "비/눈";
+                            index=1;
+                        }
+                        else if ((object.get("fcstValue").toString().equals("3")) || (object.get("fcstValue").toString().equals("7"))) {
+                            ptyValue = "눈";
+                            index=1;
+                        }
+                        else if ((object.get("fcstValue").toString().equals("4"))) {
+                            ptyValue = "소나기";
+                            index=1;
+                        }
+
+
+
+                    }
+                   else if (object.get("category").equals("SKY")) {
+//                        System.out.println("object = " + object);
+                        if(index==0){
+                            if (object.get("fcstValue").toString().equals("1")) {
+                                weeklyWeatherForecastResult.put("wf1", "맑음");
+                            } else if (object.get("fcstValue").toString().equals("3")) {
+                                weeklyWeatherForecastResult.put("wf1", "구름많음");
+                            } else if (object.get("fcstValue").toString().equals("4")) {
+                                weeklyWeatherForecastResult.put("wf1", "흐림");
+                            }
+                        }
+                       else if(index==1){
+                            if (object.get("fcstValue").toString().equals("1")) {
+                                weeklyWeatherForecastResult.put("wf1", "맑고" + " " + ptyValue);
+                            } else if (object.get("fcstValue").toString().equals("3")) {
+                                weeklyWeatherForecastResult.put("wf1", "구름많고" + " " + ptyValue);
+                            } else if (object.get("fcstValue").toString().equals("4")) {
+                                weeklyWeatherForecastResult.put("wf1", "흐리고" + " " + ptyValue);
+                            }
+
+
+
+                        }
+
+                    }
+                }
+
+            }
+
+    }
 }
