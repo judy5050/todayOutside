@@ -11,7 +11,7 @@ import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PUBLIC) // Unit Test 를 위해 PUBLIC
 @EqualsAndHashCode(callSuper = false)
-@Data // from lombok
+@Setter // from lombok
 @Entity // 필수, Class 를 Database Table화 해주는 것이다
 @Table(name = "UserInfo") // Table 이름을 명시해주지 않으면 class 이름을 Table 이름으로 대체한다.
 @Getter

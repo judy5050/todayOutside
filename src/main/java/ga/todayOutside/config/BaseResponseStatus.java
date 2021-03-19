@@ -29,6 +29,7 @@ public enum BaseResponseStatus {
     SUCCESS_PATCH_ADDRESS_ORDER(true,1209,"회원주소 순서 수정에 성공하였습니다."),
     SUCCESS_READ_THIRD_ADDRESS_NAME(true,1210,"동 정보 전체 정보 조회에 성공하였습니다."),
     SUCCESS_POST_THIRD_ADDRESS_NAME(true,1211,"동 정보 등록에 성공하였습니다."),
+    SUCCESS_POST_MESSAGE_BOARD(true,1212,"게시판 글 정보 등록에 성공하였습니다."),
 
     // 2000 : Request 오류
     REQUEST_ERROR(false, 2000, "입력값을 확인해주세요."),
@@ -44,6 +45,7 @@ public enum BaseResponseStatus {
     EMPTY_NICKNAME(false, 2040, "닉네임을 입력해주세요."),
     EMPTY_ADDRESS_ORDER(false, 2201, "변경하고 싶은 주소 순서를 입력해주세요."),
     INVALID_ADDRESS_ORDER(false, 2202, "변경하고 싶은 순서 값을 확인해주세요."),
+    EMPTY_MESSAGE_BOARD(false, 2203, "게시글을 작성해주세요."),
 
 
 
@@ -60,6 +62,7 @@ public enum BaseResponseStatus {
     NOT_FOUND_ADDRESS(false, 3201, "존재하지 않는 주소 인덱스 입니다."),
     FAILED_TO_GET_ADDRESS(false, 3202, "주소 리스트 조회에 실패하였습니다."),
     HAVE_NOT_ADDRESS(false, 3203, "유저가 갖고 있지 않은 주소 인덱스입니다."),
+    EMPTY_THIRD_ADDRESS(false, 3204, "동 정보가 비어있습니다."),
 
 
 

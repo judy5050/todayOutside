@@ -5,21 +5,24 @@ import ga.todayOutside.config.BaseEntity;
 import ga.todayOutside.src.comment.model.Comments;
 import ga.todayOutside.src.user.models.UserInfo;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
-@Data
+@Setter
+@Getter
 @Entity
 @Table(name="MessageBoard")
 public class MessageBoard extends BaseEntity {
 
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "messageBoardIdx")
     private Long id;
 
@@ -57,6 +60,20 @@ public class MessageBoard extends BaseEntity {
     private Long heartNum;
 
 
+    public MessageBoard(UserInfo userInfo,String addressMsg,String message,Long heartNum) {
+        this.userInfo=userInfo;
+        this.addressMsg=addressMsg;
+        this.message=message;
+        this.heartNum=heartNum;
 
+    }
 
+    public MessageBoard(UserInfo userInfo, String msg) {
+        this.userInfo=userInfo;
+        this.message=msg;
+    }
+
+    public MessageBoard(String msg) {
+        this.message=msg;
+    }
 }
