@@ -26,6 +26,8 @@ public abstract class BaseEntity {
     @Column(name = "updatedAt", nullable = false)
     private Date updatedAt;
 
+
+
 //    @PrePersist
 //    void prePersist() {
 //        this.createdAt = this.updatedAt = new Date();

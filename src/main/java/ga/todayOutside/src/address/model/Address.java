@@ -3,13 +3,16 @@ package ga.todayOutside.src.address.model;
 import ga.todayOutside.config.BaseEntity;
 import ga.todayOutside.src.user.models.UserInfo;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import javax.persistence.JoinColumn;
 
 @NoArgsConstructor
-@Data
+@Setter
+@Getter
 @Entity
 @Table(name="Address")
 public class Address  extends BaseEntity {
