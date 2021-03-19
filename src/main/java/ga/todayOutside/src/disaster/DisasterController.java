@@ -1,5 +1,6 @@
 package ga.todayOutside.src.disaster;
 
+import ga.todayOutside.src.disaster.model.DisasterInfo;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,6 +45,15 @@ public class DisasterController {
         JSONArray messages = (JSONArray) row.get("row");
 
         result = disasterService.filter(messages);
+
+        return result;
+    }
+
+    @ResponseBody
+    @GetMapping("/date")
+    public Map<String, Object> getDate() {
+        Map<String, Object> result = new HashMap<>();
+        disasterService.filterByDate();
 
         return result;
     }
