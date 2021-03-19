@@ -51,28 +51,33 @@ public class Address  extends BaseEntity {
     @JoinColumn(name="userIdx")
     private UserInfo userInfo;
 
+//    /**
+//     * 주소 상태 여부
+//     */
+//    @Enumerated(EnumType.STRING)
+//    @Column(name = "addressType")
+//    private AddressType addressType;
+
     /**
-     * 주소 상태 여부
+     *주소 순서 인덱스
      */
-    @Enumerated(EnumType.STRING)
-    @Column(name = "addressType")
-    private AddressType addressType;
-
-    public Address(UserInfo userInfo, String firstAddressName, String secondAddressName, String thirdAddressName) {
-
-       this.userInfo=userInfo;
-       this.firstAddressName=firstAddressName;
-       this.secondAddressName=secondAddressName;
-       this.thirdAddressName=thirdAddressName;
-
-    }
+    @Column(name = "addressOrder")
+    private Integer addressOrder;
 
 
-    public Address(UserInfo userInfo, String firstAddressName, String secondAddressName, String thirdAddressName, AddressType addressType) {
+    public Address(UserInfo userInfo, String firstAddressName, String secondAddressName, Integer addressOrder) {
         this.userInfo=userInfo;
         this.firstAddressName=firstAddressName;
         this.secondAddressName=secondAddressName;
-        this.thirdAddressName=thirdAddressName;
-        this.addressType=addressType;
+        this.addressOrder=addressOrder;
+
     }
+
+
+//    public Address(UserInfo userInfo,String firstAddressName, String secondAddressName, Integer addressOrder) {
+//        this.userInfo=userInfo;
+//        this.firstAddressName=firstAddressName;
+//        this.secondAddressName=secondAddressName;
+//        this.addressOrder=addressOrder;
+//    }
 }

@@ -5,16 +5,15 @@ import lombok.Data;
 @Data
 public class GetAddressRes {
 
-    private  String firstAddressName;
-    private String secondAddressName;
-    private String thirdAddressName;
+//    private  String firstAddressName;
     private Long addressIdx;
+    private String secondAddressName;
+    private Integer addressOrder;
 
-    public GetAddressRes(Long addressIdx,String firstAddressName,String secondAddressName, String thirdAddressName){
+    public GetAddressRes(Long addressIdx,String secondAddressName,Integer addressOrder){
         this.addressIdx=addressIdx;
-        this.firstAddressName=firstAddressName;
         this.secondAddressName=secondAddressName;
-        this.thirdAddressName=thirdAddressName;
+        this.addressOrder=addressOrder;
     }
 
 }

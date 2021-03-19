@@ -80,9 +80,18 @@ public class UserInfoService {
         } catch (Exception ignored) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_POST_USER);
         }
+        //수정전
+//        UserInfo userInfo = UserInfo.builder()
+//                .email(email).nickname(nickname)
+//                .userMainLocation(mainLocation).userSubLocation(subLocation)
+//                .picture(picture).snsId(snsId)
+//                .noticeAlarmStatus(noticeAlarmStatus).disasterAlarmStatus(disasterAlarmStatus)
+//                .heartNum(heartNum).isDeleted(isDeleted)
+//                .build();
+
+        //수정후
         UserInfo userInfo = UserInfo.builder()
                 .email(email).nickname(nickname)
-                .userMainLocation(mainLocation).userSubLocation(subLocation)
                 .picture(picture).snsId(snsId)
                 .noticeAlarmStatus(noticeAlarmStatus).disasterAlarmStatus(disasterAlarmStatus)
                 .heartNum(heartNum).isDeleted(isDeleted)
@@ -120,13 +129,22 @@ public class UserInfoService {
             String userMainLocation = patchUserReq.getUserMainLocation();
             String userSubLocation = patchUserReq.getUserSubLocation();
 
+            //수정전
+//            userInfo.setEmail(email);
+//            userInfo.setNickname(nickname);
+//            userInfo.setPicture(picture);
+//            userInfo.setNoticeAlarmStatus(noticeAlarmStatus);
+//            userInfo.setDisasterAlarmStatus(disasterAlarmStatus);
+//            userInfo.setUserMainLocation(userMainLocation);
+//            userInfo.setUserSubLocation(userSubLocation);
+
+            //수정후
             userInfo.setEmail(email);
             userInfo.setNickname(nickname);
             userInfo.setPicture(picture);
             userInfo.setNoticeAlarmStatus(noticeAlarmStatus);
             userInfo.setDisasterAlarmStatus(disasterAlarmStatus);
-            userInfo.setUserMainLocation(userMainLocation);
-            userInfo.setUserSubLocation(userSubLocation);
+
 
             String jwt = jwtService.createJwt(userInfo.getId());
             userInfoRepository.save(userInfo);

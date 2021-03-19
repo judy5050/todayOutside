@@ -6,11 +6,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Getter
-public class PostAddressReq {
-
-    private  String firstAddressName;
+public class PatchAddressNameReq {
+    private String firstAddressName;
     private String secondAddressName;
-
-
-
 }

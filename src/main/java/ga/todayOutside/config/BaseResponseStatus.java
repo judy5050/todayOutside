@@ -17,9 +17,18 @@ public enum BaseResponseStatus {
     SUCCESS_DELETE_USER(true, 1015, "회원 탈퇴에 성공하였습니다."),
     SUCCESS_PATCH_USER(true, 1016, "회원정보 수정에 성공하였습니다."),
     SUCCESS_READ_SEARCH_USERS(true, 1017, "회원 검색 조회에 성공하였습니다."),
-    SUCCESS_POST_ADDRESS(true, 1200, "주소 등록에 성공하였습니다"),
-    SUCCESS_DELETE_ADDRESS(true, 1201, "주소 삭제를 성공하였습니다"),
-    SUCCESS_READ_ADDRESS(true,1202,"주소 목록 조회에 성공하였습니다"),
+    SUCCESS_POST_ADDRESS(true, 1200, "주소 등록에 성공하였습니다."),
+    SUCCESS_DELETE_ADDRESS(true, 1201, "주소 삭제를 성공하였습니다."),
+    SUCCESS_READ_ADDRESS(true,1202,"주소 목록 조회에 성공하였습니다."),
+    SUCCESS_READ_NOW_WEATHER(true,1203,"현재 날씨 조회에 성공하였습니다."),
+    SUCCESS_READ_TODAY_LOW_HIGH(true,1204,"오늘의 최저기온과 최고기온 조회에 성공하였습니다."),
+    SUCCESS_READ_TIME_WEATHER(true,1205,"시간별 날씨예보 조회에 성공하였습니다."),
+    SUCCESS_READ_WEEKLY_HIGH_LOW_VALUE(true,1206,"주간 최고 최저 기온조회에 성공하였습니다."),
+    SUCCESS_READ_WEEKLY_RAIN_WEATHER(true,1207,"주간 강수확률과 날씨예보 조회를 성공하였습니다."),
+    SUCCESS_PATCH_ADDRESS_NAME(true,1208,"회원주소 수정에 성공하였습니다."),
+    SUCCESS_PATCH_ADDRESS_ORDER(true,1209,"회원주소 순서 수정에 성공하였습니다."),
+    SUCCESS_READ_THIRD_ADDRESS_NAME(true,1210,"동 정보 전체 정보 조회에 성공하였습니다."),
+    SUCCESS_POST_THIRD_ADDRESS_NAME(true,1211,"동 정보 등록에 성공하였습니다."),
 
     // 2000 : Request 오류
     REQUEST_ERROR(false, 2000, "입력값을 확인해주세요."),
@@ -33,6 +42,9 @@ public enum BaseResponseStatus {
     WRONG_PASSWORD(false, 2032, "비밀번호를 다시 입력해주세요."),
     DO_NOT_MATCH_PASSWORD(false, 2033, "비밀번호와 비밀번호확인 값이 일치하지 않습니다."),
     EMPTY_NICKNAME(false, 2040, "닉네임을 입력해주세요."),
+    EMPTY_ADDRESS_ORDER(false, 2201, "변경하고 싶은 주소 순서를 입력해주세요."),
+    INVALID_ADDRESS_ORDER(false, 2202, "변경하고 싶은 순서 값을 확인해주세요."),
+
 
 
     // 3000 : Response 오류
@@ -47,6 +59,7 @@ public enum BaseResponseStatus {
     FAILED_TO_POST_ADDRESS(false, 3200, "최대 주소 등록 개수를 초과했습니다"),
     NOT_FOUND_ADDRESS(false, 3201, "존재하지 않는 주소 인덱스 입니다."),
     FAILED_TO_GET_ADDRESS(false, 3202, "주소 리스트 조회에 실패하였습니다."),
+    HAVE_NOT_ADDRESS(false, 3203, "유저가 갖고 있지 않은 주소 인덱스입니다."),
 
 
 

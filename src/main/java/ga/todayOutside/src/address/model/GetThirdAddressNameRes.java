@@ -5,10 +5,6 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class PostAddressRes {
-
-    private Long addressIdx;
-    private Integer addressOrder;
-
-
+public class GetThirdAddressNameRes {
+    private String thirdAddressName;
 }
