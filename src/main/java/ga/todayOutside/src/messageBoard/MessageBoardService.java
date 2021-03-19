@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -40,5 +41,36 @@ public class MessageBoardService {
     public void findByMessage(Long messgeIdx) {
         Optional<MessageBoard> byId = messageBoardRepository.findById(messgeIdx);
         System.out.println("byId.get() = " + byId.get().getMessage());
+    }
+
+    /**
+     *회원인덱스로 관련된 게시글 찾기
+     */
+    public MessageBoard findMessageBoardByUserIdx(Long userIdx,Long messageBoardIdx) throws BaseException {
+
+
+     MessageBoard messageBoard = messageBoardRepository.findById(messageBoardIdx).orElse(null);
+
+     if(messageBoard==null){
+         throw new BaseException(BaseResponseStatus.NOT_FOUND_MESSAGE_BOARD);
+     }
+     else {
+         //자기의 게시글이 아니라면
+         if(messageBoard.getUserInfo().getId()!=userIdx){
+             throw new BaseException(BaseResponseStatus.NOT_MATCH_USER_MESSAGE_BOARD);
+         }
+
+     }
+     return messageBoard;
+
+
+    }
+
+    /**
+     * 저장
+     */
+    @Transactional
+    public void save(MessageBoard messageBoard) {
+        messageBoardRepository.save(messageBoard);
     }
 }

@@ -68,12 +68,5 @@ public class MessageBoard extends BaseEntity {
 
     }
 
-    public MessageBoard(UserInfo userInfo, String msg) {
-        this.userInfo=userInfo;
-        this.message=msg;
-    }
 
-    public MessageBoard(String msg) {
-        this.message=msg;
-    }
 }

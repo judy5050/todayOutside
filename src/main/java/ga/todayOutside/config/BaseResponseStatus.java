@@ -30,6 +30,10 @@ public enum BaseResponseStatus {
     SUCCESS_READ_THIRD_ADDRESS_NAME(true,1210,"동 정보 전체 정보 조회에 성공하였습니다."),
     SUCCESS_POST_THIRD_ADDRESS_NAME(true,1211,"동 정보 등록에 성공하였습니다."),
     SUCCESS_POST_MESSAGE_BOARD(true,1212,"게시판 글 정보 등록에 성공하였습니다."),
+    SUCCESS_PATCH_MESSAGE_BOARD(true,1213,"게시판 글 정보 수정에 성공하였습니다."),
+
+
+
 
     // 2000 : Request 오류
     REQUEST_ERROR(false, 2000, "입력값을 확인해주세요."),
@@ -63,6 +67,8 @@ public enum BaseResponseStatus {
     FAILED_TO_GET_ADDRESS(false, 3202, "주소 리스트 조회에 실패하였습니다."),
     HAVE_NOT_ADDRESS(false, 3203, "유저가 갖고 있지 않은 주소 인덱스입니다."),
     EMPTY_THIRD_ADDRESS(false, 3204, "동 정보가 비어있습니다."),
+    NOT_FOUND_MESSAGE_BOARD(false, 3205, "존재 하지 않는 게시글 입니다."),
+    NOT_MATCH_USER_MESSAGE_BOARD(false, 3206, "해당 유저가 작성한 게시글이 아닙니다."),
 
 
 

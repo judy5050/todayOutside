@@ -7,6 +7,7 @@ import ga.todayOutside.config.BaseResponseStatus;
 import ga.todayOutside.src.address.AddressService;
 import ga.todayOutside.src.address.model.Address;
 import ga.todayOutside.src.messageBoard.models.MessageBoard;
+import ga.todayOutside.src.messageBoard.models.PatchMessageBoardReq;
 import ga.todayOutside.src.messageBoard.models.PostMessageBoardReq;
 import ga.todayOutside.src.messageBoard.models.PostMessageBoardRes;
 import ga.todayOutside.src.user.UserInfoRepository;
@@ -70,12 +71,42 @@ public class MessageBoardController {
             return new BaseResponse<>(exception.getStatus());
         }
 
-
-
-
-//        return new BaseResponse<>(BaseResponseStatus.SUCCESS,new PostMessageBoardRes(messageBoard.getId()));
         return new BaseResponse<>(BaseResponseStatus.SUCCESS_POST_MESSAGE_BOARD,new PostMessageBoardRes(messageBoard.getId()));
 
+    }
+
+    /**
+     * 게시글 수정
+     */
+    @ResponseBody
+    @PatchMapping("/messageBoards/{messageBoardIdx}")
+    public BaseResponse<Void> patchMessageBoard(@PathVariable Long messageBoardIdx, @RequestBody PatchMessageBoardReq patchMessageBoardReq){
+
+        Long userIdx;
+        UserInfo userInfo=null;
+        MessageBoard messageBoard;
+        try {
+            userIdx = jwtService.getUserId();
+
+            //존재하는 회원인지 확인 후
+            userInfo = userInfoService.findByUserIdx(userIdx);
+            //수정하고자 하는 messageBoard가 자기 글인지 확인
+            messageBoard = messageBoardService.findMessageBoardByUserIdx(userIdx, messageBoardIdx);
+
+            if(patchMessageBoardReq.getMsg()==null||patchMessageBoardReq.getMsg().isEmpty()){
+                throw new BaseException(BaseResponseStatus.EMPTY_MESSAGE_BOARD); 
+            }
+
+            messageBoard.setMessage(patchMessageBoardReq.getMsg());
+            messageBoardService.save(messageBoard);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+
+
+
+        return new BaseResponse<>(BaseResponseStatus.SUCCESS_PATCH_MESSAGE_BOARD);
     }
 
 
