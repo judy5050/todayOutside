@@ -73,4 +73,13 @@ public class MessageBoardService {
     public void save(MessageBoard messageBoard) {
         messageBoardRepository.save(messageBoard);
     }
+
+    /**
+     * 삭제
+     */
+    @Transactional
+    public void delete(MessageBoard messageBoard){
+
+        messageBoardRepository.delete(messageBoard);
+    }
 }

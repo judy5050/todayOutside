@@ -109,6 +109,35 @@ public class MessageBoardController {
         return new BaseResponse<>(BaseResponseStatus.SUCCESS_PATCH_MESSAGE_BOARD);
     }
 
+    /**
+     * 게시판 글 삭제
+     */
+    @ResponseBody
+    @DeleteMapping("/messageBoards/{messageBoardIdx}")
+    public BaseResponse<Void> deleteMessageBoard(@PathVariable Long messageBoardIdx){
+
+        Long userIdx;
+        UserInfo userInfo=null;
+        MessageBoard messageBoard;
+        try {
+            userIdx = jwtService.getUserId();
+
+            //존재하는 회원인지 확인 후
+            userInfo = userInfoService.findByUserIdx(userIdx);
+            //수정하고자 하는 messageBoard가 자기 글인지 확인
+            messageBoard = messageBoardService.findMessageBoardByUserIdx(userIdx, messageBoardIdx);
+            messageBoardService.delete(messageBoard);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+
+        return new BaseResponse<>(BaseResponseStatus.SUCCESS_DELETE_MESSAGE_BOARD);
+
+
+    }
+
+
 
     /**
      * 메시지 찾기

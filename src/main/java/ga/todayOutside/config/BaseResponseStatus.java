@@ -31,6 +31,7 @@ public enum BaseResponseStatus {
     SUCCESS_POST_THIRD_ADDRESS_NAME(true,1211,"동 정보 등록에 성공하였습니다."),
     SUCCESS_POST_MESSAGE_BOARD(true,1212,"게시판 글 정보 등록에 성공하였습니다."),
     SUCCESS_PATCH_MESSAGE_BOARD(true,1213,"게시판 글 정보 수정에 성공하였습니다."),
+    SUCCESS_DELETE_MESSAGE_BOARD(true,1214,"게시판 글 정보 삭제를 성공하였습니다."),
 
 
 
