@@ -39,9 +39,14 @@ public class MessageBoardService {
     }
 
     //TODO 해당 코드 나중에 변경하기
-    public void findByMessage(Long messgeIdx) {
-        Optional<MessageBoard> byId = messageBoardRepository.findById(messgeIdx);
-        System.out.println("byId.get() = " + byId.get().getMessage());
+    public MessageBoard findByMessage(Long messageIdx) throws BaseException {
+        MessageBoard  messageBoard = messageBoardRepository.findById(messageIdx).orElse(null);
+        if(messageBoard==null){
+            throw new BaseException(BaseResponseStatus.NOT_FOUND_MESSAGE_BOARD);
+        }
+
+        return messageBoard;
+
     }
 
     /**

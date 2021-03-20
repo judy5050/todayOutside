@@ -34,6 +34,7 @@ public enum BaseResponseStatus {
     SUCCESS_DELETE_MESSAGE_BOARD(true,1214,"게시판 글 정보 삭제를 성공하였습니다."),
     SUCCESS_READ_MESSAGE_BOARD_HEART(true,1215,"데일리하트 순위로 게시글을 조회하는데 성공하였습니다."),
     SUCCESS_READ_MESSAGE_BOARD_RECENTLY(true,1216,"최신 순으로 게시글을 조회하는데 성공하였습니다."),
+    SUCCESS_READ_MESSAGE_BOARD(true,1217,"게시글 조회애 성공하였습니다."),
 
 
 
@@ -56,6 +57,7 @@ public enum BaseResponseStatus {
 
 
 
+
     // 3000 : Response 오류
     RESPONSE_ERROR(false, 3000, "값을 불러오는데 실패하였습니다."),
     NOT_FOUND_USER(false, 3010, "존재하지 않는 회원입니다."),
@@ -70,7 +72,7 @@ public enum BaseResponseStatus {
     FAILED_TO_GET_ADDRESS(false, 3202, "주소 리스트 조회에 실패하였습니다."),
     HAVE_NOT_ADDRESS(false, 3203, "유저가 갖고 있지 않은 주소 인덱스입니다."),
     EMPTY_THIRD_ADDRESS(false, 3204, "동 정보가 비어있습니다."),
-    NOT_FOUND_MESSAGE_BOARD(false, 3205, "존재 하지 않는 게시글 입니다."),
+    NOT_FOUND_MESSAGE_BOARD(false, 3205, "존재하지 않는 게시글 입니다."),
     NOT_MATCH_USER_MESSAGE_BOARD(false, 3206, "해당 유저가 작성한 게시글이 아닙니다."),
 
 

@@ -200,22 +200,30 @@ public class MessageBoardController {
         }
 
 
-
-
         return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_MESSAGE_BOARD_HEART);
     }
 
 
     /**
-     * 메시지 찾기
+     * 게시글 보기
      */
     @ResponseBody
-    @GetMapping("/test/{messgeIdx}")
-    public BaseResponse<Void> test(@PathVariable Long messgeIdx){
+    @GetMapping("/messageBoards/{messageBoardIdx}")
+    public BaseResponse<GetMessageBoardReq> test(@PathVariable Long messageBoardIdx) throws BaseException {
+        UserInfo userInfo;
+        Long userIdx;
+        MessageBoard messageBoard;
+        try {
+            userIdx = jwtService.getUserId();
+            userInfo = userInfoService.findByUserIdx(userIdx);
+             messageBoard = messageBoardService.findByMessage(messageBoardIdx);
 
-        messageBoardService.findByMessage(messgeIdx);
+        }catch (BaseException baseException){
+            return new BaseResponse<>(baseException.getStatus());
+        }
 
-        return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+
+        return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_MESSAGE_BOARD,new GetMessageBoardReq(messageBoard));
     }
 
     @ResponseBody
