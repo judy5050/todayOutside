@@ -7,15 +7,12 @@ import ga.todayOutside.config.BaseResponseStatus;
 import ga.todayOutside.src.address.AddressService;
 import ga.todayOutside.src.address.model.Address;
 import ga.todayOutside.src.messageBoard.models.*;
-import ga.todayOutside.src.user.UserInfoRepository;
 import ga.todayOutside.src.user.UserInfoService;
 import ga.todayOutside.src.user.models.UserInfo;
 import ga.todayOutside.utils.JwtService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -148,7 +145,7 @@ public class MessageBoardController {
      */
     @ResponseBody
     @GetMapping("/address/{addressIdx}/messageBoardList")
-    public BaseResponse<List<GetMessageBoardHeartRes>>getMessageBoardList(@PathVariable Long addressIdx, @RequestParam("sortType")String sortType,@RequestParam("boardType") BoardType boardType, @RequestParam("page")String page){
+    public BaseResponse<List<GetMessageBoardRecentlyRes>>getMessageBoardList(@PathVariable Long addressIdx, @RequestParam("sortType")String sortType, @RequestParam("boardType") BoardType boardType, @RequestParam("page")String page){
 
         Long userIdx;
         Address address=null;
@@ -169,12 +166,31 @@ public class MessageBoardController {
         //하트순 조회
         if(sortType.equals("heart")&&boardType.equals(BoardType.WEATHER)){
 
-            List<GetMessageBoardHeartRes> recentlyMessageBoardList = messageBoardService.getRecentlyMessageBoardList(address.getSecondAddressName(), page,boardType);
+            List<GetMessageBoardRecentlyRes> recentlyMessageBoardList = messageBoardService.getHeartMessageBoardList(address.getSecondAddressName(), page,boardType);
             return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_MESSAGE_BOARD_HEART,recentlyMessageBoardList);
 
         }
+
+        //날씨 최신순 조회
         else if(sortType.equals("recently")&&boardType.equals(BoardType.WEATHER)){
 
+            List<GetMessageBoardRecentlyRes> recentlyMessageBoardList = messageBoardService.getRecentlyMessageBoardList(address.getSecondAddressName(), page,boardType);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_MESSAGE_BOARD_RECENTLY,recentlyMessageBoardList);
+
+
+        }
+
+        else if(sortType.equals("heart")&&boardType.equals(BoardType.DISASTER)){
+
+            List<GetMessageBoardRecentlyRes> recentlyMessageBoardList = messageBoardService.getHeartMessageBoardDisasterList(address.getSecondAddressName(), page,boardType);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_MESSAGE_BOARD_HEART,recentlyMessageBoardList);
+
+
+        }
+        else if(sortType.equals("recently")&&boardType.equals(BoardType.DISASTER)){
+
+            List<GetMessageBoardRecentlyRes> recentlyMessageBoardList = messageBoardService.getRecentlyMessageBoardDisasterList(address.getSecondAddressName(), page,boardType);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_MESSAGE_BOARD_RECENTLY,recentlyMessageBoardList);
 
 
 

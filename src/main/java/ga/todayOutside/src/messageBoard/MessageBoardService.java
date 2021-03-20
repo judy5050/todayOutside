@@ -3,7 +3,6 @@ package ga.todayOutside.src.messageBoard;
 
 import ga.todayOutside.config.BaseException;
 import ga.todayOutside.config.BaseResponseStatus;
-import ga.todayOutside.src.address.model.Address;
 import ga.todayOutside.src.messageBoard.models.*;
 import ga.todayOutside.src.user.models.UserInfo;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -87,13 +85,13 @@ public class MessageBoardService {
     }
 
     /**
-     *구 단위로 게시글 리스트 가져오기
+     *하트순서대로 날씨 관련 게시글 리스트 가져오기
      */
-    public List<GetMessageBoardHeartRes> getRecentlyMessageBoardList(String secondAddressName, String page, BoardType boardType) {
+    public List<GetMessageBoardRecentlyRes> getHeartMessageBoardList(String secondAddressName, String page, BoardType boardType) {
 
         int index;
         String filter;
-        List<GetMessageBoardHeartRes>getMessageBoardHeartRes;
+        List<GetMessageBoardRecentlyRes> getMessageBoardRecentlyRes;
 
         //게시글 필터링 구 정보 받기
         if(secondAddressName.length()>=2&&secondAddressName.length()<=4){
@@ -114,19 +112,110 @@ public class MessageBoardService {
         //page 처리
         PageRequest pageRequest=PageRequest.of(Integer.parseInt(page),10);
         Page <MessageBoard> messageBoards= messageBoardRepository.findByAddressMsgLike(filter,pageRequest,boardType);
-        List<GetMessageBoardHeartRes> getMessageBoardHeartRes1=messageBoards.map(GetMessageBoardHeartRes::new).getContent();
+        List<GetMessageBoardRecentlyRes> getMessageBoardHeartRes1=messageBoards.map(GetMessageBoardRecentlyRes::new).getContent();
 
-
-//        for(int i=0;i<messageBoards.getContent().size();i++){
-//
-//            System.out.println("messageBoards = " + messageBoards.getContent().get(i).getAddressMsg());
-////            System.out.println("messageBoards = " + messageBoards.getContent().get(i).getUpdatedAt());
-//             date = simpleDateFormat.format(messageBoards.getContent().get(i).getCreatedAt());
-//             System.out.println("date = " + date);
-//
-//
-//        }
-//        System.out.println("getMessageBoardHeartRes1 = " + getMessageBoardHeartRes1);
         return getMessageBoardHeartRes1;
     }
+
+
+    /**
+     * 날씨 게시글 최신 순 조회
+     */
+    public List<GetMessageBoardRecentlyRes> getRecentlyMessageBoardList(String secondAddressName, String page, BoardType boardType) {
+
+        int index;
+        String filter;
+        List<GetMessageBoardRecentlyRes> getMessageBoardRecentlyRes;
+
+        //게시글 필터링 구 정보 받기
+        if(secondAddressName.length()>=2&&secondAddressName.length()<=4){
+            filter=secondAddressName;
+        }
+        //시 구 두개 다 합쳐있을경우 구 정보만 받기
+        else{
+            index=secondAddressName.indexOf("시");
+            filter=secondAddressName.substring(index+1);
+            System.out.println("index = " + index);
+
+        }
+        System.out.println("filter = " + filter);
+
+        //page 처리
+        PageRequest pageRequest=PageRequest.of(Integer.parseInt(page),10);
+        Page <MessageBoard> messageBoards= messageBoardRepository.findByAddressRecentlyMsg(filter,pageRequest,boardType);
+        List<GetMessageBoardRecentlyRes> getMessageBoardHeartRes1=messageBoards.map(GetMessageBoardRecentlyRes::new).getContent();
+
+        return getMessageBoardHeartRes1;
+    }
+
+    /**
+     * 재난 관련 하트순
+     */
+
+    public List<GetMessageBoardRecentlyRes> getHeartMessageBoardDisasterList(String secondAddressName, String page, BoardType boardType) {
+
+        int index;
+        String filter;
+        List<GetMessageBoardRecentlyRes> getMessageBoardRecentlyRes;
+
+        //게시글 필터링 구 정보 받기
+        if(secondAddressName.length()>=2&&secondAddressName.length()<=4){
+            filter=secondAddressName;
+        }
+        //시 구 두개 다 합쳐있을경우 구 정보만 받기
+        else{
+            index=secondAddressName.indexOf("시");
+            filter=secondAddressName.substring(index+1);
+            System.out.println("index = " + index);
+
+        }
+        System.out.println("filter = " + filter);
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String date ;
+
+        //page 처리
+        PageRequest pageRequest=PageRequest.of(Integer.parseInt(page),10);
+        Page <MessageBoard> messageBoards= messageBoardRepository.findByAddressMsgLike(filter,pageRequest,boardType);
+        List<GetMessageBoardRecentlyRes> getMessageBoardListHeartRes=messageBoards.map(GetMessageBoardRecentlyRes::new).getContent();
+
+        return getMessageBoardListHeartRes;
+    }
+
+    /**
+     * 재난 관련 최신순
+     */
+
+    public List<GetMessageBoardRecentlyRes> getRecentlyMessageBoardDisasterList(String secondAddressName, String page, BoardType boardType) {
+
+        int index;
+        String filter;
+        List<GetMessageBoardRecentlyRes> getMessageBoardRecentlyRes;
+
+        //게시글 필터링 구 정보 받기
+        if(secondAddressName.length()>=2&&secondAddressName.length()<=4){
+            filter=secondAddressName;
+        }
+        //시 구 두개 다 합쳐있을경우 구 정보만 받기
+        else{
+            index=secondAddressName.indexOf("시");
+            filter=secondAddressName.substring(index+1);
+            System.out.println("index = " + index);
+
+        }
+        System.out.println("filter = " + filter);
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String date ;
+
+        //page 처리
+        PageRequest pageRequest=PageRequest.of(Integer.parseInt(page),10);
+        Page <MessageBoard> messageBoards= messageBoardRepository.findByAddressRecentlyMsg(filter,pageRequest,boardType);
+        List<GetMessageBoardRecentlyRes> getMessageBoardListHeartRes=messageBoards.map(GetMessageBoardRecentlyRes::new).getContent();
+
+        return getMessageBoardListHeartRes;
+    }
+
+
+
 }

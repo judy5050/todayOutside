@@ -33,6 +33,7 @@ public enum BaseResponseStatus {
     SUCCESS_PATCH_MESSAGE_BOARD(true,1213,"게시판 글 정보 수정에 성공하였습니다."),
     SUCCESS_DELETE_MESSAGE_BOARD(true,1214,"게시판 글 정보 삭제를 성공하였습니다."),
     SUCCESS_READ_MESSAGE_BOARD_HEART(true,1215,"데일리하트 순위로 게시글을 조회하는데 성공하였습니다."),
+    SUCCESS_READ_MESSAGE_BOARD_RECENTLY(true,1216,"최신 순으로 게시글을 조회하는데 성공하였습니다."),
 
 
 
