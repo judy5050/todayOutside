@@ -69,19 +69,22 @@ public class DisasterProvider {
     public JSONObject MapToJSON(Map<String, ArrayList<DisasterInfo>> map) {
 
         JSONObject resultMap = new JSONObject();
+        int total = 0;
 
         for (String key : map.keySet()) {
 
             ArrayList<DisasterInfo> al = map.get(key);
             JSONArray ja = new JSONArray();
 
-            for (DisasterInfo d : al)
+            for (DisasterInfo d : al){
                 ja.add(d);
+                total += 1;
+            }
 
             resultMap.put(key, ja);
 
         }
-
+        resultMap.put("total", total);
         return resultMap;
     }
 
@@ -99,7 +102,7 @@ public class DisasterProvider {
 
             resultInfo = disasterRepository.findByMsgIdx(info.getMsgIdx()).orElse(null);
             //등록 되지 않은 데이터만 등록
-            if (resultInfo != null) return;
+            if (resultInfo != null) continue;
 
             DisasterInfoEntity saveInfo = DisasterInfoEntity.builder()
                     .msg(info.getMsg()).msgIdx(info.getMsgIdx())

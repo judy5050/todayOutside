@@ -6,10 +6,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -44,16 +41,29 @@ public class DisasterController {
         JSONObject row = (JSONObject) disasterMsg.get(1);
         JSONArray messages = (JSONArray) row.get("row");
 
-        result = disasterService.filter(messages);
+        disasterService.postMsg(messages);
 
         return result;
     }
 
     @ResponseBody
-    @GetMapping("/date")
-    public Map<String, Object> getDate() {
+    @GetMapping("/month")
+    public Map<String, Object> getMonth(@RequestParam String month) {
+
         Map<String, Object> result = new HashMap<>();
-        disasterService.filterByDate();
+        ArrayList<DisasterInfo> infos = disasterService.filterByMonth(month);
+        result = disasterService.filter(infos);
+
+        return result;
+    }
+
+    @ResponseBody
+    @GetMapping("/day")
+    public Map<String, Object> getDay(@RequestParam String month, @RequestParam String day) {
+
+        Map<String, Object> result = new HashMap<>();
+        ArrayList<DisasterInfo> infos = disasterService.filterByDay(month, day);
+        result = disasterService.filter(infos);
 
         return result;
     }

@@ -42,8 +42,8 @@ public class DisasterService {
             factory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.NONE);
 
             String serviceKey = "BtXq5fRG2%2Bv%2B%2FEVKm3iuwIj%2BjPQnTRsO3yp6ZhtElvdMODumC6aSKDBkKtamNx9yp6YDVxes2fz5bK5FxZJI1Q%3D%3D";
-            String pageNo = "1";
-            String numOfRows = "3";
+            String pageNo = "9";
+            String numOfRows = "10";
             String type = "json";
 
             String flag = "y";
@@ -73,21 +73,28 @@ public class DisasterService {
     }
 
     /**
+     * DB 등록
+     * @param messages
+     */
+    public void postMsg(JSONArray messages) {
+        //모델 매핑
+        ArrayList<DisasterInfo> disasterInfos = disasterProvider.makeModel(messages);
+        //DB 등록
+        disasterProvider.postMsg(disasterInfos);
+
+        return;
+    }
+
+    /**
     재난 필터 로직
      **/
-    public JSONObject filter(JSONArray messages) {
+    public JSONObject filter(ArrayList<DisasterInfo> disasterInfos) {
 
         JSONObject resultState = new JSONObject();
         JSONObject resultDisaster = new JSONObject();
         JSONObject result = new JSONObject();
 
         Map<String, ArrayList<DisasterInfo>> stateFilter = null;
-
-        //모델 매핑
-        ArrayList<DisasterInfo> disasterInfos = disasterProvider.makeModel(messages);
-
-        //DB 등록
-        disasterProvider.postMsg(disasterInfos);
 
         //도 필터
         stateFilter = filterByState(disasterInfos);
@@ -102,7 +109,6 @@ public class DisasterService {
                 Map<String, ArrayList<DisasterInfo>> cityFilter = filterByCity(stateFilter.get(key));
                 JSONObject resultCity = new JSONObject();
 
-
                 for (String cityKey : cityFilter.keySet()) {
 
                     //재난 필터
@@ -112,7 +118,6 @@ public class DisasterService {
                     resultCity.put(cityKey, resultDisaster);
 
                 }
-
                 resultState.put(key, resultCity);
 
             }
@@ -190,23 +195,26 @@ public class DisasterService {
         return result;
     }
 
-    public Map<String, ArrayList<DisasterInfo>> filterByDate() {
+    /**
+     * 월 별 데이터
+     * @return
+     */
+    public ArrayList<DisasterInfo> filterByMonth(String month) {
 
-        Map<String, ArrayList<DisasterInfo>> result = new HashMap<>();
+        String s = "2021-"+ month +"-01 00:00:00";
+        String e = "2021-"+ month +"-31 23:59:59";
 
-        Timestamp start = Timestamp.valueOf("2021-03-18 00:00:00");
-        Timestamp end = Timestamp.valueOf("2021-03-20 10:20:30");
+        ArrayList<DisasterInfo> result = disasterRepository.findAllByCreateDateBetween(s, e);
 
-        String s = "2021-03-18 00:00:00";
-        String e = "2021-03-20 00:00:00";
+        return result;
+    }
 
-        ArrayList<DisasterInfoEntity> resultDate = disasterRepository.findAllByCreateDateBetween(s, e);
+    public ArrayList<DisasterInfo> filterByDay(String month, String day) {
 
-        //3
-        for (DisasterInfoEntity o : resultDate) {
+        String s = "2021-"+ month +"-"+ day +" 00:00:00";
+        String e = "2021-"+ month +"-"+ day +" 23:59:59";
 
-            System.out.println(o);
-        }
+        ArrayList<DisasterInfo> result = disasterRepository.findAllByCreateDateBetween(s, e);
 
         return result;
     }
