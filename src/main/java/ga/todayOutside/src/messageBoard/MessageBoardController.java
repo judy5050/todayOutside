@@ -6,16 +6,19 @@ import ga.todayOutside.config.BaseResponse;
 import ga.todayOutside.config.BaseResponseStatus;
 import ga.todayOutside.src.address.AddressService;
 import ga.todayOutside.src.address.model.Address;
-import ga.todayOutside.src.messageBoard.models.MessageBoard;
-import ga.todayOutside.src.messageBoard.models.PatchMessageBoardReq;
-import ga.todayOutside.src.messageBoard.models.PostMessageBoardReq;
-import ga.todayOutside.src.messageBoard.models.PostMessageBoardRes;
+import ga.todayOutside.src.messageBoard.models.*;
 import ga.todayOutside.src.user.UserInfoRepository;
 import ga.todayOutside.src.user.UserInfoService;
 import ga.todayOutside.src.user.models.UserInfo;
 import ga.todayOutside.utils.JwtService;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.sql.Time;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -54,6 +57,7 @@ public class MessageBoardController {
             //시나 구나 이런게 한가지만 들어가있을경우 구나 시 정보 +동정보 반환
             //TODO 서비스 로직으로 넘기기 (개발 얼른 끝내고 코드 수정하기)
             else{
+
                 if(address.getSecondAddressName().length()>=2&&address.getSecondAddressName().length()<=4){
                     addressMsg=address.getThirdAddressName()+" "+address.getThirdAddressName();
                 }
@@ -65,7 +69,7 @@ public class MessageBoardController {
                     addressMsg=addressMdl+" "+address.getThirdAddressName();
                 }
 
-                 messageBoard = messageBoardService.postMessageBoard(userInfo, addressMsg, postMessageBoardReq);
+                 messageBoard = messageBoardService.postMessageBoard(userInfo, addressMdl, postMessageBoardReq);
             }
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
@@ -137,6 +141,53 @@ public class MessageBoardController {
 
     }
 
+    /**
+     * 게시판 글 조회 API
+     * boardType가 heat일 경우 heart순 정렬
+     * recently 일 경우 최신순 정렬
+     */
+    @ResponseBody
+    @GetMapping("/address/{addressIdx}/messageBoardList")
+    public BaseResponse<List<GetMessageBoardHeartRes>>getMessageBoardList(@PathVariable Long addressIdx, @RequestParam("sortType")String sortType,@RequestParam("boardType") BoardType boardType, @RequestParam("page")String page){
+
+        Long userIdx;
+        Address address=null;
+        UserInfo userInfo=null;
+        String addressMsg=" ";
+        MessageBoard messageBoard;
+        String addressMdl=" ";
+        try {
+            userIdx = jwtService.getUserId();
+            userInfo = userInfoService.findByUserIdx(userIdx);
+            address = addressService.findByAddress(addressIdx, userIdx);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+
+
+        //하트순 조회
+        if(sortType.equals("heart")&&boardType.equals(BoardType.WEATHER)){
+
+            List<GetMessageBoardHeartRes> recentlyMessageBoardList = messageBoardService.getRecentlyMessageBoardList(address.getSecondAddressName(), page,boardType);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_MESSAGE_BOARD_HEART,recentlyMessageBoardList);
+
+        }
+        else if(sortType.equals("recently")&&boardType.equals(BoardType.WEATHER)){
+
+
+
+
+        }
+        else if(sortType.isEmpty()||sortType==null){
+            return new BaseResponse<>(BaseResponseStatus.FAILED_TO_POST_ADDRESS);//TODO 오류 값 수정하기 boardType를 입력하세요
+        }
+
+
+
+
+        return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_MESSAGE_BOARD_HEART);
+    }
 
 
     /**
@@ -150,5 +201,15 @@ public class MessageBoardController {
 
         return new BaseResponse<>(BaseResponseStatus.SUCCESS);
     }
+
+    @ResponseBody
+    @GetMapping("/timeTest")
+    public  String time(){
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
+        String date = simpleDateFormat.format(new Date());
+        return date;
+    }
+
 
 }

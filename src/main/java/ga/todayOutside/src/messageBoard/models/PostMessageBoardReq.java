@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 public class PostMessageBoardReq {
 
     private String msg;
+    private BoardType boardType;
 }

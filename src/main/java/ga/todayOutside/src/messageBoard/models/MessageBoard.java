@@ -59,6 +59,12 @@ public class MessageBoard extends BaseEntity {
     @Column(name="heartNum")
     private Long heartNum;
 
+    /**
+     * 게시글 종류
+     */
+    @Column(name = "boardType")
+    @Enumerated(EnumType.STRING)
+    private BoardType boardType;
 
     public MessageBoard(UserInfo userInfo,String addressMsg,String message,Long heartNum) {
         this.userInfo=userInfo;
@@ -69,4 +75,12 @@ public class MessageBoard extends BaseEntity {
     }
 
 
+    public MessageBoard(UserInfo userInfo, String addressMsg, String message, long heartNum, BoardType boardType) {
+
+        this.userInfo=userInfo;
+        this.addressMsg=addressMsg;
+        this.message=message;
+        this.heartNum=heartNum;
+        this.boardType=boardType;
+    }
 }
