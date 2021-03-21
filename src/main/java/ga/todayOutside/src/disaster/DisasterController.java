@@ -1,5 +1,8 @@
 package ga.todayOutside.src.disaster;
 
+import ga.todayOutside.config.BaseException;
+import ga.todayOutside.config.BaseResponse;
+import ga.todayOutside.config.BaseResponseStatus;
 import ga.todayOutside.src.disaster.model.DisasterInfo;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -24,7 +27,7 @@ public class DisasterController {
     }
 
     /**
-     * 재난 정보 조회 api
+     * 재난 정보 조회, DB 저장
      */
     @ResponseBody
     @GetMapping("/info")
@@ -48,23 +51,32 @@ public class DisasterController {
 
     @ResponseBody
     @GetMapping("/month")
-    public Map<String, Object> getMonth(@RequestParam String month) {
+    public BaseResponse<Map<String, Object>> getMonth(@RequestParam String month) {
 
         Map<String, Object> result = new HashMap<>();
-        ArrayList<DisasterInfo> infos = disasterService.filterByMonth(month);
-        result = disasterService.filter(infos);
 
-        return result;
+        try {
+            ArrayList<DisasterInfo> infos = disasterService.filterByMonth(month);
+            result = disasterService.filter(infos);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS_GET_DISASTER, result);
+        } catch(BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+
     }
 
     @ResponseBody
     @GetMapping("/day")
-    public Map<String, Object> getDay(@RequestParam String month, @RequestParam String day) {
+    public BaseResponse<Map<String, Object>> getDay(@RequestParam String month, @RequestParam String day) {
 
         Map<String, Object> result = new HashMap<>();
-        ArrayList<DisasterInfo> infos = disasterService.filterByDay(month, day);
-        result = disasterService.filter(infos);
 
-        return result;
+        try {
+            ArrayList<DisasterInfo> infos = disasterService.filterByDay(month, day);
+            result = disasterService.filter(infos);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS_GET_DISASTER, result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
     }
 }

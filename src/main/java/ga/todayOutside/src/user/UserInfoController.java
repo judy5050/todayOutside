@@ -81,7 +81,7 @@ public class UserInfoController {
      */
     @ResponseBody
     @PostMapping("")
-    public BaseResponse<PostUserRes> postUsers(@RequestBody PostUserReq params) throws JsonProcessingException {
+    public BaseResponse<PostUserRes> postUsers(@RequestBody PostUserReq params) {
 
         try {
             PostUserRes postUserRes = userInfoService.createUserInfo(params);
