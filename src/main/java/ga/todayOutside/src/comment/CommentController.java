@@ -43,10 +43,7 @@ public class CommentController {
             //jwt 토큰값으로 유저 확인
             userIdx = jwtService.getUserId();
             //해당 유저 존재하는지 확인
-//            userInfo=userInfoService.findByUserIdx(userIdx);
-//            if(userInfo==null){
-//
-//            }
+            userInfo=userInfoService.findByUserIdx(userIdx);
 
             commentRes = commentService.findAllByMessageId(messageBoardIdx, page);
 
@@ -54,7 +51,7 @@ public class CommentController {
             return new BaseResponse<>(exception.getStatus());
         }
 
-        return new BaseResponse<>(BaseResponseStatus.SUCCESS,commentRes);
+        return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_COMMENT_LIST,commentRes);
     }
 
     /**

@@ -39,7 +39,7 @@ public class CommentService {
         Page<Comment> comments = commentRepository.findAllByMessageId(messageBoardIdx, pageRequest);
         List<GetCommentRes> getCommentRes=comments.map(GetCommentRes::new).getContent();
         if(getCommentRes.isEmpty()){
-            throw new BaseException(BaseResponseStatus.FAILED_TO_GET_ADDRESS);// 실패코트 값 변경하
+            throw new BaseException(BaseResponseStatus.NOU_FOUND_COMMENT);
         }
 
         return getCommentRes;
