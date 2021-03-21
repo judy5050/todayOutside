@@ -15,4 +15,14 @@ public class DisasterInfo {
     private String createDate;
     private Long msgIdx;
 
+    @Override
+    public String toString() {
+        return "DisasterInfo{" +
+                "state='" + state + '\'' +
+                ", city='" + city + '\'' +
+                ", msg='" + msg + '\'' +
+                ", createDate='" + createDate + '\'' +
+                ", msgIdx=" + msgIdx +
+                '}';
+    }
 }
