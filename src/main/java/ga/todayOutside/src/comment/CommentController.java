@@ -5,11 +5,13 @@ import ga.todayOutside.config.BaseResponse;
 import ga.todayOutside.config.BaseResponseStatus;
 import ga.todayOutside.src.address.model.Address;
 import ga.todayOutside.src.comment.model.GetCommentRes;
+import ga.todayOutside.src.comment.model.PostCommentReq;
+import ga.todayOutside.src.comment.model.PostCommentRes;
 import ga.todayOutside.src.user.UserInfoService;
 import ga.todayOutside.src.user.models.UserInfo;
 import ga.todayOutside.utils.JwtService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,9 +21,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommentController {
 
+    @Autowired
     private final JwtService jwtService;
+    @Autowired
     private final UserInfoService userInfoService;
+    @Autowired
     private final CommentService commentService;
+
     /**
      * 게시글과 관련된 댓글 조회
      */
@@ -47,4 +53,37 @@ public class CommentController {
 
         return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_COMMENT_LIST,commentRes);
     }
+
+    /**
+     * 댓글 등록
+     * @param req
+     * @param messageBoardIdx
+     * @return
+     * @throws BaseException
+     */
+    @ResponseBody
+    @PostMapping("/messageBoards/{messageBoardIdx}/comment")
+    public BaseResponse<PostCommentRes> postComment(@RequestBody PostCommentReq req, @PathVariable Long messageBoardIdx) {
+
+        try {
+            PostCommentRes result = commentService.postComments(req, messageBoardIdx);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS_POST_COMMENTS, result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    @ResponseBody
+    @DeleteMapping("messageBoards/{messageBoardIdx}/comment/{commentIdx}")
+    public BaseResponse<Void> deleteComments(@RequestParam Long userIdx, @PathVariable Long messageBoardIdx,
+                                             @PathVariable Long commentIdx) {
+
+        try {
+            commentService.deleteComment(userIdx, commentIdx);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS_DELETE_COMMENTS);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
 }

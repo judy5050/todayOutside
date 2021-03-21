@@ -3,6 +3,7 @@ package ga.todayOutside.src.comment.model;
 import ga.todayOutside.config.BaseEntity;
 import ga.todayOutside.src.messageBoard.models.MessageBoard;
 import ga.todayOutside.src.user.models.UserInfo;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -46,4 +47,11 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "messageBoardIdx")
     private MessageBoard messageBoard;
 
+    @Builder
+    public Comment(UserInfo userInfo, String addressMsg, String commentMsg, MessageBoard messageBoard) {
+        this.userInfo = userInfo;
+        this.addressMsg = addressMsg;
+        this.commentMsg = commentMsg;
+        this.messageBoard = messageBoard;
+    }
 }
