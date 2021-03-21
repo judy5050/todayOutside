@@ -35,6 +35,7 @@ public enum BaseResponseStatus {
     SUCCESS_READ_MESSAGE_BOARD_HEART(true,1215,"데일리하트 순위로 게시글을 조회하는데 성공하였습니다."),
     SUCCESS_READ_MESSAGE_BOARD_RECENTLY(true,1216,"최신 순으로 게시글을 조회하는데 성공하였습니다."),
     SUCCESS_READ_MESSAGE_BOARD(true,1217,"게시글 조회애 성공하였습니다."),
+    SUCCESS_READ_COMMENT_LIST(true,1218,"게시글에 해당하는 댓글 리스트 조회에 성공하였습니다."),
 
 
 
@@ -74,6 +75,7 @@ public enum BaseResponseStatus {
     EMPTY_THIRD_ADDRESS(false, 3204, "동 정보가 비어있습니다."),
     NOT_FOUND_MESSAGE_BOARD(false, 3205, "존재하지 않는 게시글 입니다."),
     NOT_MATCH_USER_MESSAGE_BOARD(false, 3206, "해당 유저가 작성한 게시글이 아닙니다."),
+    NOU_FOUND_COMMENT(false, 3207, "게시글에 해당하는 댓글이 없습니다."),
 
 
 
