@@ -46,7 +46,7 @@ public class CommentService {
     }
 
     /**
-     * db 댓글 등록
+     * 댓글 등록
      * @return
      */
     @Transactional
@@ -91,5 +91,29 @@ public class CommentService {
         commentRepository.save(comment);
 
         return new PostCommentRes(userId, boardIdx, commentMsg);
+    }
+
+    /**
+     * 댓글 삭제
+     */
+    public void deleteComment(Long userIdx, Long commentIdx) throws BaseException {
+
+        Comment comment = null;
+
+        try {
+            comment = commentRepository.findById(commentIdx).orElse(null);
+        } catch (Exception exception) {
+            throw new BaseException(BaseResponseStatus.FAILED_TO_GET_COMMENTS);
+        }
+
+        if (comment == null) {
+            throw new BaseException(BaseResponseStatus.EMPTY_MESSAGE_COMMENTS);
+        }
+
+        if (comment.getUserInfo().getId() != userIdx) {
+            throw new BaseException(BaseResponseStatus.FAILED_TO_DELETE_COMMENTS);
+        }
+
+        commentRepository.delete(comment);
     }
 }

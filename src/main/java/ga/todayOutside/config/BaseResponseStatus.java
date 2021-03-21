@@ -39,7 +39,7 @@ public enum BaseResponseStatus {
     SUCCESS_GET_COMMENTS(true, 1301, "댓글 조회가 성공하였습니다."),
     SUCCESS_PATCH_COMMENTS(true, 1302, "댓글 수정이 성공하였습니다."),
     SUCCESS_GET_DISASTER(true, 1303, "재난정보 조회가 성공하였습니다."),
-
+    SUCCESS_DELETE_COMMENTS(true, 1304, "댓글 삭제가 성공하였습니다."),
 
 
     // 2000 : Request 오류
@@ -81,6 +81,7 @@ public enum BaseResponseStatus {
     FAILED_TO_GET_COMMENTS(false, 3301, "댓글 조회가 실패했습니다."),
     FAILED_TO_PATCH_COMMENTS(false, 3302, "댓글 수정이 실패했습니다."),
     FAILED_TO_GET_DISASTER(false, 3303, "재난 조회가 실패했습니다."),
+    FAILED_TO_DELETE_COMMENTS(false, 3304, "댓글 삭제가 실패했습니다."),
 
 
     // 4000 : Database 오류

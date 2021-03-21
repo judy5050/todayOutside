@@ -57,9 +57,16 @@ public class CommentController {
         return new BaseResponse<>(BaseResponseStatus.SUCCESS,commentRes);
     }
 
+    /**
+     * 댓글 등록
+     * @param req
+     * @param messageBoardIdx
+     * @return
+     * @throws BaseException
+     */
     @ResponseBody
     @PostMapping("/messageBoards/{messageBoardIdx}/comment")
-    public BaseResponse<PostCommentRes> postComment(@RequestBody PostCommentReq req, @PathVariable Long messageBoardIdx) throws BaseException{
+    public BaseResponse<PostCommentRes> postComment(@RequestBody PostCommentReq req, @PathVariable Long messageBoardIdx) {
 
         try {
             PostCommentRes result = commentService.postComments(req, messageBoardIdx);
@@ -67,6 +74,19 @@ public class CommentController {
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
-
     }
+
+    @ResponseBody
+    @DeleteMapping("messageBoards/{messageBoardIdx}/comment/{commentIdx}")
+    public BaseResponse<Void> deleteComments(@RequestParam Long userIdx, @PathVariable Long messageBoardIdx,
+                                             @PathVariable Long commentIdx) {
+
+        try {
+            commentService.deleteComment(userIdx, commentIdx);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS_DELETE_COMMENTS);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
 }
