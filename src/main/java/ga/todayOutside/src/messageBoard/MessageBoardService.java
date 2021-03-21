@@ -21,6 +21,19 @@ import java.util.Optional;
 public class MessageBoardService {
 
     private final MessageBoardRepository messageBoardRepository;
+
+
+        public MessageBoard getMessageBoard(Long messageBoardIdx) throws BaseException {
+            MessageBoard messageBoard = messageBoardRepository.findById(messageBoardIdx).orElse(null);
+            if(messageBoard==null){
+
+                throw new BaseException(BaseResponseStatus.NOT_FOUND_MESSAGE_BOARD);//TODO 실패코드 변경하기
+            }
+            return messageBoard;
+        }
+
+
+
 //
 //    address=new Address(userInfo,postAddressReq.getFirstAddressName(), postAddressReq.getSecondAddressName(),1);
 //            System.out.println("address = " + address.getFirstAddressName());
@@ -222,5 +235,22 @@ public class MessageBoardService {
     }
 
 
+    /**
+     * 하트 수 증가
+     */
+    @Transactional
+    public void updateHeartNumPlus(Long messageBoardIdx) {
 
+        System.out.println("messageBoardIdx = " + messageBoardIdx);
+        messageBoardRepository.setHeartNumPlus(messageBoardIdx);
+    }
+
+    /**
+     * 하트 수 감소
+     */
+    @Transactional
+    public void updateHeartNumSub(Long messageBoardIdx){
+        System.out.println("messageBoardIdx = " + messageBoardIdx);
+        messageBoardRepository.setHeartNumSub(messageBoardIdx);
+    }
 }

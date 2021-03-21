@@ -3,6 +3,8 @@ package ga.todayOutside.src.user.models;
 import ga.todayOutside.config.BaseEntity;
 import ga.todayOutside.src.address.model.Address;
 import ga.todayOutside.src.comment.model.Comment;
+import ga.todayOutside.src.heartHistory.model.HeartHistory;
+import ga.todayOutside.src.messageBoard.models.MessageBoard;
 import lombok.*;
 
 import javax.persistence.*;
@@ -96,6 +98,14 @@ public class UserInfo extends BaseEntity {
      */
     @OneToMany(mappedBy = "userInfo")
     List<Comment> comments=new ArrayList<>();
+
+    /**
+     * 하트
+     */
+    @OneToMany
+    List<HeartHistory> heartHistories=new ArrayList<>();
+
+
 
 //    @Builder
 //    public UserInfo(Long id, String nickname,

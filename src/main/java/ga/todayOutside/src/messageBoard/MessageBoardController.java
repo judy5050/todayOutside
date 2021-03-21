@@ -1,11 +1,15 @@
 package ga.todayOutside.src.messageBoard;
 
 
+import com.fasterxml.jackson.databind.ser.Serializers;
 import ga.todayOutside.config.BaseException;
 import ga.todayOutside.config.BaseResponse;
 import ga.todayOutside.config.BaseResponseStatus;
 import ga.todayOutside.src.address.AddressService;
 import ga.todayOutside.src.address.model.Address;
+import ga.todayOutside.src.heartHistory.HeartHistoryService;
+import ga.todayOutside.src.heartHistory.model.HeartHistory;
+import ga.todayOutside.src.heartHistory.model.PostHeartRes;
 import ga.todayOutside.src.messageBoard.models.*;
 import ga.todayOutside.src.user.UserInfoService;
 import ga.todayOutside.src.user.models.UserInfo;
@@ -25,7 +29,7 @@ public class MessageBoardController {
     private final MessageBoardService messageBoardService;
     private final UserInfoService userInfoService;
     private final AddressService addressService;
-
+    private final HeartHistoryService heartHistoryService;
 
     /**
      * 게시글 등록
@@ -225,6 +229,37 @@ public class MessageBoardController {
 
         return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_MESSAGE_BOARD,new GetMessageBoardReq(messageBoard));
     }
+
+    @ResponseBody
+    @GetMapping("/messageBoards/{messageBoardIdx}/heart")
+    public BaseResponse<PostHeartRes> postHeart(@PathVariable Long messageBoardIdx){
+        Long userIdx;
+        UserInfo userInfo;
+        MessageBoard messageBoard;
+        HeartHistory heartHistory;
+        MessageBoard messageBoard1;
+        try {
+            userIdx = jwtService.getUserId();
+
+            userInfo = userInfoService.findByUserIdx(userIdx);
+
+            System.out.println("userInfo = " + userInfo);
+            messageBoard= messageBoardService.getMessageBoard(messageBoardIdx);
+
+            System.out.println("messageBoard = " + messageBoard);
+
+             heartHistory = heartHistoryService.postHeart(messageBoard, userInfo);
+             messageBoard1=messageBoardService.getMessageBoard(messageBoardIdx);
+
+        }catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+
+
+
+        return new BaseResponse(BaseResponseStatus.SUCCESS_POST_HEART,new PostHeartRes(messageBoard1));
+    }
+
 
     @ResponseBody
     @GetMapping("/timeTest")

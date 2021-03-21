@@ -36,6 +36,7 @@ public enum BaseResponseStatus {
     SUCCESS_READ_MESSAGE_BOARD_RECENTLY(true,1216,"최신 순으로 게시글을 조회하는데 성공하였습니다."),
     SUCCESS_READ_MESSAGE_BOARD(true,1217,"게시글 조회애 성공하였습니다."),
     SUCCESS_READ_COMMENT_LIST(true,1218,"게시글에 해당하는 댓글 리스트 조회에 성공하였습니다."),
+    SUCCESS_POST_HEART(true,1219,"성공적으로 하트를 눌렀습니다."),
 
 
 
