@@ -37,6 +37,11 @@ public enum BaseResponseStatus {
     SUCCESS_READ_MESSAGE_BOARD(true,1217,"게시글 조회애 성공하였습니다."),
     SUCCESS_READ_COMMENT_LIST(true,1218,"게시글에 해당하는 댓글 리스트 조회에 성공하였습니다."),
     SUCCESS_POST_HEART(true,1219,"성공적으로 하트를 눌렀습니다."),
+    SUCCESS_POST_COMMENTS(true, 1300, "댓글 등록이 성공하였습니다."),
+    SUCCESS_GET_COMMENTS(true, 1301, "댓글 조회가 성공하였습니다."),
+    SUCCESS_PATCH_COMMENTS(true, 1302, "댓글 수정이 성공하였습니다."),
+    SUCCESS_GET_DISASTER(true, 1303, "재난정보 조회가 성공하였습니다."),
+    SUCCESS_DELETE_COMMENTS(true, 1304, "댓글 삭제가 성공하였습니다."),
 
 
 
@@ -56,8 +61,8 @@ public enum BaseResponseStatus {
     EMPTY_ADDRESS_ORDER(false, 2201, "변경하고 싶은 주소 순서를 입력해주세요."),
     INVALID_ADDRESS_ORDER(false, 2202, "변경하고 싶은 순서 값을 확인해주세요."),
     EMPTY_MESSAGE_BOARD(false, 2203, "게시글을 작성해주세요."),
-
-
+    EMPTY_MESSAGE_COMMENTS(false, 2300, "댓글을 작성해주세요"),
+    EMPTY_DATE(false, 2301, "월, 일을 확인해주세요"),
 
 
     // 3000 : Response 오류
@@ -77,7 +82,11 @@ public enum BaseResponseStatus {
     NOT_FOUND_MESSAGE_BOARD(false, 3205, "존재하지 않는 게시글 입니다."),
     NOT_MATCH_USER_MESSAGE_BOARD(false, 3206, "해당 유저가 작성한 게시글이 아닙니다."),
     NOU_FOUND_COMMENT(false, 3207, "게시글에 해당하는 댓글이 없습니다."),
-
+    FAILED_TO_POST_COMMENTS(false, 3300, "댓글 등록이 실패했습니다."),
+    FAILED_TO_GET_COMMENTS(false, 3301, "댓글 조회가 실패했습니다."),
+    FAILED_TO_PATCH_COMMENTS(false, 3302, "댓글 수정이 실패했습니다."),
+    FAILED_TO_GET_DISASTER(false, 3303, "재난 조회가 실패했습니다."),
+    FAILED_TO_DELETE_COMMENTS(false, 3304, "댓글 삭제가 실패했습니다."),
 
 
     // 4000 : Database 오류

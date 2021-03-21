@@ -1,5 +1,6 @@
 package ga.todayOutside.src.disaster;
 
+import ga.todayOutside.config.BaseException;
 import ga.todayOutside.src.disaster.model.DisasterInfo;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -123,8 +124,7 @@ public class DisasterService {
             }
         }
 
-        result.put("result", resultState);
-        return result;
+        return resultState;
     }
 
     /**
@@ -199,7 +199,7 @@ public class DisasterService {
      * 월 별 데이터
      * @return
      */
-    public ArrayList<DisasterInfo> filterByMonth(String month) {
+    public ArrayList<DisasterInfo> filterByMonth(String month) throws BaseException {
 
         String s = "2021-"+ month +"-01 00:00:00";
         String e = "2021-"+ month +"-31 23:59:59";
@@ -209,7 +209,7 @@ public class DisasterService {
         return result;
     }
 
-    public ArrayList<DisasterInfo> filterByDay(String month, String day) {
+    public ArrayList<DisasterInfo> filterByDay(String month, String day) throws BaseException {
 
         String s = "2021-"+ month +"-"+ day +" 00:00:00";
         String e = "2021-"+ month +"-"+ day +" 23:59:59";
