@@ -37,6 +37,7 @@ public enum BaseResponseStatus {
     SUCCESS_READ_MESSAGE_BOARD(true,1217,"게시글 조회애 성공하였습니다."),
     SUCCESS_READ_COMMENT_LIST(true,1218,"게시글에 해당하는 댓글 리스트 조회에 성공하였습니다."),
     SUCCESS_POST_HEART(true,1219,"성공적으로 하트를 눌렀습니다."),
+    SUCCESS_READ_DUST(true,1220,"미세먼지 조회에 성공하였습니다."),
     SUCCESS_POST_COMMENTS(true, 1300, "댓글 등록이 성공하였습니다."),
     SUCCESS_GET_COMMENTS(true, 1301, "댓글 조회가 성공하였습니다."),
     SUCCESS_PATCH_COMMENTS(true, 1302, "댓글 수정이 성공하였습니다."),
