@@ -32,11 +32,16 @@ public class UserInfoService {
          *userInfo 찾기
          * judy 5050 작성
          */
-        public UserInfo findByUserIdx(Long userIdx){
+        public UserInfo findByUserIdx(Long userIdx) throws BaseException {
 
-            Optional<UserInfo> userInfo;
-            userInfo= userInfoRepository.findById(userIdx);
-            return userInfo.get();
+            UserInfo userInfo;
+            userInfo= userInfoRepository.findById(userIdx).orElse(null);
+            if(userInfo==null){
+
+                throw new BaseException(BaseResponseStatus.NOT_FOUND_USER);
+
+            }
+            return userInfo;
 
         }
 

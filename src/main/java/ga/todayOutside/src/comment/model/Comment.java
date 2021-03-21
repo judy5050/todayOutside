@@ -12,10 +12,10 @@ import javax.persistence.*;
 @Data
 @Entity
 @Table(name="Comment")
-public class Comments extends BaseEntity {
+public class Comment extends BaseEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "commentIdx")
     private Long id;
 
@@ -26,7 +26,7 @@ public class Comments extends BaseEntity {
     @JoinColumn(name = "userIdx")
     private UserInfo userInfo;
 
-
+    
     /**
      * 주소
      */
