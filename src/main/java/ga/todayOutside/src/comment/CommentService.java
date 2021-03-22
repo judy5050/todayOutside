@@ -9,6 +9,7 @@ import ga.todayOutside.src.comment.model.GetCommentRes;
 import ga.todayOutside.src.comment.model.PostCommentReq;
 import ga.todayOutside.src.comment.model.PostCommentRes;
 import ga.todayOutside.src.messageBoard.MessageBoardRepository;
+import ga.todayOutside.src.messageBoard.models.GetMessageBoardRecentlyRes;
 import ga.todayOutside.src.messageBoard.models.MessageBoard;
 import ga.todayOutside.src.user.UserInfoRepository;
 import ga.todayOutside.src.user.models.UserInfo;
@@ -20,17 +21,16 @@ import org.springframework.data.querydsl.QPageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class CommentService {
 
-    @Autowired
     private  final CommentRepository commentRepository;
-    @Autowired
     private final UserInfoRepository userInfoRepository;
-    @Autowired
     private final MessageBoardRepository messageBoardRepository;
 
     @Transactional
@@ -91,6 +91,11 @@ public class CommentService {
 
         commentRepository.save(comment);
 
+        userInfo.setTalkNum(userInfo.getTalkNum() + 1);
+
+        //talk count ++
+        userInfoRepository.save(userInfo);
+
         return new PostCommentRes(userId, boardIdx, commentMsg);
     }
 
@@ -136,4 +141,37 @@ public class CommentService {
         List<GetCommentRes> getCommentRes = comment.map(GetCommentRes::new).getContent();
         return getCommentRes;
     }
+
+    /**
+     * 내가 댓글단 게시글 조
+     * @param userIdx
+     * @param start
+     * @return
+     * @throws BaseException
+     */
+    public List<GetMessageBoardRecentlyRes> getMyCommentBoards(Long userIdx, int start) throws BaseException {
+
+        Page<Comment> comment = null;
+        HashSet<Long> distinct = new HashSet<>();
+        int total = 0;
+        try {
+            PageRequest pageRequest = PageRequest.of(start, 4);
+            comment = commentRepository.findAllByUserIdx(userIdx, pageRequest);
+
+        } catch (Exception exception){
+            throw new BaseException(BaseResponseStatus.FAILED_TO_GET_COMMENTS);
+        }
+
+        List<GetMessageBoardRecentlyRes> getMessageBoardRecentlyRes = comment
+                .map(Comment::getMessageBoard)
+                .map(GetMessageBoardRecentlyRes::new)
+                .getContent();
+
+        total = getMessageBoardRecentlyRes.size();
+
+        // 중복 게사글 수정 해야함
+
+        return getMessageBoardRecentlyRes;
+    }
+
 }

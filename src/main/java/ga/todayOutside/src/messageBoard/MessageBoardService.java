@@ -2,8 +2,10 @@ package ga.todayOutside.src.messageBoard;
 
 
 import ga.todayOutside.config.BaseException;
+import ga.todayOutside.config.BaseResponse;
 import ga.todayOutside.config.BaseResponseStatus;
 import ga.todayOutside.src.messageBoard.models.*;
+import ga.todayOutside.src.user.UserInfoService;
 import ga.todayOutside.src.user.models.UserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,7 +23,7 @@ import java.util.Optional;
 public class MessageBoardService {
 
     private final MessageBoardRepository messageBoardRepository;
-
+    private final UserInfoService userInfoService;
 
         public MessageBoard getMessageBoard(Long messageBoardIdx) throws BaseException {
             MessageBoard messageBoard = messageBoardRepository.findById(messageBoardIdx).orElse(null);
@@ -243,6 +245,9 @@ public class MessageBoardService {
 
         System.out.println("messageBoardIdx = " + messageBoardIdx);
         messageBoardRepository.setHeartNumPlus(messageBoardIdx);
+
+
+
     }
 
     /**
@@ -257,13 +262,24 @@ public class MessageBoardService {
     /**
      * 작성한 모든 게시물 보기
      */
-    public List<GetMyMessageListRes> findMessageAllByUserIdx(Long userIdx,String page) {
+    public List<GetMyMessageListRes> findMessageAllByUserIdx(Long userIdx,String page) throws BaseException {
 
         PageRequest pageRequest=PageRequest.of(Integer.parseInt(page),10);
         Page<MessageBoard> messageBoardList = messageBoardRepository.findByUserIdx(userIdx, pageRequest);
+        if(messageBoardList.isEmpty()||messageBoardList.getContent()==null){
+            throw new BaseException(BaseResponseStatus.NOT_FOUND_MESSAGE_BY_USERS);
+        }
         List<GetMyMessageListRes> myMessageListRes=messageBoardList.map(GetMyMessageListRes::new).getContent();
 
 
             return  myMessageListRes;
+    }
+
+    /**
+     * 게시글 등록한 유저 찾기
+     */
+    public UserInfo findByUser(MessageBoard messageBoard) throws BaseException {
+        UserInfo userInfo = userInfoService.findByUserIdx(messageBoard.getUserInfo().getId());
+        return userInfo;
     }
 }

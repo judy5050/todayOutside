@@ -214,6 +214,6 @@ public class UserInfoController {
 
 
 
-        return  new BaseResponse(BaseResponseStatus.SUCCESS,messageAllByUserIdx);
+        return  new BaseResponse(BaseResponseStatus.SUCCESS_READ_MESSAGE_BOARD,messageAllByUserIdx);
     }
 }

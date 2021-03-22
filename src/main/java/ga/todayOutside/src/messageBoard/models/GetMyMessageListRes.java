@@ -9,10 +9,9 @@ import java.text.SimpleDateFormat;
 @Getter
 @NoArgsConstructor
 public class GetMyMessageListRes {
-    private Long messageIdx;
+    private Long messageBoardIdx;
     private String userNickName;
     private String userPicture;
-    private Long talkNum;
     private Long commentNum;
     private Long heartNum;
     private String thirdAddressName;
@@ -20,7 +19,7 @@ public class GetMyMessageListRes {
     private String msg;
 
     public GetMyMessageListRes(MessageBoard messageBoard){
-        this.messageIdx=messageBoard.getId();
+        this.messageBoardIdx=messageBoard.getId();
         this.userNickName=messageBoard.getUserInfo().getNickname();
         this.userPicture=messageBoard.getUserInfo().getPicture();
         this.commentNum=messageBoard.getComments().stream().count();
@@ -39,7 +38,6 @@ public class GetMyMessageListRes {
         this.heartNum=messageBoard.getHeartNum();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         this.date= simpleDateFormat.format(messageBoard.getCreatedAt());
-        this.talkNum=messageBoard.getUserInfo().getTalkNum();
         this.msg=messageBoard.getMessage();
 
     }
