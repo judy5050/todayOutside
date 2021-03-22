@@ -75,7 +75,8 @@ public class MessageBoardController {
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
-
+        //유저 talkNum 증가
+        userInfoService.updateUserTalk(userInfo);
         return new BaseResponse<>(BaseResponseStatus.SUCCESS_POST_MESSAGE_BOARD,new PostMessageBoardRes(messageBoard.getId()));
 
     }
@@ -136,7 +137,7 @@ public class MessageBoardController {
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
-
+        userInfoService.updateUserTalkSub(userInfo);
         return new BaseResponse<>(BaseResponseStatus.SUCCESS_DELETE_MESSAGE_BOARD);
 
 

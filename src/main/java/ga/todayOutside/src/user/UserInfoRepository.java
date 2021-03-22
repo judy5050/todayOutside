@@ -35,6 +35,17 @@ public interface UserInfoRepository extends JpaRepository<UserInfo, Integer> {
     @Query("update UserInfo u set u.heartNum=u.heartNum-1 where u.id =:userIdx")
     void updateUserHeartSub(@Param("userIdx") Long userIdx);
 
+
+    @Modifying
+    @Query("update UserInfo u set u.talkNum =u.talkNum+1 where  u.id =:userIdx")
+    void updateUserTalkPlus(@Param("userIdx") Long userIdx);
+
+
+    @Modifying
+    @Query(" update UserInfo  u set u.talkNum=u.talkNum-1 where u.id =:userIdx")
+    void updateUserTalkSub(@Param("userIdx") Long userIdx);
+
+
     //Integer delete(String email);
 
 }

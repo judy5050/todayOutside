@@ -197,5 +197,24 @@ public class UserInfoService {
     public void updateUserHeartSub(UserInfo userInfo){
         userInfoRepository.updateUserHeartSub(userInfo.getId());
     }
+
+    /**
+     * 주디
+     * 유저 이야기 수 증가
+     */
+    @Transactional
+    public void updateUserTalk(UserInfo userInfo) {
+        userInfoRepository.updateUserTalkPlus(userInfo.getId());
+    }
+
+    /**
+     * 주디
+     * 유저 이야기 수 감소
+     */
+
+    @Transactional
+    public void updateUserTalkSub(UserInfo userInfo){
+        userInfoRepository.updateUserTalkSub(userInfo.getId());
+    }
 }
 
