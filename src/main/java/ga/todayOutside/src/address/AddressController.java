@@ -45,7 +45,7 @@ public class AddressController {
      * 회원 동네 등록
      */
     @ResponseBody
-    @PostMapping("/address")
+    @PostMapping("/addresses")
     public BaseResponse<PostAddressRes> postAddress(@RequestBody PostAddressReq postAddressReq){
         Long userIdx;
         try {
@@ -79,7 +79,7 @@ public class AddressController {
 
         try {
             List<GetAddressRes> getAddressResList =addressService.addressByUserIdx(userIdx);
-            return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_ADDRESS,getAddressResList);//TODO 에러 메시지 수정하기
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_ADDRESS,getAddressResList);//
         }catch (BaseException exception){
             return new BaseResponse<>(exception.getStatus());
         }
@@ -141,19 +141,17 @@ public class AddressController {
 
         try {
             userIdx = jwtService.getUserId();
+            //user idx 와 입력받은 addressIdx 일치 여부 확인 및 address 반환
+            address = addressService.findByAddress(addressIdx, userIdx);
+
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
-
-        //user idx 와 입력받은 addressIdx 일치 여부 확인 및 address 반환
-        try {
-            address = addressService.findByAddress(addressIdx, userIdx);
-        }
-        catch (BaseException exception){
-            return new BaseResponse<>(exception.getStatus());
-        }
-
         addressService.patchAddressName(address,patchAddressNameReq);
+
+
+
+
 
 
 

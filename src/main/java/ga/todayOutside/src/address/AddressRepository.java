@@ -22,7 +22,7 @@ public interface AddressRepository extends JpaRepository<Address,Long> {
     List<Address> findByUserAddress(@Param("userIdx") Long userIdx);
 
 
-    @Query("select new ga.todayOutside.src.address.model.GetAddressRes(a.id,a.secondAddressName,a.addressOrder) from Address a")
+    @Query("select new ga.todayOutside.src.address.model.GetAddressRes(a.id,a.thirdAddressName,a.secondAddressName,a.addressOrder) from Address a")
     List<GetAddressRes> findAllByUserIdx(Long userIdx);
 
     @Query("select a from  Address a where a.userInfo.id= :userIdx and a.id =:addressIdx")

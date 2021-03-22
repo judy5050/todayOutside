@@ -112,14 +112,12 @@ public class AddressService {
             throw new BaseException(BaseResponseStatus.NOT_FOUND_USER);
         }
 
-        try {
-            address=addressRepository.findAllByUserIdx(userIdx);
-            if(address.isEmpty()){
-                throw new BaseException(BaseResponseStatus.FAILED_TO_GET_ADDRESS);
-            }
-        }catch (Exception exception){
-            throw new BaseException(BaseResponseStatus.FAILED_TO_GET_ADDRESS);//TODO 오류 값 바꾸기
+        address=addressRepository.findAllByUserIdx(userIdx);
+        if(address.isEmpty()){
+            throw new BaseException(BaseResponseStatus.FAILED_TO_GET_ADDRESS);
         }
+
+
 
         return  address;
     }
@@ -178,6 +176,10 @@ public class AddressService {
         }
         if(patchAddressNameReq.getSecondAddressName()!=null){
             address1.setSecondAddressName(patchAddressNameReq.getSecondAddressName());
+        }
+        if(patchAddressNameReq.getThirdAddressName()!=null){
+            System.out.println("thirdAddressName");
+            address1.setThirdAddressName(patchAddressNameReq.getThirdAddressName());
         }
 
         addressRepository.save(address1);

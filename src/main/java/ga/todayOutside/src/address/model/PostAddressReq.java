@@ -10,7 +10,7 @@ public class PostAddressReq {
 
     private  String firstAddressName;
     private String secondAddressName;
-
+    private String thirdAddressName;
 
 
 }

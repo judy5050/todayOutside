@@ -104,9 +104,11 @@ public class DustService {
         //element 변수 선언
         JSONObject element=null;
 
+
         for (int i = 0; i < parse_items.size(); i++) {
             element = (JSONObject) parse_items.get(0);
             System.out.println("element = " + element);
+            System.out.println("parse_items = " + parse_items.get(1));
             break;
 
 
@@ -115,7 +117,9 @@ public class DustService {
         }
 //        System.out.println("element.get(\"pm10Grade\") = " + element.get("pm10Grade"));
         String dustValue=element.get("pm10Grade1h").toString();
-        m.put("status", dustValue);
+        String fineDust=element.get("pm25Grade1h").toString();
+        m.put("fineDust",fineDust);
+        m.put("dust", dustValue);
         System.out.println(m);
 
         return m;

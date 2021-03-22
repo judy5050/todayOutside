@@ -337,9 +337,9 @@ public class WeatherTest {
 
         String time=Integer.toString(currentTime)+Integer.toString(min);
 
-        String baseDate = "20210308";	//조회하고싶은 날짜
-        String baseTime = "2000";    //API 제공 시간
-        String dataType = "static";    //타입 xml, json
+        String baseDate = "20210322";	//조회하고싶은 날짜
+        String baseTime = "2300";    //API 제공 시간
+        String dataType = "json";    //타입 xml, json
         String numOfRows = "255";    //한 페이지 결과 수
         //79일경우 딱 겹치지 x는 하루 시간 조회 가능
 
@@ -924,6 +924,15 @@ public class WeatherTest {
 //                }
 //            }
 //        }
+
+
+    }
+
+    @ResponseBody
+    @GetMapping("/lowtest")
+    public void lowtest() throws IOException, ParseException {
+        test();
+        per3today();
 
 
     }
