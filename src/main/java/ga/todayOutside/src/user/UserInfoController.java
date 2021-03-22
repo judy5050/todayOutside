@@ -191,6 +191,7 @@ public class UserInfoController {
 
     /**
      * 내 게시글 조회 API
+     * 주디
      */
     @ResponseBody
     @GetMapping("/messageList")
