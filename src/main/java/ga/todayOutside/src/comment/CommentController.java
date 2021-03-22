@@ -8,6 +8,7 @@ import ga.todayOutside.src.comment.model.Comment;
 import ga.todayOutside.src.comment.model.GetCommentRes;
 import ga.todayOutside.src.comment.model.PostCommentReq;
 import ga.todayOutside.src.comment.model.PostCommentRes;
+import ga.todayOutside.src.messageBoard.models.GetMessageBoardRecentlyRes;
 import ga.todayOutside.src.user.UserInfoService;
 import ga.todayOutside.src.user.models.UserInfo;
 import ga.todayOutside.utils.JwtService;
@@ -104,6 +105,22 @@ public class CommentController {
         try {
             List<GetCommentRes> getCommentRes = commentService.getMyComments(userId, start);
             return new BaseResponse<>(BaseResponseStatus.SUCCESS_GET_COMMENTS, getCommentRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+
+    }
+
+    /**
+     * 내 댓글단 게시글 조회
+     */
+    @ResponseBody
+    @GetMapping("/comments/board")
+    public BaseResponse<List<GetMessageBoardRecentlyRes>> getMyCommentBoard(@RequestParam Long userId, @RequestParam int start) {
+
+        try {
+            List<GetMessageBoardRecentlyRes> getMessageBoardRecentlyRes = commentService.getMyCommentBoards(userId, start);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS_GET_COMMENTS, getMessageBoardRecentlyRes);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
