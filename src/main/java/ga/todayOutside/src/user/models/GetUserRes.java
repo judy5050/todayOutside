@@ -10,5 +10,8 @@ public class GetUserRes {
     private final Long userId;
     private final String email;
     private final String nickname;
-
+    private final String noticeAlarmStatus;
+    private final Long heartNum;
+    private final Long talkNum;
+    private final String profile;
 }
