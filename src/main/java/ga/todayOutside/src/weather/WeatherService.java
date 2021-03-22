@@ -1381,9 +1381,25 @@ public class WeatherService {
 
         JSONObject jsonObject;
         String localCode = null;
-        String fistSub2 = firstAddressName.substring(0, 2);
-        String fistSub3 = firstAddressName.substring(0, 3);
-        String fistSub4 = firstAddressName.substring(0, 4);
+        String fistSub2="";
+        String fistSub3=" ";
+        String fistSub4=" ";
+        if(firstAddressName.length()<=2){
+             fistSub2 = firstAddressName.substring(0, 2);
+
+
+        }
+        else if(firstAddressName.length()<=3){
+             fistSub2 = firstAddressName.substring(0, 2);
+             fistSub3 = firstAddressName.substring(0, 3);
+        }
+        else if(firstAddressName.length()<=4){
+             fistSub2 = firstAddressName.substring(0, 2);
+             fistSub3 = firstAddressName.substring(0, 3);
+             fistSub4 = firstAddressName.substring(0, 4);
+
+        }
+
 
         String secondSub2 = secondAddressName.substring(0, 2);
         System.out.println("fistSub2 = " + fistSub2);
