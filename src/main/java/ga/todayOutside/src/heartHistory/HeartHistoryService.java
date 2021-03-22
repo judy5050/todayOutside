@@ -1,10 +1,12 @@
 package ga.todayOutside.src.heartHistory;
 
 
+import ga.todayOutside.config.BaseException;
 import ga.todayOutside.src.heartHistory.model.HeartHistory;
 import ga.todayOutside.src.heartHistory.model.HeartStatus;
 import ga.todayOutside.src.messageBoard.MessageBoardService;
 import ga.todayOutside.src.messageBoard.models.MessageBoard;
+import ga.todayOutside.src.user.UserInfoService;
 import ga.todayOutside.src.user.models.UserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,9 +21,10 @@ public class HeartHistoryService {
 
     private  final HeartHistoryRepository heartHistoryRepository;
     private final MessageBoardService messageBoardService;
+    private final UserInfoService userInfoService;
 
     @Transactional
-    public HeartHistory postHeart(MessageBoard messageBoard, UserInfo userInfo) {
+    public HeartHistory postHeart(MessageBoard messageBoard, UserInfo userInfo) throws BaseException {
 
         HeartHistory heartHistory = heartHistoryRepository.findByUserIdxAndMessageIdx(userInfo.getId(), messageBoard.getId()).orElse(null);
         HeartHistory heartHistory1=null;
@@ -33,6 +36,13 @@ public class HeartHistoryService {
              heartHistory1=new HeartHistory(userInfo,messageBoard,HeartStatus.Y);
             heartHistoryRepository.save(heartHistory1);
             messageBoardService.updateHeartNumPlus(heartHistory1.getMessageBoard().getId());
+
+            //messageBoard 를 작성한 유저를 찾는다.
+            UserInfo userInfo1 = messageBoardService.findByUser(messageBoard);
+
+            //유저를 찾아, 해당 유저의 heartNum 수 증가
+            userInfoService.updateUserHeartPlus(userInfo1);
+
         }
         //하트 눌리기 전
         else if(heartHistory.getHeartStatus().toString().equals("N")){
@@ -42,6 +52,12 @@ public class HeartHistoryService {
              heartHistory1  = heartHistoryRepository.findById(heartHistory.getId()).orElse(null);
             heartHistory1.setHeartStatus(HeartStatus.Y);
             heartHistoryRepository.save(heartHistory1);
+
+            //messageBoard 를 작성한 유저를 찾는다.
+            UserInfo userInfo1 = messageBoardService.findByUser(messageBoard);
+
+            //유저를 찾아, 해당 유저의 heartNum 수 증가
+            userInfoService.updateUserHeartPlus(userInfo1);
 
 
         }
@@ -54,6 +70,12 @@ public class HeartHistoryService {
              heartHistory1  = heartHistoryRepository.findById(heartHistory.getId()).orElse(null);
             heartHistory1.setHeartStatus(HeartStatus.N);
             heartHistoryRepository.save(heartHistory1);
+
+            //messageBoard 를 작성한 유저를 찾는다.
+            UserInfo userInfo1 = messageBoardService.findByUser(messageBoard);
+
+            //유저를 찾아, 해당 유저의 heartNum 수 증가
+            userInfoService.updateUserHeartSub(userInfo1);
 
 
         }

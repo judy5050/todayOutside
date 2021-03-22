@@ -26,11 +26,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommentService {
 
-    @Autowired
     private  final CommentRepository commentRepository;
-    @Autowired
     private final UserInfoRepository userInfoRepository;
-    @Autowired
     private final MessageBoardRepository messageBoardRepository;
 
     @Transactional

@@ -1,8 +1,6 @@
 package ga.todayOutside.src.user;
 
 import ga.todayOutside.utils.JwtService;
-import ga.todayOutside.config.secret.Secret;
-import ga.todayOutside.utils.AES128;
 import ga.todayOutside.config.BaseException;
 import ga.todayOutside.config.BaseResponseStatus;
 import ga.todayOutside.src.user.models.*;
@@ -11,8 +9,7 @@ import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -186,5 +183,19 @@ public class UserInfoService {
 //        }
     }
 
+    //주디
+    //유저 하트 수 증가
+    @Transactional
+    public void updateUserHeartPlus(UserInfo userInfo1) {
+       userInfoRepository.updateUserHeartPlus(userInfo1.getId());
+
+    }
+
+    //주디
+    //유저 하트 수 감소
+    @Transactional
+    public void updateUserHeartSub(UserInfo userInfo){
+        userInfoRepository.updateUserHeartSub(userInfo.getId());
+    }
 }
 

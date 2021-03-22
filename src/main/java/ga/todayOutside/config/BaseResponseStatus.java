@@ -88,6 +88,7 @@ public enum BaseResponseStatus {
     FAILED_TO_PATCH_COMMENTS(false, 3302, "댓글 수정이 실패했습니다."),
     FAILED_TO_GET_DISASTER(false, 3303, "재난 조회가 실패했습니다."),
     FAILED_TO_DELETE_COMMENTS(false, 3304, "댓글 삭제가 실패했습니다."),
+    NOT_FOUND_MESSAGE_BY_USERS(false, 3305, "유저가 작성한 게시글이 없습니다."),
 
 
     // 4000 : Database 오류
