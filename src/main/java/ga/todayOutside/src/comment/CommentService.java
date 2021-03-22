@@ -116,4 +116,13 @@ public class CommentService {
 
         commentRepository.delete(comment);
     }
+
+    /**
+     * 내 댓글 조회
+     */
+    public GetCommentRes getMyComments(Long userIdx) {
+
+        commentRepository.findAllByUserIdx(userIdx);
+
+    }
 }

@@ -4,6 +4,7 @@ import ga.todayOutside.config.BaseException;
 import ga.todayOutside.config.BaseResponse;
 import ga.todayOutside.config.BaseResponseStatus;
 import ga.todayOutside.src.address.model.Address;
+import ga.todayOutside.src.comment.model.Comment;
 import ga.todayOutside.src.comment.model.GetCommentRes;
 import ga.todayOutside.src.comment.model.PostCommentReq;
 import ga.todayOutside.src.comment.model.PostCommentRes;
@@ -73,6 +74,13 @@ public class CommentController {
         }
     }
 
+    /**
+     * 댓글 삭제
+     * @param userIdx
+     * @param messageBoardIdx
+     * @param commentIdx
+     * @return
+     */
     @ResponseBody
     @DeleteMapping("messageBoards/{messageBoardIdx}/comment/{commentIdx}")
     public BaseResponse<Void> deleteComments(@RequestParam Long userIdx, @PathVariable Long messageBoardIdx,
@@ -86,4 +94,19 @@ public class CommentController {
         }
     }
 
+    /**
+     * 내 댓글 조회
+     */
+    @ResponseBody
+    @GetMapping("/comments")
+    public BaseResponse<List<GetCommentRes>> getMyComments(@RequestParam Long userId) {
+
+        try {
+            GetCommentRes getCommentRes = commentService.getMyComments(userId);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS_GET_COMMENTS);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+
+    }
 }
