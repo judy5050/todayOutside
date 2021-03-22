@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.querydsl.QPageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -120,9 +121,19 @@ public class CommentService {
     /**
      * 내 댓글 조회
      */
-    public GetCommentRes getMyComments(Long userIdx) {
+    public List<GetCommentRes> getMyComments(Long userIdx, int start) throws BaseException {
 
-        commentRepository.findAllByUserIdx(userIdx);
+        Page<Comment> comment = null;
 
+        try {
+            PageRequest pageRequest = PageRequest.of(start, 4);
+            comment = commentRepository.findAllByUserIdx(userIdx, pageRequest);
+
+        } catch (Exception exception){
+            throw new BaseException(BaseResponseStatus.FAILED_TO_GET_COMMENTS);
+        }
+
+        List<GetCommentRes> getCommentRes = comment.map(GetCommentRes::new).getContent();
+        return getCommentRes;
     }
 }

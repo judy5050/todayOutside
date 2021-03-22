@@ -99,11 +99,11 @@ public class CommentController {
      */
     @ResponseBody
     @GetMapping("/comments")
-    public BaseResponse<List<GetCommentRes>> getMyComments(@RequestParam Long userId) {
+    public BaseResponse<List<GetCommentRes>> getMyComments(@RequestParam Long userId, @RequestParam int start) {
 
         try {
-            GetCommentRes getCommentRes = commentService.getMyComments(userId);
-            return new BaseResponse<>(BaseResponseStatus.SUCCESS_GET_COMMENTS);
+            List<GetCommentRes> getCommentRes = commentService.getMyComments(userId, start);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS_GET_COMMENTS, getCommentRes);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
