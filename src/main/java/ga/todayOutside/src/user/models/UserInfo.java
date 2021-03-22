@@ -105,8 +105,11 @@ public class UserInfo extends BaseEntity {
     @OneToMany
     List<HeartHistory> heartHistories=new ArrayList<>();
 
-
-
+    /**
+     *  나눔 이야기 수
+     */
+    @Column(name = "talkNum")
+    private Long talkNum;
 //    @Builder
 //    public UserInfo(Long id, String nickname,
 //                    String email, String noticeAlarmStatus,

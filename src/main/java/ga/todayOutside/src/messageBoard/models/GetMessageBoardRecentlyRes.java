@@ -35,7 +35,7 @@ public class GetMessageBoardRecentlyRes {
         }
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        this.date= simpleDateFormat.format(messageBoard.getCreatedAt()); ;
+        this.date= simpleDateFormat.format(messageBoard.getCreatedAt());
         this.commentNum=messageBoard.getComments().size();
         this.picture= messageBoard.getUserInfo().getPicture();
 

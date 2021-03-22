@@ -4,31 +4,41 @@ package ga.todayOutside.src.user;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import ga.todayOutside.config.BaseException;
 import ga.todayOutside.config.BaseResponse;
+import ga.todayOutside.src.messageBoard.MessageBoardService;
+import ga.todayOutside.src.messageBoard.models.GetMyMessageListRes;
 import ga.todayOutside.utils.JwtService;
 import ga.todayOutside.config.BaseResponseStatus;
 import ga.todayOutside.src.user.models.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
 
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/users")
 public class UserInfoController {
+
+    //변경후 (judy)
     private final UserInfoProvider userInfoProvider;
     private final UserInfoService userInfoService;
     private final JwtService jwtService;
     private final KakaoService kakaoService;
+    private final MessageBoardService messageBoardService;
 
-    @Autowired
-    public UserInfoController(UserInfoProvider userInfoProvider, UserInfoService userInfoService, JwtService jwtService, KakaoService kakaoService) {
-        this.userInfoProvider = userInfoProvider;
-        this.userInfoService = userInfoService;
-        this.jwtService = jwtService;
-        this.kakaoService = kakaoService;
-    }
+    // 변경전
+//    @Autowired
+//    public UserInfoController(UserInfoProvider userInfoProvider, UserInfoService userInfoService, JwtService jwtService, KakaoService kakaoService) {
+//        this.userInfoProvider = userInfoProvider;
+//        this.userInfoService = userInfoService;
+//        this.jwtService = jwtService;
+//        this.kakaoService = kakaoService;
+//
+//    }
 
     /**
      * 회원 전체 조회 API
@@ -179,5 +189,30 @@ public class UserInfoController {
         }
     }
 
-    
+    /**
+     * 내 게시글 조회 API
+     */
+    @ResponseBody
+    @GetMapping("/messageList")
+    public BaseResponse<List<GetMyMessageListRes>> getUserMessageList(@RequestParam("page")String page)
+    {
+        Long userIdx;
+        UserInfo userInfo;
+        List<GetMyMessageListRes> messageAllByUserIdx;
+        try {
+
+            userIdx = jwtService.getUserId();
+            userInfo = userInfoService.findByUserIdx(userIdx);
+            messageAllByUserIdx = messageBoardService.findMessageAllByUserIdx(userIdx, page);
+
+
+        }catch (BaseException exception){
+
+            return new BaseResponse<>(exception.getStatus());
+        }
+
+
+
+        return  new BaseResponse(BaseResponseStatus.SUCCESS,messageAllByUserIdx);
+    }
 }

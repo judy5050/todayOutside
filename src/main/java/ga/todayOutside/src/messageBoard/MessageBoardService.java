@@ -253,4 +253,17 @@ public class MessageBoardService {
         System.out.println("messageBoardIdx = " + messageBoardIdx);
         messageBoardRepository.setHeartNumSub(messageBoardIdx);
     }
+
+    /**
+     * 작성한 모든 게시물 보기
+     */
+    public List<GetMyMessageListRes> findMessageAllByUserIdx(Long userIdx,String page) {
+
+        PageRequest pageRequest=PageRequest.of(Integer.parseInt(page),10);
+        Page<MessageBoard> messageBoardList = messageBoardRepository.findByUserIdx(userIdx, pageRequest);
+        List<GetMyMessageListRes> myMessageListRes=messageBoardList.map(GetMyMessageListRes::new).getContent();
+
+
+            return  myMessageListRes;
+    }
 }
