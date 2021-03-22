@@ -62,8 +62,12 @@ public class UserInfoProvider {
         Long id = userInfo.getId();
         String email = userInfo.getEmail();
         String nickname = userInfo.getNickname();
+        String noticeAlarmStatus = userInfo.getNoticeAlarmStatus();
+        Long heartNum = userInfo.getHeartNum();
+        Long talkNum = userInfo.getTalkNum();
+        String profile = userInfo.getPicture();
 
-        return new GetUserRes(id, email, nickname);
+        return new GetUserRes(id, email, nickname, noticeAlarmStatus, heartNum, talkNum, profile);
     }
 
     /**

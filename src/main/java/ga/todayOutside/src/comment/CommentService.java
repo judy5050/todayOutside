@@ -90,11 +90,7 @@ public class CommentService {
                 .build();
 
         commentRepository.save(comment);
-
-        userInfo.setTalkNum(userInfo.getTalkNum() + 1);
-
-        //talk count ++
-        userInfoRepository.save(userInfo);
+        userInfoRepository.updateUserTalkPlus(userInfo.getId());
 
         return new PostCommentRes(userId, boardIdx, commentMsg);
     }
@@ -120,7 +116,9 @@ public class CommentService {
             throw new BaseException(BaseResponseStatus.FAILED_TO_DELETE_COMMENTS);
         }
 
+        userInfoRepository.updateUserTalkSub(comment.getUserInfo().getId());
         commentRepository.delete(comment);
+
     }
 
     /**
