@@ -14,7 +14,7 @@ import java.util.List;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment,Long> {
 
-    @Query("select c  from Comment  c where  c.messageBoard.id =:messageIdx order by c.createdAt desc ")
+    @Query("select c  from Comment  c where  c.messageBoard.id =:messageIdx order by c.createdAt asc ")
     Page<Comment> findAllByMessageId(@Param("messageIdx")Long messageIdx, Pageable pageable);
 
     @Query("select c  from Comment  c where  c.userInfo.id =:userIdx order by c.createdAt desc ")
