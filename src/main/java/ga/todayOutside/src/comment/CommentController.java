@@ -83,16 +83,20 @@ public class CommentController {
      * @return
      */
     @ResponseBody
-    @DeleteMapping("messageBoards/{messageBoardIdx}/comment/{commentIdx}")
+    @DeleteMapping("/messageBoards/{messageBoardIdx}/comment/{commentIdx}")
     public BaseResponse<Void> deleteComments(@RequestParam Long userIdx, @PathVariable Long messageBoardIdx,
                                              @PathVariable Long commentIdx) {
 
+
         try {
-            commentService.deleteComment(userIdx, commentIdx);
+            UserInfo userInfo = commentService.deleteComment(userIdx, commentIdx);
+            userInfoService.updateUserTalkSub(userInfo);
+
             return new BaseResponse<>(BaseResponseStatus.SUCCESS_DELETE_COMMENTS);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
+
     }
 
     /**

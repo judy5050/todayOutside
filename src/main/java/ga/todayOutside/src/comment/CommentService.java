@@ -29,8 +29,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommentService {
 
+    @Autowired
     private  final CommentRepository commentRepository;
+    @Autowired
     private final UserInfoRepository userInfoRepository;
+    @Autowired
     private final MessageBoardRepository messageBoardRepository;
 
     @Transactional
@@ -90,11 +93,7 @@ public class CommentService {
                 .build();
 
         commentRepository.save(comment);
-
-        userInfo.setTalkNum(userInfo.getTalkNum() + 1);
-
-        //talk count ++
-        userInfoRepository.save(userInfo);
+        userInfoRepository.updateUserTalkPlus(userInfo.getId());
 
         return new PostCommentRes(userId, boardIdx, commentMsg);
     }
@@ -102,12 +101,14 @@ public class CommentService {
     /**
      * 댓글 삭제
      */
-    public void deleteComment(Long userIdx, Long commentIdx) throws BaseException {
+    public UserInfo deleteComment(Long userIdx, Long commentIdx) throws BaseException {
 
         Comment comment = null;
+        UserInfo userInfo = null;
 
         try {
             comment = commentRepository.findById(commentIdx).orElse(null);
+            userInfo = comment.getUserInfo();
         } catch (Exception exception) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_GET_COMMENTS);
         }
@@ -121,6 +122,8 @@ public class CommentService {
         }
 
         commentRepository.delete(comment);
+
+        return userInfo;
     }
 
     /**
