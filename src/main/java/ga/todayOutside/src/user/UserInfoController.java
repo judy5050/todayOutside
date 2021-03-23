@@ -191,6 +191,7 @@ public class UserInfoController {
 
     /**
      * 내 게시글 조회 API
+     * 주디
      */
     @ResponseBody
     @GetMapping("/messageList")
@@ -213,6 +214,6 @@ public class UserInfoController {
 
 
 
-        return  new BaseResponse(BaseResponseStatus.SUCCESS,messageAllByUserIdx);
+        return  new BaseResponse(BaseResponseStatus.SUCCESS_READ_MESSAGE_BOARD,messageAllByUserIdx);
     }
 }

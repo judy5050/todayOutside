@@ -49,4 +49,7 @@ public interface MessageBoardRepository extends JpaRepository<MessageBoard,Long>
     @Query("update MessageBoard m set m.heartNum=m.heartNum-1 where m.id=:messageBoardIdx")
     int setHeartNumSub(@Param("messageBoardIdx")Long messageBoardIdx);
 
+    @Query("select m from MessageBoard m where m.id =:messageBoardIdx")
+    MessageBoard findByMessage(@Param("messageBoardIdx") Long messageBoardIdx);
+
 }
