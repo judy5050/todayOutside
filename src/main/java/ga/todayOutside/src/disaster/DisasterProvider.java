@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -121,6 +122,13 @@ public class DisasterProvider {
         return;
     }
 
+    public Set<String> alarmSeting() {
+
+        Set<String> result = null;
+
+        return result;
+    }
+
     /**
      * 필터 키워드
      * @param msg
@@ -129,11 +137,14 @@ public class DisasterProvider {
 
     public String findKeyword(String msg) {
         String result = "";
-        /* 필터 키워드
-        질병, 지진, 태풍, 해일, 홍수, 호우, 강풍, 대설, 한파, 폭염, 건조, 황사
 
-        미세먼지, 화재,
+        /* 필터 키워드 - 넘버링
+
+        질병 - 1, 지진 - 2, 태풍 - 3, 해일 - 4, 홍수 - 5, 호우 - 6, 강풍 - 7, 대설- 8, 한파 -9, 폭염 - 10, 건조 - 11, 황사 - 12
+        미세먼지 13, 화재 14, 민방공 15,물 16  테러 17, 방사능 18, 감염병 19, 미세먼지 20, 화재 21 , 수질 22, 위험 23
+
          */
+
         //질병
         Pattern pattern1 = Pattern.compile("[\\w\\W\\d\\D\\s\\S]*코로나+[\\w\\W\\d\\D\\s\\S]*");
         Pattern pattern2 = Pattern.compile("[\\w\\W\\d\\D\\s\\S]*방역+[\\w\\W\\d\\D\\s\\S]*");
