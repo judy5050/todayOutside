@@ -13,6 +13,7 @@ import ga.todayOutside.src.user.UserInfoService;
 import ga.todayOutside.src.user.models.UserInfo;
 import ga.todayOutside.utils.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -116,10 +117,10 @@ public class CommentController {
      */
     @ResponseBody
     @GetMapping("/comments/board")
-    public BaseResponse<List<GetMessageBoardRecentlyRes>> getMyCommentBoard(@RequestParam Long userId, @RequestParam int start) {
+    public BaseResponse<JSONObject> getMyCommentBoard(@RequestParam Long userId, @RequestParam int start) {
 
         try {
-            List<GetMessageBoardRecentlyRes> getMessageBoardRecentlyRes = commentService.getMyCommentBoards(userId, start);
+            JSONObject getMessageBoardRecentlyRes = commentService.getMyCommentBoards(userId, start);
             return new BaseResponse<>(BaseResponseStatus.SUCCESS_GET_COMMENTS, getMessageBoardRecentlyRes);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
