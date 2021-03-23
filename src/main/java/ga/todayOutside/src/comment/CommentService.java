@@ -14,6 +14,7 @@ import ga.todayOutside.src.messageBoard.models.MessageBoard;
 import ga.todayOutside.src.user.UserInfoRepository;
 import ga.todayOutside.src.user.models.UserInfo;
 import lombok.RequiredArgsConstructor;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +25,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -152,11 +154,13 @@ public class CommentService {
      * @return
      * @throws BaseException
      */
-    public List<GetMessageBoardRecentlyRes> getMyCommentBoards(Long userIdx, int start) throws BaseException {
+    public JSONObject getMyCommentBoards(Long userIdx, int start) throws BaseException {
 
+        JSONObject result = new JSONObject();
         Page<Comment> comment = null;
-        HashSet<Long> distinct = new HashSet<>();
+        HashSet<Long> index = new HashSet<>();
         int total = 0;
+
         try {
             PageRequest pageRequest = PageRequest.of(start, 4);
             comment = commentRepository.findAllByUserIdx(userIdx, pageRequest);
@@ -172,9 +176,21 @@ public class CommentService {
 
         total = getMessageBoardRecentlyRes.size();
 
-        // 중복 게사글 수정 해야함
+        //중복 게시글 필터링
+        getMessageBoardRecentlyRes = getMessageBoardRecentlyRes
+                .stream().filter( a -> {
+                    if (index.contains(a.getMessageBoardIdx())) {
+                        return false;
+                    }
 
-        return getMessageBoardRecentlyRes;
+                    index.add(a.getMessageBoardIdx());
+                    return true;
+                }).collect(Collectors.toList());
+
+        result.put("total", total);
+        result.put("boards", getMessageBoardRecentlyRes);
+
+        return result;
     }
 
 }
