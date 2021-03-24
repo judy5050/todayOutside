@@ -108,6 +108,7 @@ public class AddressService {
         UserInfo userInfo;
         try {
             userInfo=userInfoRepository.findById(userIdx).get();
+            System.out.println("userInfo = " + userInfo.getNickname());
         }catch (Exception exception){
             throw new BaseException(BaseResponseStatus.NOT_FOUND_USER);
         }
