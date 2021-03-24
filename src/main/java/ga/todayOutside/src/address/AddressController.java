@@ -72,6 +72,7 @@ public class AddressController {
         Long userIdx;
         try {
             userIdx =jwtService.getUserId();
+            System.out.println("userIdx = " + userIdx);
 
         }catch (BaseException exception){
             return new BaseResponse<>(exception.getStatus());
