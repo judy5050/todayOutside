@@ -180,6 +180,7 @@ public class DisasterService {
      */
     public Map<String, ArrayList<DisasterInfo>> filterByDisaster(ArrayList<DisasterInfo> disasterInfos) {
 
+
         Map<String, ArrayList<DisasterInfo>> result = new HashMap<>();
 
         for (DisasterInfo o : disasterInfos) {

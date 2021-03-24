@@ -2,10 +2,8 @@ package ga.todayOutside.src.address.model;
 
 import ga.todayOutside.config.BaseEntity;
 import ga.todayOutside.src.user.models.UserInfo;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import javax.persistence.JoinColumn;
@@ -67,7 +65,10 @@ public class Address  extends BaseEntity {
     @Column(name = "addressOrder")
     private Integer addressOrder;
 
-
+    /**
+     * paul 수정 builder 추가
+     */
+    @Builder
     public Address(UserInfo userInfo, String firstAddressName, String secondAddressName, Integer addressOrder) {
         this.userInfo=userInfo;
         this.firstAddressName=firstAddressName;

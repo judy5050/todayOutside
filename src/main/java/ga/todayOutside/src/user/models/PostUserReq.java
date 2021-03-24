@@ -10,21 +10,21 @@ public class PostUserReq {
     private String email;
     private String nickname;
     private String picture;
-    private String mainLocation;
-    private String subLocation;
+    private String firstAddressName;
+    private String secondAddressName;
     private Long snsId;
 
     @Builder
     public PostUserReq(String email,
                        String nickname, String picture,
-                       String mainLocation, String subLocation,
+                       String firstAddressName, String secondAddressName,
                        Long snsId) {
 
         this.email = email;
         this.nickname = nickname;
         this.picture = picture;
-        this.mainLocation = mainLocation;
-        this.subLocation = subLocation;
+        this.firstAddressName = firstAddressName;
+        this.secondAddressName = secondAddressName;
         this.snsId = snsId;
     }
 }

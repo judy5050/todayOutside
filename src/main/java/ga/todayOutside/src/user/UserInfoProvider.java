@@ -1,25 +1,29 @@
 package ga.todayOutside.src.user;
 
 import ga.todayOutside.config.BaseException;
+import ga.todayOutside.src.address.AddressRepository;
+import ga.todayOutside.src.address.model.Address;
+import ga.todayOutside.src.address.model.GetAddressRes;
 import ga.todayOutside.utils.JwtService;
 import ga.todayOutside.config.BaseResponseStatus;
 import ga.todayOutside.src.user.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class UserInfoProvider {
     private final UserInfoRepository userInfoRepository;
-        private final JwtService jwtService;
+    private final JwtService jwtService;
+    private final AddressRepository addressRepository;
 
     @Autowired
-    public UserInfoProvider(UserInfoRepository userInfoRepository, JwtService jwtService) {
+    public UserInfoProvider(UserInfoRepository userInfoRepository, JwtService jwtService, AddressRepository addressRepository) {
         this.userInfoRepository = userInfoRepository;
         this.jwtService = jwtService;
+        this.addressRepository = addressRepository;
     }
 
     /**
@@ -67,7 +71,10 @@ public class UserInfoProvider {
         Long talkNum = userInfo.getTalkNum();
         String profile = userInfo.getPicture();
 
-        return new GetUserRes(id, email, nickname, noticeAlarmStatus, heartNum, talkNum, profile);
+        List<GetAddressRes> address = addressRepository.findAllByUserIdx(id);
+
+        System.out.println(address);
+        return new GetUserRes(id, email, nickname, noticeAlarmStatus, heartNum, talkNum, profile, address);
     }
 
     /**
@@ -102,7 +109,7 @@ public class UserInfoProvider {
         } catch (Exception ignored) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_GET_USER);
         }
-        System.out.println(userInfo);
+
         // 2. 존재하는 회원인지 확인
         if (userInfo == null || !userInfo.getIsDeleted().equals("N")) {
             throw new BaseException(BaseResponseStatus.NOT_FOUND_USER);

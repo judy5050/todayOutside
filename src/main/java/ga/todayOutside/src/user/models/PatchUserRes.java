@@ -8,5 +8,4 @@ import lombok.Getter;
 @AllArgsConstructor
 public class PatchUserRes {
     private final Long userId;
-    private final String jwt;
 }
