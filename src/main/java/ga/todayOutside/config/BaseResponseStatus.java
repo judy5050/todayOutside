@@ -40,6 +40,8 @@ public enum BaseResponseStatus {
     SUCCESS_READ_DUST(true,1220,"미세먼지 조회에 성공하였습니다."),
     SUCCESS_HOME_WEATHER(true, 1221, "홈 화면 날씨 조회를 성공하였습니다"),
     SUCCESS_HOME_WEATHER_MESSAGE(true, 1222, "홈 화면 게시판 조회를 성공하였습니다."),
+    NEW_KAKAO_USERS(true, 1223, "카카오 신규 회원입니다."),
+    SUCCESS_KAKAO_LOGIN(true, 1224, "카카오 로그인 성공."),
     SUCCESS_POST_COMMENTS(true, 1300, "댓글 등록이 성공하였습니다."),
     SUCCESS_GET_COMMENTS(true, 1301, "댓글 조회가 성공하였습니다."),
     SUCCESS_PATCH_COMMENTS(true, 1302, "댓글 수정이 성공하였습니다."),
@@ -65,8 +67,10 @@ public enum BaseResponseStatus {
     EMPTY_ADDRESS_ORDER(false, 2201, "변경하고 싶은 주소 순서를 입력해주세요."),
     INVALID_ADDRESS_ORDER(false, 2202, "변경하고 싶은 순서 값을 확인해주세요."),
     EMPTY_MESSAGE_BOARD(false, 2203, "게시글을 작성해주세요."),
+    INVALID_KAKAO(false, 2204, "유효하지 않은 access-token입니다."),
     EMPTY_MESSAGE_COMMENTS(false, 2300, "댓글을 작성해주세요"),
     EMPTY_DATE(false, 2301, "월, 일을 확인해주세요"),
+
 
 
     // 3000 : Response 오류
