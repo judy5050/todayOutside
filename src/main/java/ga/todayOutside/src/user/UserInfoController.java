@@ -92,7 +92,7 @@ public class UserInfoController {
     @ResponseBody
     @PostMapping("")
     public BaseResponse<PostUserRes> postUsers(@RequestBody PostUserReq params) {
-
+        System.out.println("dfasdf");
         try {
             PostUserRes postUserRes = userInfoService.createUserInfo(params);
             return new BaseResponse<>(BaseResponseStatus.SUCCESS_POST_USER, postUserRes);
@@ -113,6 +113,7 @@ public class UserInfoController {
     public BaseResponse<PatchUserRes> patchUsers(@RequestBody PatchUserReq parameters) throws BaseException {
 
         Long id = jwtService.getUserId();
+
         try {
             UserInfo userInfo = userInfoProvider.retrieveUserInfoByUserId(id);
             PatchUserRes patchUserRes = userInfoService.updateUserInfo(id, parameters, userInfo);
@@ -122,7 +123,6 @@ public class UserInfoController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
-
 
     /**
      * 로그인 API
@@ -174,16 +174,21 @@ public class UserInfoController {
     }
 
     /**
-     * JWT 검증 API
+     * 자동 로그 API
      * [GET] /users/jwt
      * @return BaseResponse<Void>
      */
     @GetMapping("/jwt")
-    public BaseResponse<Void> jwt() {
+    public BaseResponse<PostLoginRes> jwt() {
         try {
             Long userId = jwtService.getUserId();
-            userInfoProvider.retrieveUserInfo(userId);
-            return new BaseResponse<>(BaseResponseStatus.SUCCESS_JWT);
+            UserInfo userInfo = userInfoService.findByUserIdx(userId);
+
+            PostLoginRes postLoginRes = new PostLoginRes(
+                    userId, userInfo.getEmail(),
+                    userInfo.getSnsId());
+
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS_JWT, postLoginRes);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
@@ -216,4 +221,24 @@ public class UserInfoController {
 
         return  new BaseResponse(BaseResponseStatus.SUCCESS_READ_MESSAGE_BOARD,messageAllByUserIdx);
     }
+
+    /**
+     * 알람 설정 on off
+     */
+    @PostMapping("/alarm")
+    public BaseResponse<Void> alarm(@RequestParam boolean notice, @RequestParam boolean disaster) {
+
+        UserInfo userInfo = null;
+
+        try {
+            Long userId = jwtService.getUserId();
+            userInfo = userInfoService.findByUserIdx(userId);
+            userInfoService.changeAlarm(userInfo, notice, disaster);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+
+    }
+
 }

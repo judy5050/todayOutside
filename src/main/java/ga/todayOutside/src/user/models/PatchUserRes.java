@@ -8,4 +8,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public class PatchUserRes {
     private final Long userId;
+    private final String nickname;
+    private final String picture;
+    private final String email;
+
 }
