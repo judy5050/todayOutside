@@ -1,5 +1,7 @@
 package ga.todayOutside.src.user;
 
+import ga.todayOutside.src.address.AddressRepository;
+import ga.todayOutside.src.address.model.Address;
 import ga.todayOutside.utils.JwtService;
 import ga.todayOutside.config.BaseException;
 import ga.todayOutside.config.BaseResponseStatus;
@@ -17,12 +19,14 @@ public class UserInfoService {
     private final UserInfoRepository userInfoRepository;
     private final UserInfoProvider userInfoProvider;
     private final JwtService jwtService;
+    private final AddressRepository addressRepository;
 
     @Autowired
-    public UserInfoService(UserInfoRepository userInfoRepository, UserInfoProvider userInfoProvider, JwtService jwtService) {
+    public UserInfoService(UserInfoRepository userInfoRepository, UserInfoProvider userInfoProvider, JwtService jwtService, AddressRepository addressRepository) {
         this.userInfoRepository = userInfoRepository;
         this.userInfoProvider = userInfoProvider;
         this.jwtService = jwtService;
+        this.addressRepository = addressRepository;
     }
 
         /**
@@ -52,7 +56,6 @@ public class UserInfoService {
         UserInfo existsUserInfo = null;
         try {
             // 1-1. 이미 존재하는 회원이 있는지 조회
-            System.out.println("회원 조회");
             existsUserInfo = userInfoProvider.retrieveUserInfoBySnsId(postUserReq.getSnsId());
         } catch (BaseException exception) {
             // 1-2. 이미 존재하는 회원이 없다면 그대로 진행
@@ -70,8 +73,8 @@ public class UserInfoService {
         String nickname = postUserReq.getNickname();
         String picture = postUserReq.getPicture();
         Long snsId = postUserReq.getSnsId();
-        String mainLocation = postUserReq.getMainLocation();
-        String subLocation = postUserReq.getSubLocation();
+        String firstAddressName = postUserReq.getFirstAddressName();
+        String secondAddressName = postUserReq.getSecondAddressName();
         String noticeAlarmStatus = "Y";
         String disasterAlarmStatus = "Y";
         Long heartNum = (long) 0;
@@ -82,16 +85,7 @@ public class UserInfoService {
         } catch (Exception ignored) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_POST_USER);
         }
-        //수정전
-//        UserInfo userInfo = UserInfo.builder()
-//                .email(email).nickname(nickname)
-//                .userMainLocation(mainLocation).userSubLocation(subLocation)
-//                .picture(picture).snsId(snsId)
-//                .noticeAlarmStatus(noticeAlarmStatus).disasterAlarmStatus(disasterAlarmStatus)
-//                .heartNum(heartNum).isDeleted(isDeleted)
-//                .build();
 
-        //수정후
         UserInfo userInfo = UserInfo.builder()
                 .email(email).nickname(nickname)
                 .picture(picture).snsId(snsId)
@@ -99,9 +93,17 @@ public class UserInfoService {
                 .heartNum(heartNum).isDeleted(isDeleted)
                 .build();
 
+        Address address = Address.builder()
+                .userInfo(userInfo)
+                .firstAddressName(firstAddressName)
+                .secondAddressName(secondAddressName)
+                .addressOrder(1)
+                .build();
+
         // 3. 유저 정보 저장
         try {
             userInfo = userInfoRepository.save(userInfo);
+            addressRepository.save(address);
         } catch (Exception exception) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_POST_USER);
         }
@@ -126,32 +128,14 @@ public class UserInfoService {
             String email = patchUserReq.getEmail();
             String nickname = patchUserReq.getNickname();
             String picture = patchUserReq.getPicture();
-            String noticeAlarmStatus = patchUserReq.getNoticeAlarmStatus();
-            String disasterAlarmStatus = patchUserReq.getDisasterAlarmStatus();
-            String userMainLocation = patchUserReq.getUserMainLocation();
-            String userSubLocation = patchUserReq.getUserSubLocation();
 
-            //수정전
-//            userInfo.setEmail(email);
-//            userInfo.setNickname(nickname);
-//            userInfo.setPicture(picture);
-//            userInfo.setNoticeAlarmStatus(noticeAlarmStatus);
-//            userInfo.setDisasterAlarmStatus(disasterAlarmStatus);
-//            userInfo.setUserMainLocation(userMainLocation);
-//            userInfo.setUserSubLocation(userSubLocation);
-
-            //수정후
             userInfo.setEmail(email);
             userInfo.setNickname(nickname);
             userInfo.setPicture(picture);
-            userInfo.setNoticeAlarmStatus(noticeAlarmStatus);
-            userInfo.setDisasterAlarmStatus(disasterAlarmStatus);
 
-
-            String jwt = jwtService.createJwt(userInfo.getId());
             userInfoRepository.save(userInfo);
 
-            return new PatchUserRes(userId, jwt);
+            return new PatchUserRes(userId);
         } catch (Exception ignored) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_PATCH_USER);
         }

@@ -13,10 +13,6 @@ public class PatchUserReq {
 
     private String nickname;
     private String email;
-    private String noticeAlarmStatus;
-    private String disasterAlarmStatus;
-    private String userMainLocation;
-    private String userSubLocation;
     private String picture;
 
 }

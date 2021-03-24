@@ -13,10 +13,11 @@ import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PUBLIC) // Unit Test 를 위해 PUBLIC
 @EqualsAndHashCode(callSuper = false)
-@Setter // from lombok
+@Getter
+@Setter
 @Entity // 필수, Class 를 Database Table화 해주는 것이다
 @Table(name = "UserInfo") // Table 이름을 명시해주지 않으면 class 이름을 Table 이름으로 대체한다.
-@Getter
+
 public class UserInfo extends BaseEntity {
     /**
      * 유저 ID
@@ -102,7 +103,7 @@ public class UserInfo extends BaseEntity {
     /**
      * 하트
      */
-    @OneToMany
+    @OneToMany(mappedBy = "userInfo")
     List<HeartHistory> heartHistories=new ArrayList<>();
 
     /**
