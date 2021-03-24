@@ -5,6 +5,7 @@ import ga.todayOutside.config.BaseResponse;
 import ga.todayOutside.config.BaseResponseStatus;
 import ga.todayOutside.src.address.AddressService;
 import ga.todayOutside.src.address.model.Address;
+import ga.todayOutside.src.user.UserInfoService;
 import ga.todayOutside.src.weather.model.GetTodayNowRes;
 import ga.todayOutside.src.weather.model.GetWeeklyReq;
 import ga.todayOutside.src.weather.model.GetWeeklyRes;
@@ -28,6 +29,7 @@ public class WeatherController {
     private final WeatherService weatherService;
     private  final JwtService jwtService;
     private final AddressService addressService;
+    private final UserInfoService userInfoService;
 
     /**
      *오늘 날씨 조회 리스트
@@ -202,7 +204,14 @@ public class WeatherController {
           return  new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_WEEKLY_HIGH_LOW_VALUE,result);//:TODO 성공 코드 바꾸기
     }
 
-
+    /**
+     *
+     * @param addressIdx
+     * @return
+     * @throws IOException
+     * @throws ParseException
+     * 주간 강수확률 밑 날씨
+     */
     @ResponseBody
     @GetMapping("/address/{addressIdx}/weekly-weathers")
     public BaseResponse<Map> data(@PathVariable  Long addressIdx) throws IOException, ParseException {
@@ -241,6 +250,40 @@ public class WeatherController {
 
         return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_WEEKLY_RAIN_WEATHER,weeklyForecastResult);
     }
+
+    /**
+     * 홈 화면용 날씨 데이터
+     */
+    @ResponseBody
+    @GetMapping("/homeWeather")
+    public BaseResponse<ArrayList> home(){
+
+        Long userIdx;
+        Address address;
+        Map allAddressesByUserIdx=null;
+        JSONArray allAddressesByUserIdx1;
+        ArrayList allAddressesByUserIdx2=null;
+
+        try {
+            userIdx = jwtService.getUserId();
+            userInfoService.findByUserIdx(userIdx);
+
+             allAddressesByUserIdx2 = addressService.getAllAddressesByUserIdx(userIdx);
+
+
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        return new BaseResponse<>(BaseResponseStatus.SUCCESS_HOME_WEATHER, allAddressesByUserIdx2);
+    }
+
 
 
 

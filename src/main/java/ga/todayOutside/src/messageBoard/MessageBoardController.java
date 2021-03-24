@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ser.Serializers;
 import ga.todayOutside.config.BaseException;
 import ga.todayOutside.config.BaseResponse;
 import ga.todayOutside.config.BaseResponseStatus;
+import ga.todayOutside.src.address.AddressRepository;
 import ga.todayOutside.src.address.AddressService;
 import ga.todayOutside.src.address.model.Address;
 import ga.todayOutside.src.heartHistory.HeartHistoryService;
@@ -15,9 +16,12 @@ import ga.todayOutside.src.user.UserInfoService;
 import ga.todayOutside.src.user.models.UserInfo;
 import ga.todayOutside.utils.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.json.simple.parser.ParseException;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -30,7 +34,7 @@ public class MessageBoardController {
     private final UserInfoService userInfoService;
     private final AddressService addressService;
     private final HeartHistoryService heartHistoryService;
-
+    private final AddressRepository addressRepository;
     /**
      * 게시글 등록
      */
@@ -231,6 +235,10 @@ public class MessageBoardController {
         return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_MESSAGE_BOARD,new GetMessageBoardReq(messageBoard));
     }
 
+    /**
+     *하트 등록
+     *
+     * */
     @ResponseBody
     @GetMapping("/messageBoards/{messageBoardIdx}/heart")
     public BaseResponse<PostHeartRes> postHeart(@PathVariable Long messageBoardIdx){
@@ -261,6 +269,48 @@ public class MessageBoardController {
         return new BaseResponse(BaseResponseStatus.SUCCESS_POST_HEART,new PostHeartRes(messageBoard1));
     }
 
+    @ResponseBody
+    @GetMapping("/homeMessageBoard")
+    public BaseResponse<ArrayList> homeTalk(){
+
+        Long userIdx;
+        UserInfo userInfo;
+        MessageBoard messageBoard;
+        HeartHistory heartHistory;
+        MessageBoard messageBoard1;
+        List<Address> address=null;
+        ArrayList arrayList=new ArrayList();
+        try {
+            //유저 정보 받기
+            userIdx = jwtService.getUserId();
+            userInfo = userInfoService.findByUserIdx(userIdx);
+            address = addressRepository.findByUserAddress(userIdx);
+            if(address.size()==0){
+                throw new BaseException(BaseResponseStatus.FAILED_TO_GET_ADDRESS);
+            }
+            else{
+                for(int i=0;i<address.size();i++){
+                    System.out.println("i = " + i);
+                    address.get(i).getId();
+                    arrayList.addAll( messageBoardService.getRecentlyTop1(address.get(i).getSecondAddressName()));
+                    if(arrayList.size()-1!=i){
+                        arrayList.add(new GetMessageBoardRecentlyRes("N"));
+
+                    }
+                }
+
+            }
+
+
+
+
+        }catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+        return  new BaseResponse<>(BaseResponseStatus.SUCCESS_HOME_WEATHER_MESSAGE,arrayList);
+
+
+    }
 
     @ResponseBody
     @GetMapping("/timeTest")

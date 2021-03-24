@@ -18,15 +18,17 @@ import java.util.List;
 @Repository
 public interface AddressRepository extends JpaRepository<Address,Long> {
 
-    @Query("select a from Address a where a.userInfo.id= :userIdx")
+    @Query("select a from Address a where a.userInfo.id= :userIdx order by a.addressOrder asc ")
     List<Address> findByUserAddress(@Param("userIdx") Long userIdx);
 
 
-    @Query("select new ga.todayOutside.src.address.model.GetAddressRes(a.id,a.thirdAddressName,a.secondAddressName,a.addressOrder) from Address a where a.userInfo.id =:userIdx")
+    @Query("select new ga.todayOutside.src.address.model.GetAddressRes(a.id,a.thirdAddressName,a.secondAddressName) from Address a where a.userInfo.id =:userIdx order by a.addressOrder asc ")
     List<GetAddressRes> findAllByUserIdx(@Param("userIdx")  Long userIdx);
 
     @Query("select a from  Address a where a.userInfo.id= :userIdx and a.id =:addressIdx")
     List<Address> findByUserIdxAndAddressIdx(@Param("userIdx") Long userIdx,@Param("addressIdx") Long addressIdx);
+
+
 
 
 //    @Query("select Address from UserInfo u join fetch u.addressList  where u.id=:userIdx ")

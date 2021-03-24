@@ -11,9 +11,9 @@ public class GetAddressRes {
     private Long addressIdx;
     private String secondAddressName;
     private String thirdAddressName;
-    private Integer addressOrder;
 
-    public GetAddressRes(Long addressIdx,String thirdAddressName,String secondAddressName,Integer addressOrder){
+
+    public GetAddressRes(Long addressIdx,String thirdAddressName,String secondAddressName){
         this.addressIdx=addressIdx;
         int index=0;
         if(secondAddressName.matches(".*시.*")){
@@ -24,14 +24,11 @@ public class GetAddressRes {
         }
         if(thirdAddressName!=null){
 
-
             this.thirdAddressName=thirdAddressName;
         }else{
             this.thirdAddressName="없음";
         }
 
-
-        this.addressOrder=addressOrder;
     }
 
 }

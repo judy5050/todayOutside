@@ -2,11 +2,13 @@ package ga.todayOutside.src.messageBoard.models;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.text.SimpleDateFormat;
 
 @Getter
 @NoArgsConstructor
+@Setter
 public class GetMessageBoardRecentlyRes {
 
     private Long messageBoardIdx;
@@ -17,10 +19,16 @@ public class GetMessageBoardRecentlyRes {
     private Long heartNum;
     private int commentNum; //댓글 수
     private String date;
-
+    private String isExistent;
 
 
     public GetMessageBoardRecentlyRes(MessageBoard messageBoard) {
+        if(messageBoard==null){
+            this.isExistent="N";
+        }
+        else{
+            this.isExistent="Y";
+        }
         this.messageBoardIdx=messageBoard.getId();
         this.userNickName=messageBoard.getUserInfo().getNickname();
         this.msg= messageBoard.getMessage();
@@ -41,5 +49,9 @@ public class GetMessageBoardRecentlyRes {
 
 
 
+    }
+
+    public GetMessageBoardRecentlyRes(String isExistent) {
+        this.isExistent=isExistent;
     }
 }

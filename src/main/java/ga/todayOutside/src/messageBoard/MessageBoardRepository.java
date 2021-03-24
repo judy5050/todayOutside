@@ -32,6 +32,8 @@ public interface MessageBoardRepository extends JpaRepository<MessageBoard,Long>
     @Query("select m from MessageBoard  m where m.addressMsg like  %:filter%  and m.boardType =:boardType order by m.createdAt desc ")
     Page<MessageBoard> findByAddressRecentlyMsg(@Param("filter") String filter, Pageable pageable,@Param("boardType") BoardType boardType);
 
+
+
 //    @Modifying(clearAutomatically = true)
 //    @Query(" update MessageBoard m set m.heartNum = m.heartNum+1  where m.id =: messageBoardIdx ")
 //    int setHeartNumPlus(@Param("messageBoardIdx") Long messageBoardIdx);
