@@ -865,7 +865,7 @@ public class WeatherService {
      */
 
 
-    Map getTodayWeatherNow(String x,String y) throws IOException, ParseException {
+    public Map getTodayWeatherNow(String x,String y) throws IOException, ParseException {
 
 
         date();
@@ -1001,7 +1001,8 @@ public class WeatherService {
 
         //시간 확인
         getTodayWeatherMaxHour(baseTime);
-        System.out.println("fcstTime = " + fcstTime);
+//        System.out.println("fcstTime = " + fcstTime);
+        System.out.println("nx = " + nx);
         System.out.println("parse_body = " + parse_body);
         for (int i = 0; i < parse_item.size(); i++) {
             element = (JSONObject) parse_item.get(i);
@@ -1016,7 +1017,7 @@ public class WeatherService {
             }
 
         }
-
+        todayWeatherNowCount=0;
         return nowWeatherResult;
     }
 

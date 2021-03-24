@@ -130,7 +130,7 @@ public class AddressController {
      }
 
     /**
-     * 회원 동네 이름 수정
+     * 회원 구 이름 수정
      */
 
     @ResponseBody

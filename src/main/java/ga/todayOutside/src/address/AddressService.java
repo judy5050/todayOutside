@@ -2,12 +2,15 @@ package ga.todayOutside.src.address;
 
 
 
+import com.fasterxml.jackson.databind.ser.Serializers;
 import ga.todayOutside.config.BaseException;
 import ga.todayOutside.config.BaseResponseStatus;
 import ga.todayOutside.src.address.model.*;
+import ga.todayOutside.src.dust.DustService;
 import ga.todayOutside.src.user.UserInfoRepository;
 import ga.todayOutside.src.user.UserInfoService;
 import ga.todayOutside.src.user.models.UserInfo;
+import ga.todayOutside.src.weather.WeatherService;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -33,12 +36,15 @@ import java.util.*;
 public class AddressService {
 
 
-    final AddressRepository addressRepository;
-    final UserInfoService userInfoService;
-    final UserInfoRepository userInfoRepository;
+    private final AddressRepository addressRepository;
+    private final UserInfoService userInfoService;
+    private final UserInfoRepository userInfoRepository;
+    private final WeatherService weatherService;
+    private final DustService dustService;
      Map<String,String> thirdAddressResult =new LinkedHashMap<>();
      JSONObject jsonObject=new JSONObject();
      JSONArray jsonArray=new JSONArray();
+    ArrayList<Map> weatherList=new ArrayList<>();
     /**
      *회원 주소 등록
      */
@@ -177,6 +183,7 @@ public class AddressService {
         }
         if(patchAddressNameReq.getSecondAddressName()!=null){
             address1.setSecondAddressName(patchAddressNameReq.getSecondAddressName());
+            address1.setThirdAddressName(null);
         }
         if(patchAddressNameReq.getThirdAddressName()!=null){
             System.out.println("thirdAddressName");
@@ -336,13 +343,74 @@ public class AddressService {
     }
 
     @Transactional
-    public void postThirdAddressName(Long addressIdx,PostThirdAddressNameReq postThirdAddressNameReq) {
+    public void postThirdAddressName(Long addressIdx,PostThirdAddressNameReq postThirdAddressNameReq) throws BaseException {
 
         Address address = addressRepository.findById(addressIdx).orElse(null);
+        if(postThirdAddressNameReq.getThirdAddressName()==null){
+            throw  new BaseException(BaseResponseStatus.EMPTY_THIRD_ADDRESS);
+        }
         address.setThirdAddressName(postThirdAddressNameReq.getThirdAddressName());
         addressRepository.save(address);
 
 
 
     }
+
+    /**
+     *
+     * @param userIdx
+     * 유저 Idx로 주소값 받기
+     */
+    public ArrayList getAllAddressesByUserIdx(Long userIdx) throws IOException, ParseException,BaseException {
+        //관련 address 를 받음
+        JSONArray jsonArray=new JSONArray();
+        List<Address> addresses = addressRepository.findByUserAddress(userIdx);
+        System.out.println("addresses = " + addresses.size());
+        for(int i=0;i<addresses.size();i++){
+            Map<String,String> homeWeather=null;
+            Long addressIdx = addresses.get(i).getId();
+            String firstAddressName=addresses.get(i).getFirstAddressName();
+            String secondAddressName=addresses.get(i).getSecondAddressName();
+
+            // 시,도 구 정보 받아 nx ny로 좌표 변경
+
+            Map<String, String> nxNy = weatherService.convertNxNy(firstAddressName, secondAddressName);
+
+            //x,y 값 얻기
+            String nx=nxNy.get("x");
+            String ny=nxNy.get("y");
+            postWeatherList(nx,ny,secondAddressName);
+//            postWeatherNow(nx,ny);
+
+
+
+
+        }
+
+        return weatherList;
+    }
+
+    /**
+     * 오늘의 최고 최저 기온 정보 리스트로 넘김
+     */
+    public void postWeatherList(String nx,String ny,String secondAddressName) throws IOException, ParseException {
+        Map<String,String> homeWeather=new HashMap<>();
+        homeWeather.putAll(weatherService.getTodayWeatherHighAndLow(nx, ny));
+        System.out.println("현재 날씨 하늘 정보 조회 함수 ");
+        homeWeather.putAll(weatherService.getTodayWeatherNow(nx,ny));
+        homeWeather.putAll(dustService.getDust(secondAddressName));
+        System.out.println("homeWeather = " + homeWeather.toString());
+         weatherList.add(homeWeather);
+    }
+
+//    /**
+//     * 현재 날씨 하늘 기온 정보 넘기기
+//     */
+//
+//    public void postWeatherNow(String nx,String ny) throws IOException, ParseException {
+//        Map<String,String> weatherNow=new HashMap<>();
+//        weatherNow.putAll( weatherService.getTodayWeatherNow(nx, ny));
+//        System.out.println("homeWeather = " + weatherNow.toString());
+//        weatherList.add(weatherNow);
+//    }
 }
