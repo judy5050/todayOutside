@@ -4,6 +4,7 @@ import ga.todayOutside.config.BaseException;
 import ga.todayOutside.src.address.AddressRepository;
 import ga.todayOutside.src.address.model.Address;
 import ga.todayOutside.src.address.model.GetAddressRes;
+import ga.todayOutside.src.address.model.PostAddressRes;
 import ga.todayOutside.utils.JwtService;
 import ga.todayOutside.config.BaseResponseStatus;
 import ga.todayOutside.src.user.models.*;
@@ -73,7 +74,6 @@ public class UserInfoProvider {
 
         List<GetAddressRes> address = addressRepository.findAllByUserIdx(id);
 
-        System.out.println(address);
         return new GetUserRes(id, email, nickname, noticeAlarmStatus, heartNum, talkNum, profile, address);
     }
 
@@ -92,7 +92,8 @@ public class UserInfoProvider {
 
         // 4. PostLoginRes 변환하여 return
         Long id = userInfo.getId();
-        return new PostLoginRes(id, jwt);
+        return new PostLoginRes(id, userInfo.getEmail(),
+                userInfo.getSnsId());
     }
 
     /**
@@ -142,5 +143,16 @@ public class UserInfoProvider {
         return userInfo;
     }
 
+    /**
+     * 닉네임 중복 조회
+     * 중복일 경우 false 리턴
+     * @param name
+     * @return
+     */
+    public boolean checkDuplication(String name) {
+        UserInfo userInfo = userInfoRepository.findByNickname(name).orElse(null);
+        if (userInfo != null) return false;
+        return true;
+    }
 
 }

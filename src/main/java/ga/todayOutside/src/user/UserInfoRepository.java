@@ -22,6 +22,7 @@ public interface UserInfoRepository extends JpaRepository<UserInfo, Integer> {
     Optional<UserInfo> findById(Long id);
     Integer deleteById(Long userId);
     Optional<UserInfo> save(PatchUserReq patchUserReq);
+    Optional<UserInfo> findByNickname(String nickname);
 
     //주디 작성
     //유저 하트수 증가

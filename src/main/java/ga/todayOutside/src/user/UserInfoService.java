@@ -1,7 +1,9 @@
 package ga.todayOutside.src.user;
 
+import com.fasterxml.jackson.databind.ser.Serializers;
 import ga.todayOutside.src.address.AddressRepository;
 import ga.todayOutside.src.address.model.Address;
+import ga.todayOutside.src.address.model.PostAddressReq;
 import ga.todayOutside.utils.JwtService;
 import ga.todayOutside.config.BaseException;
 import ga.todayOutside.config.BaseResponseStatus;
@@ -12,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 @Service
@@ -63,8 +67,12 @@ public class UserInfoService {
                 throw exception;
             }
         }
+
+        // 중복된 닉네임 조회 중복시 false 리턴
+        boolean duplication = userInfoProvider.checkDuplication(postUserReq.getNickname());
+
         // 1-3. 이미 존재하는 회원이 있다면 return DUPLICATED_USER
-        if (existsUserInfo != null) {
+        if (existsUserInfo != null || !duplication ) {
             throw new BaseException(BaseResponseStatus.DUPLICATED_USER);
         }
 
@@ -73,8 +81,7 @@ public class UserInfoService {
         String nickname = postUserReq.getNickname();
         String picture = postUserReq.getPicture();
         Long snsId = postUserReq.getSnsId();
-        String firstAddressName = postUserReq.getFirstAddressName();
-        String secondAddressName = postUserReq.getSecondAddressName();
+        List<PostAddressReq> postAddressReqs = postUserReq.getAddressInfos();
         String noticeAlarmStatus = "Y";
         String disasterAlarmStatus = "Y";
         Long heartNum = (long) 0;
@@ -93,17 +100,27 @@ public class UserInfoService {
                 .heartNum(heartNum).isDeleted(isDeleted)
                 .build();
 
-        Address address = Address.builder()
-                .userInfo(userInfo)
-                .firstAddressName(firstAddressName)
-                .secondAddressName(secondAddressName)
-                .addressOrder(1)
-                .build();
+
 
         // 3. 유저 정보 저장
         try {
             userInfo = userInfoRepository.save(userInfo);
-            addressRepository.save(address);
+
+            //주소 저장 로직
+            int orderCnt = 1;
+            for (PostAddressReq postAddressReq : postAddressReqs) {
+
+                Address address = Address.builder()
+                        .userInfo(userInfo)
+                        .firstAddressName(postAddressReq.getFirstAddressName())
+                        .secondAddressName(postAddressReq.getSecondAddressName())
+                        .addressOrder(orderCnt++)
+                        .build();
+
+                addressRepository.save(address);
+
+            }
+
         } catch (Exception exception) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_POST_USER);
         }
@@ -113,7 +130,7 @@ public class UserInfoService {
 
         // 5. UserInfoLoginRes로 변환하여 return
         Long id = userInfo.getId();
-        return new PostUserRes(id, jwt);
+        return new PostUserRes(id, email, snsId, jwt);
     }
 
     /**
@@ -133,9 +150,15 @@ public class UserInfoService {
             userInfo.setNickname(nickname);
             userInfo.setPicture(picture);
 
+
+            boolean duplication = userInfoProvider.checkDuplication(nickname);
+            if (!duplication) {
+                throw new BaseException(BaseResponseStatus.DUPLICATED_USER);
+            }
+
             userInfoRepository.save(userInfo);
 
-            return new PatchUserRes(userId);
+            return new PatchUserRes(userId, nickname, picture, email);
         } catch (Exception ignored) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_PATCH_USER);
         }
@@ -165,6 +188,25 @@ public class UserInfoService {
 //        } catch (Exception ignored) {
 //            throw new BaseException(BaseResponseStatus.FAILED_TO_DELETE_USER);
 //        }
+    }
+    public void changeAlarm(UserInfo userInfo, boolean notice, boolean disaster) throws BaseException {
+
+        if (notice) {
+            if (userInfo.getNoticeAlarmStatus().equals("Y")) {
+                userInfo.setNoticeAlarmStatus("N");
+            } else {
+                userInfo.setNoticeAlarmStatus("Y");
+            }
+        }
+
+        if (disaster) {
+            if (userInfo.getDisasterAlarmStatus().equals("Y")) {
+                userInfo.setDisasterAlarmStatus("N");
+            } else {
+                userInfo.setDisasterAlarmStatus("Y");
+            }
+        }
+        userInfoRepository.save(userInfo);
     }
 
     //주디
