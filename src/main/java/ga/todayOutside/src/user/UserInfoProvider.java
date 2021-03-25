@@ -68,7 +68,7 @@ public class UserInfoProvider {
         String email = userInfo.getEmail();
         String nickname = userInfo.getNickname();
         String noticeAlarmStatus = userInfo.getNoticeAlarmStatus();
-        Long heartNum = userInfo.getHeartNum();
+        String heartNum = userInfo.getHeartNum().toString();
         Long talkNum = userInfo.getTalkNum();
         String profile = userInfo.getPicture();
 
