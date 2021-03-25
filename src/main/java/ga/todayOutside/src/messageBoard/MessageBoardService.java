@@ -208,6 +208,45 @@ public class MessageBoardService {
         return getMessageBoardRecentlyRes;
     }
 
+    /**
+     * 재난 관련 게시글 최신순 한개 조회
+     */
+
+    public List<GetMessageBoardRecentlyRes> getRecentlyTop1DisasterTalk(String secondAddressName) {
+
+        int index;
+        String filter;
+        List<GetMessageBoardRecentlyRes> getMessageBoardRecentlyRes=null;
+        GetMessageBoardRecentlyRes messageBoardRecentlyRes=null;
+        //게시글 필터링 구 정보 받기
+        if(secondAddressName.length()>=2&&secondAddressName.length()<=4){
+            filter=secondAddressName;
+        }
+        //시 구 두개 다 합쳐있을경우 구 정보만 받기
+        else{
+            index=secondAddressName.indexOf("시");
+            filter=secondAddressName.substring(index+1);
+            System.out.println("index = " + index);
+
+        }
+        System.out.println("filter = " + filter);
+
+        PageRequest pageRequest=PageRequest.of(0,1);
+        Page <MessageBoard> messageBoards= messageBoardRepository.findByAddressRecentlyMsg(filter,pageRequest,BoardType.DISASTER);
+        getMessageBoardRecentlyRes=messageBoards.map(GetMessageBoardRecentlyRes::new).getContent();
+        if(getMessageBoardRecentlyRes.isEmpty()){
+            System.out.println("데이터 없음");
+//            messageBoardRecentlyRes=new GetMessageBoardRecentlyRes("Y");
+//            System.out.println("messageBoardRecentlyRes.getIsExistent() = " + messageBoardRecentlyRes.getIsExistent());
+//            getMessageBoardRecentlyRes.add(messageBoardRecentlyRes);
+        }
+
+
+
+//        System.out.println("getMessageBoardHeartRes1 = " + getMessageBoardHeartRes1);
+        return getMessageBoardRecentlyRes;
+    }
+
 
     /**
      * 재난 관련 하트순

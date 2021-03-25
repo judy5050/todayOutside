@@ -271,7 +271,7 @@ public class MessageBoardController {
 
     /**
      *
-     * 홈 화면 게시글
+     * 홈 화면 날씨  게시글
      */
     @ResponseBody
     @GetMapping("/homeMessageBoard")
@@ -297,6 +297,53 @@ public class MessageBoardController {
                     System.out.println("i = " + i);
                     address.get(i).getId();
                     arrayList.addAll( messageBoardService.getRecentlyTop1(address.get(i).getSecondAddressName()));
+                    if(arrayList.size()-1!=i){
+                        arrayList.add(new GetMessageBoardRecentlyRes("N"));
+
+                    }
+                }
+
+            }
+
+
+
+
+        }catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+        return  new BaseResponse<>(BaseResponseStatus.SUCCESS_HOME_WEATHER_MESSAGE,arrayList);
+
+
+    }
+
+    /**
+     *
+     * 홈 화면 재난 게시글
+     */
+    @ResponseBody
+    @GetMapping("/home/disaster/talk")
+    public BaseResponse<ArrayList> homeDisasterTalk(){
+
+        Long userIdx;
+        UserInfo userInfo;
+        MessageBoard messageBoard;
+        HeartHistory heartHistory;
+        MessageBoard messageBoard1;
+        List<Address> address=null;
+        ArrayList arrayList=new ArrayList();
+        try {
+            //유저 정보 받기
+            userIdx = jwtService.getUserId();
+            userInfo = userInfoService.findByUserIdx(userIdx);
+            address = addressRepository.findByUserAddress(userIdx);
+            if(address.size()==0){
+                throw new BaseException(BaseResponseStatus.FAILED_TO_GET_ADDRESS);
+            }
+            else{
+                for(int i=0;i<address.size();i++){
+                    System.out.println("i = " + i);
+                    address.get(i).getId();
+                    arrayList.addAll( messageBoardService.getRecentlyTop1DisasterTalk(address.get(i).getSecondAddressName()));
                     if(arrayList.size()-1!=i){
                         arrayList.add(new GetMessageBoardRecentlyRes("N"));
 
