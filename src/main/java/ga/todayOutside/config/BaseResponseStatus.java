@@ -70,7 +70,7 @@ public enum BaseResponseStatus {
     INVALID_KAKAO(false, 2204, "유효하지 않은 access-token입니다."),
     EMPTY_MESSAGE_COMMENTS(false, 2300, "댓글을 작성해주세요"),
     EMPTY_DATE(false, 2301, "월, 일을 확인해주세요"),
-
+    INVALID_ACCESSTOKEN(false, 2302, "유효하지 않은 accessToken 입니다."),
 
 
     // 3000 : Response 오류

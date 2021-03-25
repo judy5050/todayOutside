@@ -18,6 +18,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 public class DisasterService {
@@ -89,7 +90,7 @@ public class DisasterService {
     /**
     재난 필터 로직
      **/
-    public JSONObject filter(ArrayList<DisasterInfo> disasterInfos) {
+    public JSONObject filter(ArrayList<DisasterInfo> disasterInfos, String city, String state) {
 
         JSONObject resultState = new JSONObject();
         JSONObject resultDisaster = new JSONObject();
@@ -98,7 +99,7 @@ public class DisasterService {
         Map<String, ArrayList<DisasterInfo>> stateFilter = null;
 
         //도 필터
-        stateFilter = filterByState(disasterInfos);
+        stateFilter = filterByState(disasterInfos, state);
 
         if (disasterInfos == null) {
             return null;
@@ -107,7 +108,7 @@ public class DisasterService {
         else {
             for (String key : stateFilter.keySet()) {
                 //시 필터
-                Map<String, ArrayList<DisasterInfo>> cityFilter = filterByCity(stateFilter.get(key));
+                Map<String, ArrayList<DisasterInfo>> cityFilter = filterByCity(stateFilter.get(key), city);
                 JSONObject resultCity = new JSONObject();
 
                 for (String cityKey : cityFilter.keySet()) {
@@ -132,13 +133,15 @@ public class DisasterService {
      * @param disasterInfos
      * @return
      */
-    public Map<String, ArrayList<DisasterInfo>> filterByState(ArrayList<DisasterInfo> disasterInfos) {
+    public Map<String, ArrayList<DisasterInfo>> filterByState(ArrayList<DisasterInfo> disasterInfos, String userState) {
 
         Map<String, ArrayList<DisasterInfo>> result = new HashMap<>();
 
         for (DisasterInfo o : disasterInfos) {
 
             String state = o.getState();
+            //유저동네 아니면 건너뛰기
+            if (!userState.equals(state)) continue;
 
             ArrayList<DisasterInfo> infos = result.getOrDefault(state, new ArrayList<DisasterInfo>());
             infos.add(o);
@@ -153,7 +156,7 @@ public class DisasterService {
      * 시 단위의 필터
      * @return
      */
-    public Map<String, ArrayList<DisasterInfo>> filterByCity(ArrayList<DisasterInfo> disasterInfos) {
+    public Map<String, ArrayList<DisasterInfo>> filterByCity(ArrayList<DisasterInfo> disasterInfos, String userCity) {
         Map<String, ArrayList<DisasterInfo>> result = new HashMap<>();
 
         /*
@@ -162,6 +165,9 @@ public class DisasterService {
         for (DisasterInfo o : disasterInfos) {
 
             String city = o.getCity();
+
+            //유저 동 아니면 건너뛰기
+            if (!userCity.equals(city)) continue;
 
             ArrayList<DisasterInfo> infos = result.getOrDefault(city, new ArrayList<DisasterInfo>());
             infos.add(o);

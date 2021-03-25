@@ -51,13 +51,12 @@ public class DisasterController {
 
     @ResponseBody
     @GetMapping("/month")
-    public BaseResponse<Map<String, Object>> getMonth(@RequestParam String month) {
-
-        Map<String, Object> result = new HashMap<>();
+    public BaseResponse<Map<String, Object>> getMonth(@RequestParam String month, @RequestParam String city,
+                                                      @RequestParam String state) {
 
         try {
             ArrayList<DisasterInfo> infos = disasterService.filterByMonth(month);
-            result = disasterService.filter(infos);
+            Map<String, Object> result = disasterService.filter(infos, city, state);
             return new BaseResponse<>(BaseResponseStatus.SUCCESS_GET_DISASTER, result);
         } catch(BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
@@ -67,13 +66,14 @@ public class DisasterController {
 
     @ResponseBody
     @GetMapping("/day")
-    public BaseResponse<Map<String, Object>> getDay(@RequestParam String month, @RequestParam String day) {
+    public BaseResponse<Map<String, Object>> getDay(@RequestParam String month, @RequestParam String day,
+                                                    @RequestParam String city, @RequestParam String state) {
 
         Map<String, Object> result = new HashMap<>();
 
         try {
             ArrayList<DisasterInfo> infos = disasterService.filterByDay(month, day);
-            result = disasterService.filter(infos);
+            result = disasterService.filter(infos, city, state);
             return new BaseResponse<>(BaseResponseStatus.SUCCESS_GET_DISASTER, result);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
