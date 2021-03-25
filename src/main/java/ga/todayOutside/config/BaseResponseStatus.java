@@ -64,7 +64,7 @@ public enum BaseResponseStatus {
     EMPTY_MESSAGE_BOARD(false, 2203, "게시글을 작성해주세요."),
     EMPTY_MESSAGE_COMMENTS(false, 2300, "댓글을 작성해주세요"),
     EMPTY_DATE(false, 2301, "월, 일을 확인해주세요"),
-
+    INVALID_ACCESSTOKEN(false, 2302, "유효하지 않은 accessToken 입니다."),
 
     // 3000 : Response 오류
     RESPONSE_ERROR(false, 3000, "값을 불러오는데 실패하였습니다."),

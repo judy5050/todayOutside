@@ -2,6 +2,9 @@ package ga.todayOutside.src.user;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import ga.todayOutside.config.BaseException;
+import ga.todayOutside.config.BaseResponse;
+import ga.todayOutside.config.BaseResponseStatus;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -77,11 +80,13 @@ public class KakaoService {
      *
      * 카카오 유저 정보 조회
      */
-
-    public Map<String, Object> getUserInfo(String accessToken) {
+    public Map<String, Object> getUserInfo(String accessToken) throws BaseException {
 
         HashMap<String, Object> result = new HashMap<String, Object>();
         String jsonInString = "";
+
+        //accesstoken 값 추출
+        accessToken = accessToken.split("=")[1];
 
         try {
             HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
@@ -94,8 +99,6 @@ public class KakaoService {
 
             String url = "https://kapi.kakao.com/v2/user/me";
 
-            System.out.println(accessToken);
-
             header.add("Authorization", "Bearer " + accessToken);
             UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
 
@@ -107,16 +110,15 @@ public class KakaoService {
             ObjectMapper mapper = new ObjectMapper();
             jsonInString = mapper.writeValueAsString(resultMap.getBody());
 
-
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             result.put("statusCode", e.getRawStatusCode());
             result.put("body", e.getStatusText());
             System.out.println(e.toString());
+            throw new BaseException(BaseResponseStatus.INVALID_ACCESSTOKEN);
 
         } catch (Exception e) {
             result.put("statusCode", "999");
             System.out.println(e.toString());
-
         }
         //에러 관련 문서 -> 토큰 정보 보기 탭
         // https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api#get-token-info
