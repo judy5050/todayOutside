@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -79,6 +81,7 @@ public class WeatherController {
     /**
      * 현재 시각 날씨 조회
      */
+
     @ResponseBody
     @GetMapping("/address/{addressIdx}/now-weather")
     public BaseResponse<Map> todayWeatherNow(@PathVariable Long addressIdx) throws IOException, ParseException {

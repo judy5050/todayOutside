@@ -392,13 +392,27 @@ public class AddressService {
 
     /**
      * 오늘의 최고 최저 기온 정보 리스트로 넘김
+     * 홈 화면 전용
      */
     public void postWeatherList(String nx,String ny,String secondAddressName) throws IOException, ParseException {
         Map<String,String> homeWeather=new HashMap<>();
+        Map<String,String> address=new HashMap<>();
+        int index=0;
+
+        //시가 존재할 경우 구 정보만 반환
+        if(secondAddressName.matches(".*시.*")){
+            index=secondAddressName.indexOf("시");
+            secondAddressName=secondAddressName.substring(index+1);
+            System.out.println("index = " + index);
+        }
+
+
+        address.put("secondAddressName",secondAddressName);
         homeWeather.putAll(weatherService.getTodayWeatherHighAndLow(nx, ny));
         System.out.println("현재 날씨 하늘 정보 조회 함수 ");
         homeWeather.putAll(weatherService.getTodayWeatherNow(nx,ny));
         homeWeather.putAll(dustService.getDust(secondAddressName));
+        homeWeather.putAll(address);
         System.out.println("homeWeather = " + homeWeather.toString());
          weatherList.add(homeWeather);
     }

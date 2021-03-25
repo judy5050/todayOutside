@@ -269,6 +269,10 @@ public class MessageBoardController {
         return new BaseResponse(BaseResponseStatus.SUCCESS_POST_HEART,new PostHeartRes(messageBoard1));
     }
 
+    /**
+     *
+     * 홈 화면 게시글
+     */
     @ResponseBody
     @GetMapping("/homeMessageBoard")
     public BaseResponse<ArrayList> homeTalk(){
