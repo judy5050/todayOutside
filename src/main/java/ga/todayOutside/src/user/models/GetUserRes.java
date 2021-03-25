@@ -15,7 +15,7 @@ public class GetUserRes {
     private final String email;
     private final String nickname;
     private final String noticeAlarmStatus;
-    private final Long heartNum;
+    private final String heartNum;
     private final Long talkNum;
     private final String profile;
     private final List<GetAddressRes> address;
