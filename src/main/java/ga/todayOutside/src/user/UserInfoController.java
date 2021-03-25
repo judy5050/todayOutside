@@ -2,6 +2,7 @@
 package ga.todayOutside.src.user;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import ga.todayOutside.config.BaseException;
 import ga.todayOutside.config.BaseResponse;
 import ga.todayOutside.src.messageBoard.MessageBoardService;
@@ -12,7 +13,14 @@ import ga.todayOutside.src.user.models.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Map;
@@ -125,31 +133,84 @@ public class UserInfoController {
     }
 
     /**
-     * 로그인 API
+     * 카카오 로그인 API
      * [POST] /users/login/kakao
      * @RequestBody PostLoginReq
      * @return BaseResponse<PostLoginRes>
+     *
      */
     @PostMapping("/login/kakao")
-    public BaseResponse<PostLoginRes> login(@RequestParam String accessToken) throws BaseException {
+    public BaseResponse<PostKakaoLoginRes> login(@RequestBody PostKakaoLoginReq postKakaoLoginReq) throws BaseException {
 
-        //토큰 유저 정보 조회
-        Map<String, Object> result = kakaoService.getUserInfo(accessToken);
-        Map<String, Object> body =  (Map<String, Object>) result.get("body");
-        Map<String, Object> kakaoAccount =  (Map<String, Object>) body.get("kakao_account");
+        PostKakaoLoginRes postKakaoLoginRes = null;
+        //GetKakaoUserRes getKakaoUserRes;
+        RestTemplate rt = new RestTemplate();//http요청을 간단하게 해줄 수 있는 클래
+        System.out.println(postKakaoLoginReq.getAccessToken());
 
-        String userEmail = kakaoAccount.get("email").toString();
-        String snsId = body.get("id").toString();
 
-        PostLoginReq postLoginReq = new PostLoginReq(userEmail, Long.parseLong(snsId));
-        // 2. Login
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + postKakaoLoginReq.getAccessToken());
+        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
 
+
+
+        HttpEntity<MultiValueMap<String, String>> kakaoProfileRequest = new HttpEntity<>(headers);
+
+
+        ResponseEntity<String> response=null;
         try {
-            PostLoginRes res = userInfoProvider.login(postLoginReq);
-            return new BaseResponse<>(BaseResponseStatus.SUCCESS_LOGIN, res);
-        } catch (BaseException exception) {
-            return new BaseResponse<>(exception.getStatus());
+            response = rt.exchange(
+                    "https://kapi.kakao.com/v2/user/me",
+                    HttpMethod.POST,
+                    kakaoProfileRequest,
+                    String.class
+            );
+        }catch (HttpClientErrorException exception){
+            int statusCode=exception.getStatusCode().value();
+
+
+            //잘못된 형식
+            if(statusCode==400){
+                return new BaseResponse<>(BaseResponseStatus.INVALID_KAKAO);
+            }
+
+            else if(statusCode==401){
+                return new BaseResponse<>(BaseResponseStatus.INVALID_KAKAO);
+            }
+
+
+
+
         }
+
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        KakaoProfile profile = null;
+        String jwt = null;
+        UserInfo userInfo=null;
+
+        //Model과 다르게 되있으면 그리고 getter setter가 없으면 오류가 날 것이다.
+        try {
+            profile = objectMapper.readValue(response.getBody(), KakaoProfile.class);
+            try {
+                userInfo = userInfoProvider.findOne(profile.getId());//snsId 값 넘김
+
+
+            }catch (BaseException exception){
+                return new BaseResponse<>(BaseResponseStatus.NEW_KAKAO_USERS,new PostKakaoLoginRes(null,null,profile.getKakao_account().getEmail(), profile.getId()) );
+            }
+
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+
+
+        }
+
+
+        // 변경전 jwt=jwtService.createJwt(userInfo.getId(), userInfo.getUserName(), userInfo.getSnsId());
+        jwt=jwtService.createJwt(userInfo.getId());
+
+        return new BaseResponse<>(BaseResponseStatus.SUCCESS_KAKAO_LOGIN, new PostKakaoLoginRes(userInfo.getId(),jwt,userInfo.getEmail(),userInfo.getSnsId()));
     }
 
     /**

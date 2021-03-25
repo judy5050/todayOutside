@@ -155,4 +155,17 @@ public class UserInfoProvider {
         return true;
     }
 
+    //카카오 snsId 값
+    public UserInfo findOne(Long snsId)throws BaseException{
+
+        List<UserInfo> result=null;
+        result=userInfoRepository.findByUser(snsId);
+        if(result!=null&&result.size()>0){
+            return result.get(0);
+        }
+        else{
+            throw new BaseException(BaseResponseStatus.NOT_FOUND_USER);
+        }
+
+    }
 }

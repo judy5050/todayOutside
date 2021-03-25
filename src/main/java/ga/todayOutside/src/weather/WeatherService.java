@@ -11,6 +11,8 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -864,8 +866,7 @@ public class WeatherService {
      * 현재 날씨 조회하기(초단기 예보) 변경후
      */
 
-
-    Map getTodayWeatherNow(String x,String y) throws IOException, ParseException {
+    public Map getTodayWeatherNow(String x,String y) throws IOException, ParseException {
 
 
         date();
@@ -1001,7 +1002,8 @@ public class WeatherService {
 
         //시간 확인
         getTodayWeatherMaxHour(baseTime);
-        System.out.println("fcstTime = " + fcstTime);
+//        System.out.println("fcstTime = " + fcstTime);
+        System.out.println("nx = " + nx);
         System.out.println("parse_body = " + parse_body);
         for (int i = 0; i < parse_item.size(); i++) {
             element = (JSONObject) parse_item.get(i);
@@ -1016,7 +1018,7 @@ public class WeatherService {
             }
 
         }
-
+        todayWeatherNowCount=0;
         return nowWeatherResult;
     }
 
