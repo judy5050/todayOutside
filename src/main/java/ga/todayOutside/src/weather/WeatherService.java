@@ -1114,7 +1114,7 @@ public class WeatherService {
         date();
         System.out.println("yesterdayStr = " + yesterdayStr);
         String apiUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService/getVilageFcst";    //동네예보조회
-
+        String baseDate =null;
         // 홈페이지에서 받은 키
         String serviceKey = Secret.WEATHER_OPEN_APIKEY;
         String nx = x;    //위도
@@ -1127,7 +1127,14 @@ public class WeatherService {
         String time = Integer.toString(currentTime) + Integer.toString(min);
 
         String baseTime = "2300";    //API 제공 시간
-        String baseDate = yesterdayStr;    //조회하고싶은 날짜
+//        System.out.println("currentTime = " + currentTime);
+        if(currentTime>=23){
+             baseDate = todayStr;
+        }
+        else{
+             baseDate = yesterdayStr;    //조회하고싶은 날짜
+        }
+
         System.out.println("yesterdayStr = " + yesterdayStr);
         String dataType = "json";    //타입 xml, json
         String numOfRows = "256";    //한 페이지 결과 수
