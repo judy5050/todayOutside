@@ -44,7 +44,7 @@ public class AddressService {
      Map<String,String> thirdAddressResult =new LinkedHashMap<>();
      JSONObject jsonObject=new JSONObject();
      JSONArray jsonArray=new JSONArray();
-    ArrayList<Map> weatherList=new ArrayList<>();
+//    ArrayList<Map> weatherList=new ArrayList<>();
     /**
      *회원 주소 등록
      */
@@ -363,10 +363,14 @@ public class AddressService {
      */
     public ArrayList getAllAddressesByUserIdx(Long userIdx) throws IOException, ParseException,BaseException {
         //관련 address 를 받음
+        ArrayList arrayList=new ArrayList();
+        ArrayList<Map> weatherList=new ArrayList<>();
         JSONArray jsonArray=new JSONArray();
         List<Address> addresses = addressRepository.findByUserAddress(userIdx);
-        System.out.println("addresses = " + addresses.size());
-        for(int i=0;i<addresses.size();i++){
+        System.out.println("주소크 = " + addresses.size());
+        for(int i=0;i<2;i++){
+
+            System.out.println("$$$$$$$$$$$$$$$$$$$$$$$");
             Map<String,String> homeWeather=null;
             Long addressIdx = addresses.get(i).getId();
             String firstAddressName=addresses.get(i).getFirstAddressName();
@@ -379,26 +383,23 @@ public class AddressService {
             //x,y 값 얻기
             String nx=nxNy.get("x");
             String ny=nxNy.get("y");
-            postWeatherList(nx,ny,secondAddressName);
-//            postWeatherNow(nx,ny);
-
-
-
+             arrayList.addAll(postWeatherList(nx, ny, secondAddressName));
 
         }
 
-        return weatherList;
+        return arrayList;
     }
 
     /**
      * 오늘의 최고 최저 기온 정보 리스트로 넘김
      * 홈 화면 전용
      */
-    public void postWeatherList(String nx,String ny,String secondAddressName) throws IOException, ParseException {
+    public ArrayList postWeatherList(String nx,String ny,String secondAddressName) throws IOException, ParseException {
+        ArrayList<Map> weatherList=new ArrayList<>();
         Map<String,String> homeWeather=new HashMap<>();
         Map<String,String> address=new HashMap<>();
         int index=0;
-
+        System.out.println("postWeather");
         //시가 존재할 경우 구 정보만 반환
         if(secondAddressName.matches(".*시.*")){
             index=secondAddressName.indexOf("시");
@@ -406,25 +407,18 @@ public class AddressService {
             System.out.println("index = " + index);
         }
 
+        for(int i=0;i<1;i++){
+            address.put("secondAddressName",secondAddressName);
+            homeWeather.putAll(weatherService.getTodayWeatherHighAndLow(nx, ny));
+            System.out.println("현재 날씨 하늘 정보 조회 함수 ");
+            homeWeather.putAll(weatherService.getTodayWeatherNow(nx,ny));
+            homeWeather.putAll(dustService.getDust(secondAddressName));
+            homeWeather.putAll(address);
+        }
 
-        address.put("secondAddressName",secondAddressName);
-        homeWeather.putAll(weatherService.getTodayWeatherHighAndLow(nx, ny));
-        System.out.println("현재 날씨 하늘 정보 조회 함수 ");
-        homeWeather.putAll(weatherService.getTodayWeatherNow(nx,ny));
-        homeWeather.putAll(dustService.getDust(secondAddressName));
-        homeWeather.putAll(address);
-        System.out.println("homeWeather = " + homeWeather.toString());
+//        System.out.println("homeWeather = " + homeWeather.toString());
          weatherList.add(homeWeather);
+        return weatherList;
     }
 
-//    /**
-//     * 현재 날씨 하늘 기온 정보 넘기기
-//     */
-//
-//    public void postWeatherNow(String nx,String ny) throws IOException, ParseException {
-//        Map<String,String> weatherNow=new HashMap<>();
-//        weatherNow.putAll( weatherService.getTodayWeatherNow(nx, ny));
-//        System.out.println("homeWeather = " + weatherNow.toString());
-//        weatherList.add(weatherNow);
-//    }
 }

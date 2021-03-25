@@ -6,6 +6,7 @@ import ga.todayOutside.config.BaseResponseStatus;
 import ga.todayOutside.src.address.AddressService;
 import ga.todayOutside.src.address.model.Address;
 import ga.todayOutside.src.user.UserInfoService;
+import ga.todayOutside.src.user.models.UserInfo;
 import ga.todayOutside.src.weather.model.GetTodayNowRes;
 import ga.todayOutside.src.weather.model.GetWeeklyReq;
 import ga.todayOutside.src.weather.model.GetWeeklyRes;
@@ -266,13 +267,14 @@ public class WeatherController {
         Map allAddressesByUserIdx=null;
         JSONArray allAddressesByUserIdx1;
         ArrayList allAddressesByUserIdx2=null;
+        ArrayList allAddressesByUserIdx3=null;
 
         try {
+            System.out.println("try");
             userIdx = jwtService.getUserId();
-            userInfoService.findByUserIdx(userIdx);
-
-             allAddressesByUserIdx2 = addressService.getAllAddressesByUserIdx(userIdx);
-
+            UserInfo byUser = userInfoService.findByUserIdx(userIdx);
+            System.out.println(byUser.getEmail());
+            allAddressesByUserIdx2 = addressService.getAllAddressesByUserIdx(userIdx);
 
 
         } catch (BaseException exception) {
@@ -282,7 +284,6 @@ public class WeatherController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
         return new BaseResponse<>(BaseResponseStatus.SUCCESS_HOME_WEATHER, allAddressesByUserIdx2);
     }

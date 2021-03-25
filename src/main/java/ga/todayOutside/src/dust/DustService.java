@@ -32,7 +32,7 @@ public class DustService {
 
     public Map getDust(String secondAddressName) throws IOException, ParseException {
 
-
+        System.out.println("getDust");
         String stationName=" ";
         int index;
         //게시글 필터링 구 정보 받기
@@ -92,14 +92,14 @@ public class DustService {
 
         // response 키를 가지고 데이터를 파싱
         JSONObject parse_response = (JSONObject) obj.get("response");
-        System.out.println("parse_response = " + parse_response);
+//        System.out.println("parse_response = " + parse_response);
         // response 로 부터 body 찾기
         JSONObject parse_body = (JSONObject) parse_response.get("body");
-        System.out.println("parse_body = " + parse_body);
+//        System.out.println("parse_body = " + parse_body);
 
         // body 로 부터 items 찾기
         JSONArray parse_items =(JSONArray)  parse_body.get("items");
-        System.out.println("parse_items = " + parse_items);
+//        System.out.println("parse_items = " + parse_items);
 
         //element 변수 선언
         JSONObject element=null;
@@ -107,8 +107,8 @@ public class DustService {
 
         for (int i = 0; i < parse_items.size(); i++) {
             element = (JSONObject) parse_items.get(0);
-            System.out.println("element = " + element);
-            System.out.println("parse_items = " + parse_items.get(1));
+//            System.out.println("element = " + element);
+//            System.out.println("parse_items = " + parse_items.get(1));
             break;
 
 
@@ -120,7 +120,7 @@ public class DustService {
         String fineDust=element.get("pm25Grade1h").toString();
         m.put("fineDust",fineDust);
         m.put("dust", dustValue);
-        System.out.println(m);
+//        System.out.println(m);
 
         return m;
 
