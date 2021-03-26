@@ -100,13 +100,14 @@ public class UserInfoController {
     @ResponseBody
     @PostMapping("")
     public BaseResponse<PostUserRes> postUsers(@RequestBody PostUserReq params) {
-        System.out.println("dfasdf");
+
         try {
             PostUserRes postUserRes = userInfoService.createUserInfo(params);
             return new BaseResponse<>(BaseResponseStatus.SUCCESS_POST_USER, postUserRes);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
+
     }
 
     /**
