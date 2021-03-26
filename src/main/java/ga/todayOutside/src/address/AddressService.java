@@ -367,10 +367,9 @@ public class AddressService {
         ArrayList<Map> weatherList=new ArrayList<>();
         JSONArray jsonArray=new JSONArray();
         List<Address> addresses = addressRepository.findByUserAddress(userIdx);
-        System.out.println("주소크 = " + addresses.size());
-        for(int i=0;i<2;i++){
+        for(int i=0;i<addresses.size();i++){
 
-            System.out.println("$$$$$$$$$$$$$$$$$$$$$$$");
+
             Map<String,String> homeWeather=null;
             Long addressIdx = addresses.get(i).getId();
             String firstAddressName=addresses.get(i).getFirstAddressName();
@@ -399,7 +398,7 @@ public class AddressService {
         Map<String,String> homeWeather=new HashMap<>();
         Map<String,String> address=new HashMap<>();
         int index=0;
-        System.out.println("postWeather");
+
         //시가 존재할 경우 구 정보만 반환
         if(secondAddressName.matches(".*시.*")){
             index=secondAddressName.indexOf("시");
@@ -407,14 +406,14 @@ public class AddressService {
             System.out.println("index = " + index);
         }
 
-        for(int i=0;i<1;i++){
+
             address.put("secondAddressName",secondAddressName);
             homeWeather.putAll(weatherService.getTodayWeatherHighAndLow(nx, ny));
             System.out.println("현재 날씨 하늘 정보 조회 함수 ");
             homeWeather.putAll(weatherService.getTodayWeatherNow(nx,ny));
             homeWeather.putAll(dustService.getDust(secondAddressName));
             homeWeather.putAll(address);
-        }
+
 
 //        System.out.println("homeWeather = " + homeWeather.toString());
          weatherList.add(homeWeather);

@@ -109,7 +109,7 @@ public class MessageBoardService {
     /**
      *하트순서대로 날씨 관련 게시글 리스트 가져오기
      */
-    public List<GetMessageBoardRecentlyRes> getHeartMessageBoardList(String secondAddressName, String page, BoardType boardType) {
+    public List<GetMessageBoardRecentlyRes> getHeartMessageBoardList(String secondAddressName, int page, BoardType boardType) {
 
         int index;
         String filter;
@@ -132,7 +132,7 @@ public class MessageBoardService {
         String date ;
 
         //page 처리
-        PageRequest pageRequest=PageRequest.of(Integer.parseInt(page),10);
+        PageRequest pageRequest=PageRequest.of(page,10);
         Page <MessageBoard> messageBoards= messageBoardRepository.findByAddressMsgLike(filter,pageRequest,boardType);
         List<GetMessageBoardRecentlyRes> getMessageBoardHeartRes1=messageBoards.map(GetMessageBoardRecentlyRes::new).getContent();
 
@@ -143,7 +143,7 @@ public class MessageBoardService {
     /**
      * 날씨 게시글 최신 순 조회
      */
-    public List<GetMessageBoardRecentlyRes> getRecentlyMessageBoardList(String secondAddressName, String page, BoardType boardType) {
+    public List<GetMessageBoardRecentlyRes> getRecentlyMessageBoardList(String secondAddressName, int page, BoardType boardType) {
 
         int index;
         String filter;
@@ -163,7 +163,7 @@ public class MessageBoardService {
         System.out.println("filter = " + filter);
 
         //page 처리
-        PageRequest pageRequest=PageRequest.of(Integer.parseInt(page),10);
+        PageRequest pageRequest=PageRequest.of(page,10);
         Page <MessageBoard> messageBoards= messageBoardRepository.findByAddressRecentlyMsg(filter,pageRequest,boardType);
         List<GetMessageBoardRecentlyRes> getMessageBoardHeartRes1=messageBoards.map(GetMessageBoardRecentlyRes::new).getContent();
 
@@ -252,7 +252,7 @@ public class MessageBoardService {
      * 재난 관련 하트순
      */
 
-    public List<GetMessageBoardRecentlyRes> getHeartMessageBoardDisasterList(String secondAddressName, String page, BoardType boardType) {
+    public List<GetMessageBoardRecentlyRes> getHeartMessageBoardDisasterList(String secondAddressName, int page, BoardType boardType) {
 
         int index;
         String filter;
@@ -275,7 +275,7 @@ public class MessageBoardService {
         String date ;
 
         //page 처리
-        PageRequest pageRequest=PageRequest.of(Integer.parseInt(page),10);
+        PageRequest pageRequest=PageRequest.of(page,10);
         Page <MessageBoard> messageBoards= messageBoardRepository.findByAddressMsgLike(filter,pageRequest,boardType);
         List<GetMessageBoardRecentlyRes> getMessageBoardListHeartRes=messageBoards.map(GetMessageBoardRecentlyRes::new).getContent();
 
@@ -286,7 +286,7 @@ public class MessageBoardService {
      * 재난 관련 최신순
      */
 
-    public List<GetMessageBoardRecentlyRes> getRecentlyMessageBoardDisasterList(String secondAddressName, String page, BoardType boardType) {
+    public List<GetMessageBoardRecentlyRes> getRecentlyMessageBoardDisasterList(String secondAddressName, int page, BoardType boardType) {
 
         int index;
         String filter;
@@ -309,7 +309,7 @@ public class MessageBoardService {
         String date ;
 
         //page 처리
-        PageRequest pageRequest=PageRequest.of(Integer.parseInt(page),10);
+        PageRequest pageRequest=PageRequest.of(page,10);
         Page <MessageBoard> messageBoards= messageBoardRepository.findByAddressRecentlyMsg(filter,pageRequest,boardType);
         List<GetMessageBoardRecentlyRes> getMessageBoardListHeartRes=messageBoards.map(GetMessageBoardRecentlyRes::new).getContent();
 

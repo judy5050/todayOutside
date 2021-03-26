@@ -21,9 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,10 +34,11 @@ public class WeatherController {
 
     /**
      *오늘 날씨 조회 리스트
+     * 시간별 날씨 조회 API
      */
     @ResponseBody
     @GetMapping("/address/{addressIdx}/time-weathers")
-    public BaseResponse<Map> todayWeatherList(@PathVariable Long addressIdx) throws IOException, ParseException {
+    public BaseResponse<ArrayList> todayWeatherList(@PathVariable Long addressIdx) throws IOException, ParseException {
 
         //jwt 토큰 에서 userIdx 얻기
 
@@ -71,7 +70,7 @@ public class WeatherController {
         System.out.println("nx = " + nx);
         System.out.println("ny = " + ny);
         System.out.println("userIdx :"+userIdx);
-        Map res;
+        ArrayList res;
         res =weatherService.getTodayWeatherList(nx,ny);
 
 
@@ -114,9 +113,9 @@ public class WeatherController {
         String ny=nxNy.get("y");
 
         //nx, ny,userIdx 확인
-        System.out.println("nx = " + nx);
-        System.out.println("ny = " + ny);
-        System.out.println("userIdx :"+userIdx);
+//        System.out.println("nx = " + nx);
+//        System.out.println("ny = " + ny);
+//        System.out.println("userIdx :"+userIdx);
         Map res;
 
         res = weatherService.getTodayWeatherNow(nx, ny);
@@ -156,6 +155,7 @@ public class WeatherController {
 
         // 시,도 구 정보 받아 nx ny로 좌표 변경
         Map<String, String> nxNy = weatherService.convertNxNy(address.getFirstAddressName(), address.getSecondAddressName());
+
 
         //x,y 값 얻기
         String nx=nxNy.get("x");

@@ -37,8 +37,8 @@ public class WeatherService {
     //todayWeather 시각별 날씨 관련 변수 선언
 
     //최종 오늘의 날씨 return 변수
-    static Map<String, Map> todayWeahterResult = new LinkedHashMap<>();
-
+    static ArrayList todayWeatherList = new ArrayList();
+    static Map<String, Map> todayWeatherResult = new LinkedHashMap<>();
     static Map<String, String> clock_00 = new HashMap<>();
     static Map<String, String> clock_01 = new HashMap<>();
     static Map<String, String> clock_02 = new HashMap<>();
@@ -67,9 +67,9 @@ public class WeatherService {
     static Map<String, String> clock_23 = new HashMap<>();
 
 
-    static Map<String, Map> day1Result = new LinkedHashMap<>();
-
-    static Map<String, Map> day2Result = new LinkedHashMap<>();
+//    static Map<String, Map> day1Result = new LinkedHashMap<>();
+    static JSONArray day1Result=new JSONArray();
+    static JSONArray day2Result = new JSONArray();
 
 
     //일주일 단위의 날씨 정보 조회 변수
@@ -189,6 +189,7 @@ public class WeatherService {
 
     /**
      * 한시간 단위로 날씨 정보를 받아오는 함수
+     * 시간별 날씨조회 API 에서 사용
      */
     public void todayWeatherPer1Hour(String x,String y) throws IOException, ParseException {
 
@@ -205,7 +206,7 @@ public class WeatherService {
         String baseTime = null;
 
         //분에 따른 baseTime 조절
-        if (min <= 30) {
+        if (min <= 45) {
             Integer calTime;
             if (currentTime == 0) {
                 calTime = 23;
@@ -272,7 +273,7 @@ public class WeatherService {
         rd.close();
         conn.disconnect();
         String data = sb.toString();
-
+        System.out.println("data = " + data);
         // Json parser를 만들어 만들어진 문자열 데이터를 객체화
         JSONParser parser = new JSONParser();
         JSONObject obj = (JSONObject) parser.parse(data);
@@ -336,11 +337,13 @@ public class WeatherService {
             if (object.get("category").equals("SKY")) {
                 String skyValue = object.get("fcstValue").toString();
                 clockValue.put("SKY", skyValue);
-
+                clockValue.put("time",clockName);
+                todayWeatherList.add(clockValue);
 
             } else if (object.get("category").equals("PTY")) {
                 String ptyValue = object.get("fcstValue").toString();
                 clockValue.put("PTY", ptyValue);
+
                 count++;
             } else if (object.get("category").equals("T1H")) {
                 String T1H = object.get("fcstValue").toString();
@@ -348,7 +351,7 @@ public class WeatherService {
             }
 
 
-            todayWeahterResult.put(clockName, clockValue);
+//            todayWeatherResult.put(clockName, clockValue);
 
         }
 
@@ -575,7 +578,7 @@ public class WeatherService {
         JSONObject element = null;
 
         System.out.println("cp = " + cp);
-//        System.out.println(data);
+        System.out.println("$$$$$$$$$$$$"+data);
         for (int i = 0; i < parse_item.size(); i++) {
             if (count < 14) {
 
@@ -610,17 +613,20 @@ public class WeatherService {
                     if (object.get("category").equals("SKY")) {
                         System.out.println("count = " + count);
                         String skyValue = object.get("fcstValue").toString();
+                        clockValue.put("time",clockName);//TODO 수정된 부분
                         clockValue.put("SKY", skyValue);
                     } else if (object.get("category").equals("PTY")) {
                         String ptyValue = object.get("fcstValue").toString();
                         clockValue.put("PTY", ptyValue);
                     } else if (object.get("category").equals("T3H")) {
+
                         System.out.println("object = " + object);
                         count++;
                         String T3H = object.get("fcstValue").toString();
                         clockValue.put("T3H", T3H);
+                        todayWeatherList.add(clockValue);
                     }
-                    todayWeahterResult.put(clockName, clockValue);
+
                 }
             }
         } else if (object.get("fcstDate").equals(tomorrowStr)) {
@@ -628,6 +634,7 @@ public class WeatherService {
                 if (object.get("category").equals("SKY")) {
 //                    System.out.println("tomorrowStr = " + tomorrowStr);
                     String skyValue = object.get("fcstValue").toString();
+                    clockValue.put("time",clockName);//TODO 수정된 부분
                     clockValue.put("SKY", skyValue);
                 } else if (object.get("category").equals("PTY")) {
                     String ptyValue = object.get("fcstValue").toString();
@@ -638,8 +645,9 @@ public class WeatherService {
                     System.out.println("object = " + object);
                     String T3H = object.get("fcstValue").toString();
                     clockValue.put("T3H", T3H);
+                    day1Result.add(clockValue);
                 }
-                day1Result.put(clockName, clockValue);
+
             }
 
 
@@ -648,6 +656,7 @@ public class WeatherService {
                 if (object.get("category").equals("SKY")) {
                     String skyValue = object.get("fcstValue").toString();
                     clockValue.put("SKY", skyValue);
+                    clockValue.put("time",clockName);//TODO 수정된 부분
                 } else if (object.get("category").equals("PTY")) {
                     String ptyValue = object.get("fcstValue").toString();
                     clockValue.put("PTY", ptyValue);
@@ -656,8 +665,9 @@ public class WeatherService {
                     System.out.println("count = " + count);
                     String T3H = object.get("fcstValue").toString();
                     clockValue.put("T3H", T3H);
+                    day2Result.add(clockValue);
                 }
-                day2Result.put(clockName, clockValue);
+
             }
 
         }
@@ -699,7 +709,7 @@ public class WeatherService {
     }
 
 
-    public Map getTodayWeatherList(String x,String y) throws IOException, ParseException {
+    public ArrayList getTodayWeatherList(String x,String y) throws IOException, ParseException {
 
         //오늘 날짜 받아오기
 
@@ -719,24 +729,27 @@ public class WeatherService {
         JSONArray jsonArray1 = new JSONArray();
         JSONArray jsonArray2 = new JSONArray();
         JSONArray jsonArray3 = new JSONArray();
+        jsonArray1.addAll(todayWeatherList);
+        jsonArray1.addAll(day1Result);
 
-        jsonObject1.put("today", todayWeahterResult);
-        jsonObject2.put("tomorrow", day1Result);
-        jsonObject3.put("afterTomorrow", day2Result);
+//        jsonObject1.put("today", todayWeatherResult);
+//        jsonObject2.(day1Result);
+//        jsonObject3.put("afterTomorrow", day2Result);
 
 
-        hashMap1.put("today", todayWeahterResult);
-        hashMap2.put("tomorrow", day1Result);
-        hashMap1.putAll(hashMap2);
+//        hashMap1.put("today", todayWeatherResult);
+//        hashMap2.put("tomorrow", day1Result);
+//        hashMap1.put(hashMap2);
         if (!day2Result.isEmpty()) {
-            hashMap3.put("afterTomorrow", day2Result);
-            hashMap1.putAll(hashMap3);
-
+//            hashMap3.put("afterTomorrow", day2Result);
+//            hashMap1.putAll(hashMap3);
+            jsonArray1.addAll(day2Result);
         }
-        ArrayList arrayList = new ArrayList();
-        arrayList.add(hashMap1);
+        System.out.println("jsonArray1 = " + jsonArray1);
+//        ArrayList arrayList = new ArrayList();
+//        arrayList.add(hashMap1);
 
-        return hashMap1;
+        return jsonArray1;
 
 
     }
@@ -864,12 +877,12 @@ public class WeatherService {
 
     /**
      * 현재 날씨 조회하기(초단기 예보) 변경후
+     * 현재 날씨 조회 API 에서 사용
      */
 
     public Map getTodayWeatherNow(String x,String y) throws IOException, ParseException {
-
+        System.out.println("getTodayWeather 진입");
         todayWeatherNowCount=0;
-        System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&");
         date();
         String fcstTime=null;
         //시간을 받아오는 코드
@@ -878,13 +891,13 @@ public class WeatherService {
         Integer min = LocalDateTime.now().getMinute();
 
 
-        String apiUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService/getUltraSrtFcst";
+        String apiUrl = " http://apis.data.go.kr/1360000/VilageFcstInfoService/getUltraSrtFcst";
         // 홈페이지에서 받은 키
         String serviceKey = Secret.WEATHER_OPEN_APIKEY;
         String nx = x;    //위도
         String ny = y;    //경도
         String baseTime = null;
-
+        System.out.println("getTodayWeather url에 요청");
         //분에 따른 baseTime 조절
         if (min <= 45) {
             Integer calTime;
@@ -950,12 +963,14 @@ public class WeatherService {
         System.out.println("baseTime = " + baseTime);
         System.out.println("todayStr =  "+ todayStr);
         String baseDate = null;    //조회하고싶은 날짜
+//        baseTime="0530";
         if(baseTime.equals("2330")){
             baseDate = yesterdayStr;
         }
         else{
             baseDate = todayStr;
         }
+        System.out.println("시간 계산");
 
         String dataType = "json";    //타입 xml, json 등등 ..
         String numOfRows = "50";    //한 페이지 결과 수
@@ -977,12 +992,16 @@ public class WeatherService {
         conn.setRequestMethod("GET");
         conn.setRequestProperty("Content-type", "application/json");
 
+        System.out.println("conn = " + conn);
         BufferedReader rd;
         if (conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
+            System.out.println("success");
             rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            System.out.println("success");
         } else {
             rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
         }
+        System.out.println(" rd");
         StringBuilder sb = new StringBuilder();
         String line;
         while ((line = rd.readLine()) != null) {
@@ -992,6 +1011,8 @@ public class WeatherService {
         conn.disconnect();
         String data = sb.toString();
 
+        System.out.println("rd close");
+        System.out.println("data = " + data);
         // Json parser를 만들어 만들어진 문자열 데이터를 객체화
         JSONParser parser = new JSONParser();
         JSONObject obj = (JSONObject) parser.parse(data);
@@ -1002,15 +1023,15 @@ public class WeatherService {
         // body 로 부터 items 찾기
         JSONObject parse_items = (JSONObject) parse_body.get("items");
         JSONArray parse_item = (JSONArray) parse_items.get("item");
-
+        System.out.println("data = " + data);
         //element 변수 선언
         JSONObject element;
 
         //시간 확인
-        getTodayWeatherMaxHour(baseTime);
+//        getTodayWeatherMaxHour(baseTime);
 //        System.out.println("fcstTime = " + fcstTime);
 //        System.out.println("nx = " + nx);
-        System.out.println("parse_body = " + parse_body);
+//        System.out.println("parse_body = " + parse_body);
         for (int i = 0; i < parse_item.size(); i++) {
             element = (JSONObject) parse_item.get(i);
 
@@ -1054,6 +1075,7 @@ public class WeatherService {
 
     /**
      * 오늘의 날씨 정보(현재 날씨에 대해 원하는 값만 파싱해서 가져오기)
+     * 현재 날씨 조회 API 에서 사용
      * 변경후 (초단기 예보)
      */
     void todayNowWeatherParsing(JSONObject object,String fcstTime) {
@@ -1064,7 +1086,7 @@ public class WeatherService {
                     String T1H = object.get("fcstValue").toString();
                     nowWeatherResult.put("T1H", T1H);
                     todayWeatherNowCount++;
-                    System.out.println("todayWeatherNowCount = " + todayWeatherNowCount);
+//                    System.out.println("todayWeatherNowCount = " + todayWeatherNowCount);
 
 
 
@@ -1093,7 +1115,7 @@ public class WeatherService {
     //전날 23시 조회 기준
     //최고기온은 15시 데이터
     //최저 기온은 6시 데이터
-    void todayWeatherHighAndLowParsing(JSONObject object) {
+    public void todayWeatherHighAndLowParsing(JSONObject object) {
         if (object.get("fcstDate").equals(todayStr)) {
             if (object.get("category").equals("TMN")) {
 //                System.out.println("object = " + object);
@@ -1198,6 +1220,7 @@ public class WeatherService {
         for (int i = 0; i < parse_item.size(); i++) {
             {
                 object = (JSONObject) parse_item.get(i);
+                System.out.println("object = " + object);
                 todayWeatherHighAndLowParsing(object);
             }
 

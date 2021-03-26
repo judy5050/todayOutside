@@ -154,7 +154,7 @@ public class MessageBoardController {
      */
     @ResponseBody
     @GetMapping("/address/{addressIdx}/messageBoardList")
-    public BaseResponse<List<GetMessageBoardRecentlyRes>>getMessageBoardList(@PathVariable Long addressIdx, @RequestParam("sortType")String sortType, @RequestParam("boardType") BoardType boardType, @RequestParam("page")String page){
+    public BaseResponse<List<GetMessageBoardRecentlyRes>>getMessageBoardList(@PathVariable Long addressIdx, @RequestParam("sortType")String sortType, @RequestParam("boardType") BoardType boardType, @RequestParam("page")int page){
 
         Long userIdx;
         Address address=null;
