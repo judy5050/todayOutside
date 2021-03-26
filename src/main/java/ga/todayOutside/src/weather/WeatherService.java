@@ -71,29 +71,37 @@ public class WeatherService {
     static JSONArray day1Result=new JSONArray();
     static JSONArray day2Result = new JSONArray();
 
+    //일주일 단위 용 array
+    static JSONArray day1Weekly=new JSONArray();
+    static JSONArray day2Weekly=new JSONArray();
+    static JSONArray day3Weekly=new JSONArray();
+    static JSONArray day4Weekly=new JSONArray();
+    static JSONArray day5Weekly=new JSONArray();
+    static JSONArray day6Weekly=new JSONArray();
+    static JSONArray day7Weekly=new JSONArray();
 
     //일주일 단위의 날씨 정보 조회 변수
 
-    static Map<String, String> day1_high = new HashMap<>();
-    static Map<String, String> day1_low = new HashMap<>();
+    static Map<String, String> day1 = new HashMap<>();
+//    static Map<String, String> day1_low = new HashMap<>();
 
-    static Map<String, String> day2_high = new HashMap<>();
-    static Map<String, String> day2_low = new HashMap<>();
+    static Map<String, String> day2 = new HashMap<>();
+//    static Map<String, String> day2_low = new HashMap<>();
 
-    static Map<String, String> day3_high = new HashMap<>();
-    static Map<String, String> day3_low = new HashMap<>();
+    static Map<String, String> day3 = new HashMap<>();
+//    static Map<String, String> day3_low = new HashMap<>();
 
-    static Map<String, String> day4_high = new HashMap<>();
-    static Map<String, String> day4_low = new HashMap<>();
+    static Map<String, String> day4 = new HashMap<>();
+//    static Map<String, String> day4_low = new HashMap<>();
 
-    static Map<String, String> day5_high = new HashMap<>();
-    static Map<String, String> day5_low = new HashMap<>();
+    static Map<String, String> day5 = new HashMap<>();
+//    static Map<String, String> day5_low = new HashMap<>();
 
-    static Map<String, String> day6_high = new HashMap<>();
-    static Map<String, String> day6_low = new HashMap<>();
+    static Map<String, String> day6 = new HashMap<>();
+//    static Map<String, String> day6_low = new HashMap<>();
 
-    static Map<String, String> day7_high = new HashMap<>();
-    static Map<String, String> day7_low = new HashMap<>();
+    static Map<String, String> day7 = new HashMap<>();
+//    static Map<String, String> day7_low = new HashMap<>();
 
     //최종 오늘의 날씨 return 변수
     static Map<String, Map> todayWeatherPer03Result = new LinkedHashMap<>();
@@ -111,23 +119,6 @@ public class WeatherService {
     static Map<String, String> per_15 = new HashMap<>();
     static Map<String, String> per_18 = new HashMap<>();
     static Map<String, String> per_21 = new HashMap<>();
-
-
-    //당일~7일 데이터 정보 넘김
-    static Map<String, String> day_01_high = new HashMap<>();
-    static Map<String, String> day_01_low = new HashMap<>();
-    static Map<String, String> day_02_high = new HashMap<>();
-    static Map<String, String> day_02_low = new HashMap<>();
-    static Map<String, String> day_03_high = new HashMap<>();
-    static Map<String, String> day_03_low = new HashMap<>();
-    static Map<String, String> day_04_high = new HashMap<>();
-    static Map<String, String> day_04_low = new HashMap<>();
-    static Map<String, String> day_05_high = new HashMap<>();
-    static Map<String, String> day_05_low = new HashMap<>();
-    static Map<String, String> day_06_high = new HashMap<>();
-    static Map<String, String> day_06_low = new HashMap<>();
-    static Map<String, String> day_07_high = new HashMap<>();
-    static Map<String, String> day_07_low = new HashMap<>();
 
     static Map<String, String> weeklyHighAndLowResult = new LinkedHashMap<>();// 키값 자동정
 
@@ -160,8 +151,28 @@ public class WeatherService {
 
     Calendar cal;
     Calendar yes;
-    SimpleDateFormat sdf;
+    Calendar cal2;
 
+    SimpleDateFormat sdf;
+    SimpleDateFormat cal2sdf;
+    SimpleDateFormat cal3sdf;
+
+    //월, 일용
+    String mon1;
+    String mon2;
+    String mon3;
+    String mon4;
+    String mon5;
+    String mon6;
+    String mon7;
+
+    String day1Name;
+    String day2Name;
+    String day3Name;
+    String day4Name;
+    String day5Name;
+    String day6Name;
+    String day7Name;
 
     //어제
     String yesterdayStr;
@@ -687,6 +698,9 @@ public class WeatherService {
         yes = Calendar.getInstance();
         yes.setTime(new Date());
 
+        cal2=Calendar.getInstance();
+        cal2.setTime(new Date());
+
         sdf = new SimpleDateFormat("yyyyMMdd");
         todayStr = sdf.format(cal.getTime());
         todayInteger = Integer.parseInt(todayStr);
@@ -705,6 +719,41 @@ public class WeatherService {
         LocalDateTime localDateTime = LocalDateTime.now();
         todayDate = Integer.toString(localDateTime.getDayOfMonth());
 
+        cal2sdf=new SimpleDateFormat("M.d");
+        cal3sdf=new SimpleDateFormat("E요일");
+
+        mon1=cal2sdf.format(cal2.getTime());
+        day1Name=cal3sdf.format(cal2.getTime());
+        System.out.println("mon1 = " + mon1);
+        System.out.println("day1Name = " + day1Name);
+
+        cal2.add(Calendar.DATE, +1);
+        mon2=cal2sdf.format(cal2.getTime());
+        day2Name=cal3sdf.format(cal2.getTime());
+
+
+
+        cal2.add(Calendar.DATE, +1);
+        mon3=cal2sdf.format(cal2.getTime());
+        day3Name=cal3sdf.format(cal2.getTime());
+
+        cal2.add(Calendar.DATE, +1);
+        mon4=cal2sdf.format(cal2.getTime());
+        day4Name=cal3sdf.format(cal2.getTime());
+
+        cal2.add(Calendar.DATE, +1);
+        mon5=cal2sdf.format(cal2.getTime());
+        day5Name=cal3sdf.format(cal2.getTime());
+
+        cal2.add(Calendar.DATE, +1);
+        mon6=cal2sdf.format(cal2.getTime());
+        day6Name=cal3sdf.format(cal2.getTime());
+
+        cal2.add(Calendar.DATE, +1);
+        mon7=cal2sdf.format(cal2.getTime());
+        day7Name=cal3sdf.format(cal2.getTime());
+
+
 
     }
 
@@ -713,7 +762,7 @@ public class WeatherService {
 
         //오늘 날짜 받아오기
 
-        date();
+//        date();
         todayWeatherPer1Hour(x,y);
         weatherPer3Hour(x,y);
 
@@ -883,7 +932,7 @@ public class WeatherService {
     public Map getTodayWeatherNow(String x,String y) throws IOException, ParseException {
         System.out.println("getTodayWeather 진입");
         todayWeatherNowCount=0;
-        date();
+//        date();
         String fcstTime=null;
         //시간을 받아오는 코드
         //조회하는 시간에서 +1 정보만 가져온다.
@@ -1139,7 +1188,7 @@ public class WeatherService {
     public Map getTodayWeatherHighAndLow(String x,String y) throws IOException, ParseException {
 
 //        System.out.println("getTodayWeatherHighAndLow");
-        date();
+//        date();
 //        System.out.println("yesterdayStr = " + yesterdayStr);
         String apiUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService/getVilageFcst";    //동네예보조회
         String baseDate =null;
@@ -1278,11 +1327,11 @@ public class WeatherService {
      *
      */
 
-    public Map weeklyHighAndLow(String localCode) throws IOException, ParseException {
+    public ArrayList weeklyHighAndLow(String localCode) throws IOException, ParseException {
         int index=0;// currentTime 에 따른 일주일 값 받아오는 코드의 차이를 위해 추가한 코드
                     //currentTime<6일경우 전날의 데이터 값을 받아오기 때문에 +1개의 데이터 필요
 
-
+        ArrayList arrayList=new ArrayList();
 
         //시각을 얻는 코드
         int currentTime = LocalDateTime.now().getHour();
@@ -1356,13 +1405,14 @@ public class WeatherService {
         JSONObject object;
         System.out.println("parse_items = " + parse_items);
         for (int i=0;i<parse_item.size();i++){
+//            System.out.println("i = " + i);
              object = (JSONObject) parse_item.get(i);
-            System.out.println("parse_item = " + parse_item.get(0));
-            weekHighAndLowParsing(object);
+//            System.out.println("parse_item = " + parse_item.get(0));
+            arrayList  = weekHighAndLowParsing(object);
 
         }
 
-        return weeklyHighAndLowResult;
+        return arrayList;
 
 
     }
@@ -1370,40 +1420,66 @@ public class WeatherService {
     /**
      * 중기 기온 최고, 최저 파싱 함수
      */
-    void weekHighAndLowParsing(JSONObject object) {
+    ArrayList weekHighAndLowParsing(JSONObject object) {
+        ArrayList  arrayList=new ArrayList<>();
         String day2HighResult = object.get("taMax3").toString();
-        weeklyHighAndLowResult.put("taMax2", day2HighResult);
+        day2.put("taMax", day2HighResult);
         String day2LowResult = object.get("taMin3").toString();
-        weeklyHighAndLowResult.put("taMin2", day2LowResult);
+        day2.put("taMin", day2LowResult);
+        day2.put("week",day2Name);
+        day2.put("day",mon2);
 
         String day3HighResult = object.get("taMax4").toString();
-        weeklyHighAndLowResult.put("taMax3", day3HighResult);
+        day3.put("taMax", day3HighResult);
         String day3LowResult = object.get("taMin4").toString();
-        weeklyHighAndLowResult.put("taMin3", day3LowResult);
+        day3.put("taMin", day3LowResult);
+        day3.put("week",day3Name);
+        day3.put("day",mon3);
+
 
         String day4HighResult = object.get("taMax5").toString();
-        weeklyHighAndLowResult.put("taMax4", day4HighResult);
+        day4.put("taMax", day4HighResult);
         String day4LowResult = object.get("taMin5").toString();
-        weeklyHighAndLowResult.put("taMin4", day4LowResult);
+        day4.put("taMin", day4LowResult);
+        day4.put("week",day4Name);
+        day4.put("day",mon4);
 
         String day5HighResult = object.get("taMax6").toString();
-        weeklyHighAndLowResult.put("taMax5", day5HighResult);
+        day5.put("taMax", day5HighResult);
         String day5LowResult = object.get("taMin6").toString();
-        weeklyHighAndLowResult.put("taMin5", day5LowResult);
+        day5.put("taMin", day5LowResult);
+        day5.put("week",day5Name);
+        day5.put("day",mon5);
+
 
 
         String day6HighResult = object.get("taMax7").toString();
-        weeklyHighAndLowResult.put("taMax6", day6HighResult);
+        day6.put("taMax", day6HighResult);
         String day6LowResult = object.get("taMin7").toString();
-        weeklyHighAndLowResult.put("taMin6", day6LowResult);
+        day6.put("taMin", day6LowResult);
+        day6.put("week",day6Name);
+        day6.put("day",mon6);
+
 
 
         String day7HighResult = object.get("taMax8").toString();
-        weeklyHighAndLowResult.put("taMax7", day7HighResult);
+        day7.put("taMax", day7HighResult);
         String day7LowResult = object.get("taMin8").toString();
-        weeklyHighAndLowResult.put("taMin7", day7LowResult);
+        day7.put("taMin", day7LowResult);
+        day7.put("week",day7Name);
+        day7.put("day",mon7);
 
 
+        System.out.println("day2 = " + day2);
+        System.out.println("day2.size() = " + day2.size());
+        arrayList.add(day2);
+        arrayList.add(day3);
+        arrayList.add(day4);
+        arrayList.add(day5);
+        arrayList.add(day6);
+        arrayList.add(day7);
+
+        return arrayList;
     }
 
     /**
@@ -1569,47 +1645,47 @@ public class WeatherService {
      */
     void weekForecastParsing(JSONObject object) {
         String day2RnResult = object.get("rnSt3Pm").toString();
-        weeklyRnForecastResult.put("rnSt2", day2RnResult);
+        day2.put("rnSt", day2RnResult);
 
         String day3RnResult = object.get("rnSt4Pm").toString();
-        weeklyRnForecastResult.put("rnSt3", day3RnResult);
+        day3.put("rnSt", day3RnResult);
 
         String day4RnResult = object.get("rnSt5Pm").toString();
-        weeklyRnForecastResult.put("rnSt4", day4RnResult);
+        day4.put("rnSt", day4RnResult);
 
         String day5RnResult = object.get("rnSt6Pm").toString();
-        weeklyRnForecastResult.put("rnSt5", day5RnResult);
+        day5.put("rnSt", day5RnResult);
 
         String day6RnResult = object.get("rnSt7Pm").toString();
-        weeklyRnForecastResult.put("rnSt6", day6RnResult);
+        day6.put("rnSt", day6RnResult);
 
         String day7RnResult = object.get("rnSt8").toString();
-        weeklyRnForecastResult.put("rnSt7", day7RnResult);
+        day7.put("rnSt", day7RnResult);
 
 
         //날씨 예보
         String day2WeatherResult = object.get("wf3Pm").toString();
-        weeklyWeatherForecastResult.put("wf2", day2WeatherResult);
+        day2.put("wf", day2WeatherResult);
 
         String day3WeatherResult = object.get("wf4Pm").toString();
-        weeklyWeatherForecastResult.put("wf3", day3WeatherResult);
+        day3.put("wf", day3WeatherResult);
 
         String day4WeatherResult = object.get("wf5Pm").toString();
-        weeklyWeatherForecastResult.put("wf4", day4WeatherResult);
+        day4.put("wf", day4WeatherResult);
 
         String day5WeatherResult = object.get("wf6Pm").toString();
-        weeklyWeatherForecastResult.put("wf5", day5WeatherResult);
+        day5.put("wf", day5WeatherResult);
 
         String day6WeatherResult = object.get("wf7Pm").toString();
-        weeklyWeatherForecastResult.put("wf6", day6WeatherResult);
+        day6.put("wf", day6WeatherResult);
 
         String day7WeatherResult = object.get("wf8").toString();
-        weeklyWeatherForecastResult.put("wf7", day7WeatherResult);
+        day7.put("wf", day7WeatherResult);
 
 
 
-        weeklyForecastResult.put("weather",weeklyWeatherForecastResult);
-        weeklyForecastResult.put("rain",weeklyRnForecastResult);
+//        weeklyForecastResult.put("weather",weeklyWeatherForecastResult);
+//        weeklyForecastResult.put("rain",weeklyRnForecastResult);
 
 
     }
@@ -1755,32 +1831,41 @@ public class WeatherService {
     //전날 23시 조회 기준
     //최고기온은 15시 데이터
     //최저 기온은 6시 데이터
-    void weeklyDay1HighAndLowParsing(JSONObject object) {
-
+    ArrayList weeklyDay1HighAndLowParsing(JSONObject object) {
+        ArrayList weeklyDay1HighAndLow=new ArrayList();
         if (object.get("fcstDate").equals(tomorrowStr)) {
             if (object.get("category").equals("TMN")) {
 //                System.out.println("object = " + object);
                 String skyValue = object.get("fcstValue").toString();
-                weeklyHighAndLowResult.put("taMin1", skyValue);
+                day1.put("taMin", skyValue);
+//                weeklyDay1HighAndLow.add(day1_low);
+
+
             } else if (object.get("category").equals("TMX")) {
 //                System.out.println("object = " + object);
                 String ptyValue = object.get("fcstValue").toString();
-                weeklyHighAndLowResult.put("taMax1", ptyValue);
+                day1.put("taMax", ptyValue);
+                day1.put("week",day1Name);
+                day1.put("day",mon1);
+                weeklyDay1HighAndLow.add(day1);
+
 
             }
         }
-
+//        System.out.println("weeklyDay1HighAndLow = " + weeklyDay1HighAndLow);
+        return weeklyDay1HighAndLow;
     }
 
 
     /**
      * 오늘 기준 그 다음날의 최고 최저 기온 조회
      * 전날 23시를 basetime 으로  모레의  최고, 최저 기온을 조회한다.
+     * 주간 날씨 예보에서 그 다음날 정보를 위해 사용
      */
-    public void getDay1WeatherHighAndLow(String x,String y) throws IOException, ParseException {
+    public ArrayList getDay1WeatherHighAndLow(String x,String y) throws IOException, ParseException {
 
 
-        date();
+//        date();
 //        System.out.println("yesterdayStr = " + yesterdayStr);
         String apiUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService/getVilageFcst";    //동네예보조회
 
@@ -1857,18 +1942,24 @@ public class WeatherService {
 
         //element 변수 선언
         JSONObject element = null;
-
+        ArrayList arrayList=null;
         for (int i = 0; i < parse_item.size(); i++) {
             {
 
                 object = (JSONObject) parse_item.get(i);
-                weeklyDay1HighAndLowParsing(object);
-//                System.out.println("object = " + object);
+               arrayList= weeklyDay1HighAndLowParsing(object);
+
+               //최고 최저 기온 받을경우 바로 나옴
+               if(arrayList.size()==1)
+                   break;
+//                System.out.println("arrayList = " + arrayList);
+//                System.out.println("arrayListSize = "+arrayList.size());
+
             }
 
 
         }
-
+            return arrayList;
 //        return weeklyHighAndLowResult;
     }
 
@@ -1876,11 +1967,13 @@ public class WeatherService {
     /**
      * 오늘 기준 그 다음날의 최고 최저 기온 조회
      * 전날 23시를 basetime 으로  모레의  sky,  강수확률 조회한다.
+     * 주간 강수확률 조회에서 1일차의 날씨 정보를 얻기 위해 사용됨
      */
     public void getDay1Weather(String x,String y) throws IOException, ParseException {
 
 
-        date();
+        //시간 관련 함수 실행
+//        date();
 //        System.out.println("yesterdayStr = " + yesterdayStr);
         String apiUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService/getVilageFcst";    //동네예보조회
 
@@ -1959,18 +2052,15 @@ public class WeatherService {
 
                 object = (JSONObject) parse_item.get(i);
                 weeklyDay1WeatherParsing(object);
-//                System.out.println("object = " + object);
             }
-
-
         }
 
-//        return weeklyHighAndLowResult;
     }
 
 
     /**
      * 일주일 단위  하늘, 강수확률 가져오기 (그 다음날 데이터만)
+     * 주간 강수량 확인용
      */
     //전날 23시 조회 기준
     //최고기온은 15시 데이터
@@ -1984,7 +2074,7 @@ public class WeatherService {
                     if (object.get("category").equals("POP")) {
                         System.out.println("object = " + object);
                         String rnValue = object.get("fcstValue").toString();
-                        weeklyRnForecastResult.put("rnSt1", rnValue);
+                        day1.put("rnSt", rnValue);
                     } else if (object.get("category").equals("PTY")) {
                         if(object.get("fcstValue").toString().equals("0")){
                             index=0;
@@ -2013,20 +2103,20 @@ public class WeatherService {
 //                        System.out.println("object = " + object);
                         if(index==0){
                             if (object.get("fcstValue").toString().equals("1")) {
-                                weeklyWeatherForecastResult.put("wf1", "맑음");
+                                day1.put("wf", "맑음");
                             } else if (object.get("fcstValue").toString().equals("3")) {
-                                weeklyWeatherForecastResult.put("wf1", "구름많음");
+                                day1.put("wf", "구름많음");
                             } else if (object.get("fcstValue").toString().equals("4")) {
-                                weeklyWeatherForecastResult.put("wf1", "흐림");
+                                day1.put("wf", "흐림");
                             }
                         }
                        else if(index==1){
                             if (object.get("fcstValue").toString().equals("1")) {
-                                weeklyWeatherForecastResult.put("wf1", "맑고" + " " + ptyValue);
+                                day1.put("wf", "맑고" + " " + ptyValue);
                             } else if (object.get("fcstValue").toString().equals("3")) {
-                                weeklyWeatherForecastResult.put("wf1", "구름많고" + " " + ptyValue);
+                                day1.put("wf", "구름많고" + " " + ptyValue);
                             } else if (object.get("fcstValue").toString().equals("4")) {
-                                weeklyWeatherForecastResult.put("wf1", "흐리고" + " " + ptyValue);
+                                day1.put("wf", "흐리고" + " " + ptyValue);
                             }
 
 

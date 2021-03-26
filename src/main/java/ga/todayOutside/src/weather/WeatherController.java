@@ -41,7 +41,7 @@ public class WeatherController {
     public BaseResponse<ArrayList> todayWeatherList(@PathVariable Long addressIdx) throws IOException, ParseException {
 
         //jwt 토큰 에서 userIdx 얻기
-
+        weatherService.date();
         Long userIdx;
         Address address;
 
@@ -90,7 +90,7 @@ public class WeatherController {
 
         Long userIdx;
         Address address;
-
+        weatherService.date();
         try {
             userIdx = jwtService.getUserId();
         } catch (BaseException exception) {
@@ -135,7 +135,7 @@ public class WeatherController {
 
 
         //jwt 토큰 에서 userIdx 얻기
-
+        weatherService.date();
         Long userIdx;
         Address address;
 
@@ -166,30 +166,109 @@ public class WeatherController {
         return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_TODAY_LOW_HIGH,todayWeatherHighAndLowResult);
     }
 
+//    /**
+//     *주간 날씨 데이터 조회
+//     * 최고 기온 및 최저 기온 조회
+//     */
+//    @ResponseBody
+//    @GetMapping("/address/{addressIdx}/weekly-highAndLowWeathers")
+//    public BaseResponse<Map> weekly(@PathVariable  Long addressIdx) throws IOException, ParseException {
+//
+//        //jwt 토큰 에서 userIdx 얻기
+//
+//        Long userIdx;
+//        Address address;
+//
+//        try {
+//            userIdx = jwtService.getUserId();
+//        } catch (BaseException exception) {
+//            return new BaseResponse<>(exception.getStatus());
+//        }
+//
+//        //user idx 와 입력받은 addressIdx 일치 여부 확인 및 address 반환
+//        try {
+//            address = addressService.findByAddress(addressIdx, userIdx);
+//        }
+//        catch (BaseException exception){
+//            return new BaseResponse<>(exception.getStatus());
+//        }
+//
+//        // 시,도 구 정보 받아 nx ny로 좌표 변경
+//        Map<String, String> nxNy = weatherService.convertNxNy(address.getFirstAddressName(), address.getSecondAddressName());
+//
+//        //x,y 값 얻기
+//        String nx=nxNy.get("x");
+//        String ny=nxNy.get("y");
+//
+//        String s = weatherService.convertForWeeklyHighAndLowWeather(address.getFirstAddressName(),address.getSecondAddressName());
+//
+//        weatherService.getDay1WeatherHighAndLow(nx,ny);
+////        Map result = weatherService.weeklyHighAndLow(s);
+//
+//          return  new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_WEEKLY_HIGH_LOW_VALUE);//:TODO 성공 코드 바꾸기
+//    }
+//
+//    /**
+//     *
+//     * @param addressIdx
+//     * @return
+//     * @throws IOException
+//     * @throws ParseException
+//     * 주간 강수확률 밑 날씨
+//     */
+//    @ResponseBody
+//    @GetMapping("/address/{addressIdx}/weekly-weathers")
+//    public BaseResponse<Map> data(@PathVariable  Long addressIdx) throws IOException, ParseException {
+//
+//        Long userIdx;
+//        Address address;
+//
+//        try {
+//            userIdx = jwtService.getUserId();
+//            //user idx 와 입력받은 addressIdx 일치 여부 확인 및 address 반환
+//            address = addressService.findByAddress(addressIdx, userIdx);
+//        } catch (BaseException exception) {
+//            return new BaseResponse<>(exception.getStatus());
+//        }
+//
+//        // 시,도 구 정보 받아 nx ny로 좌표 변경
+//        Map<String, String> nxNy = weatherService.convertNxNy(address.getFirstAddressName(), address.getSecondAddressName());
+//
+//        //x,y 값 얻기
+//        String nx=nxNy.get("x");
+//        String ny=nxNy.get("y");
+//
+//        // 예보 구역 코드로 변경 하기 위해 실행(주간 예보)
+//        String s = weatherService.convertForWeeklyWeatherForeCast(address.getFirstAddressName(),address.getSecondAddressName());
+//        //코드값 출력 해봄
+//        System.out.println("s = " + s);
+//
+//        //day1의 강수 확률 확인
+//        weatherService.getDay1Weather(nx,ny);
+////        String s= weatherService.convertForWeeklyWeatherForeCast(getWeeklyReq.getSecondAddressName());
+//         weatherService.weeklyForecastResult(s);
+//
+//
+//        return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_WEEKLY_RAIN_WEATHER);
+//    }
+
     /**
-     *주간 날씨 데이터 조회
-     * 최고 기온 및 최저 기온 조회
+     * 주간 최고 최저 강수량 하늘 상태 모두 합치기
      */
     @ResponseBody
-    @GetMapping("/address/{addressIdx}/weekly-highAndLowWeathers")
-    public BaseResponse<Map> weekly(@PathVariable  Long addressIdx) throws IOException, ParseException {
-
-        //jwt 토큰 에서 userIdx 얻기
+    @GetMapping("/address/{addressIdx}/weekly-weather")
+    public BaseResponse<ArrayList> getWeekly(@PathVariable  Long addressIdx) throws IOException, ParseException {
+        ArrayList weeklyResult=new ArrayList();
 
         Long userIdx;
         Address address;
-
+        weatherService.date();
+        //address ,user 정보 있다 유무 확인
         try {
             userIdx = jwtService.getUserId();
-        } catch (BaseException exception) {
-            return new BaseResponse<>(exception.getStatus());
-        }
-
-        //user idx 와 입력받은 addressIdx 일치 여부 확인 및 address 반환
-        try {
+            //user idx 와 입력받은 addressIdx 일치 여부 확인 및 address 반환
             address = addressService.findByAddress(addressIdx, userIdx);
-        }
-        catch (BaseException exception){
+        } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
 
@@ -200,60 +279,31 @@ public class WeatherController {
         String nx=nxNy.get("x");
         String ny=nxNy.get("y");
 
-        String s = weatherService.convertForWeeklyHighAndLowWeather(address.getFirstAddressName(),address.getSecondAddressName());
-
-        weatherService.getDay1WeatherHighAndLow(nx,ny);
-        Map result = weatherService.weeklyHighAndLow(s);
-
-          return  new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_WEEKLY_HIGH_LOW_VALUE,result);//:TODO 성공 코드 바꾸기
-    }
-
-    /**
-     *
-     * @param addressIdx
-     * @return
-     * @throws IOException
-     * @throws ParseException
-     * 주간 강수확률 밑 날씨
-     */
-    @ResponseBody
-    @GetMapping("/address/{addressIdx}/weekly-weathers")
-    public BaseResponse<Map> data(@PathVariable  Long addressIdx) throws IOException, ParseException {
-
-        Long userIdx;
-        Address address;
-
-        try {
-            userIdx = jwtService.getUserId();
-        } catch (BaseException exception) {
-            return new BaseResponse<>(exception.getStatus());
-        }
-
-        //user idx 와 입력받은 addressIdx 일치 여부 확인 및 address 반환
-        try {
-            address = addressService.findByAddress(addressIdx, userIdx);
-        }
-        catch (BaseException exception){
-            return new BaseResponse<>(exception.getStatus());
-        }
-
-        // 시,도 구 정보 받아 nx ny로 좌표 변경
-        Map<String, String> nxNy = weatherService.convertNxNy(address.getFirstAddressName(), address.getSecondAddressName());
-
-        //x,y 값 얻기
-        String nx=nxNy.get("x");
-        String ny=nxNy.get("y");
-
-        //
+        // 예보 구역 코드로 변경 하기 위해 실행(주간 예보)
         String s = weatherService.convertForWeeklyWeatherForeCast(address.getFirstAddressName(),address.getSecondAddressName());
+        //코드값 출력 해봄
         System.out.println("s = " + s);
+        //강수확률 하늘  하루치 확인
         weatherService.getDay1Weather(nx,ny);
-//        String s= weatherService.convertForWeeklyWeatherForeCast(getWeeklyReq.getSecondAddressName());
-        Map weeklyForecastResult = weatherService.weeklyForecastResult(s);
+        //하루 최고 최저 기온 값 가져옴
+        ArrayList day1WeatherHighAndLow = weatherService.getDay1WeatherHighAndLow(nx, ny);
+        System.out.println("day1WeatherHighAndLow = " + day1WeatherHighAndLow);
+        weeklyResult.addAll(day1WeatherHighAndLow);
+        //하루치 정보 까지 다 합침
+
+        //주간 강수
+        weatherService.weeklyForecastResult(s);
 
 
-        return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_WEEKLY_RAIN_WEATHER,weeklyForecastResult);
+        //주간 최고 최저 정보
+        weeklyResult.addAll(weatherService.weeklyHighAndLow(s));
+
+        System.out.println("weeklyResult = " + weeklyResult);
+
+        return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_WEEKLY_WEATHER,weeklyResult);
     }
+
+
 
     /**
      * 홈 화면용 날씨 데이터
@@ -261,7 +311,7 @@ public class WeatherController {
     @ResponseBody
     @GetMapping("/homeWeather")
     public BaseResponse<ArrayList> home(){
-
+        weatherService.date();
         Long userIdx;
         Address address;
         Map allAddressesByUserIdx=null;

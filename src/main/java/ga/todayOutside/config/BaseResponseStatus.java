@@ -42,6 +42,7 @@ public enum BaseResponseStatus {
     SUCCESS_HOME_WEATHER_MESSAGE(true, 1222, "홈 화면 게시판 조회를 성공하였습니다."),
     NEW_KAKAO_USERS(true, 1223, "카카오 신규 회원입니다."),
     SUCCESS_KAKAO_LOGIN(true, 1224, "카카오 로그인 성공."),
+    SUCCESS_READ_WEEKLY_WEATHER(true,1225,"주간 날씨정보 조회에 성공하였습니다."),
     SUCCESS_POST_COMMENTS(true, 1300, "댓글 등록이 성공하였습니다."),
     SUCCESS_GET_COMMENTS(true, 1301, "댓글 조회가 성공하였습니다."),
     SUCCESS_PATCH_COMMENTS(true, 1302, "댓글 수정이 성공하였습니다."),
