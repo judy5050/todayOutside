@@ -720,7 +720,7 @@ public class WeatherService {
         todayDate = Integer.toString(localDateTime.getDayOfMonth());
 
         cal2sdf=new SimpleDateFormat("M.d");
-        cal3sdf=new SimpleDateFormat("E요일");
+        cal3sdf=new SimpleDateFormat("E요일",Locale.KOREAN);
 
         mon1=cal2sdf.format(cal2.getTime());
         day1Name=cal3sdf.format(cal2.getTime());
