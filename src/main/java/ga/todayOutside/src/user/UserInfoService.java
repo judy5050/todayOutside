@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -86,6 +87,7 @@ public class UserInfoService {
         String disasterAlarmStatus = "Y";
         Long heartNum = (long) 0;
         String isDeleted = "N";
+        List<Long> addressIds = new ArrayList<>();
 
         try {
             //password = new AES128(Secret.USER_INFO_PASSWORD_KEY).encrypt(postUserReq.getPassword());
@@ -117,8 +119,8 @@ public class UserInfoService {
                         .addressOrder(orderCnt++)
                         .build();
 
-                addressRepository.save(address);
-
+                address = addressRepository.save(address);
+                addressIds.add(address.getId());
             }
 
         } catch (Exception exception) {
@@ -130,7 +132,7 @@ public class UserInfoService {
 
         // 5. UserInfoLoginRes로 변환하여 return
         Long id = userInfo.getId();
-        return new PostUserRes(id, email, snsId, jwt);
+        return new PostUserRes(id, email, snsId, jwt, addressIds);
     }
 
     /**
