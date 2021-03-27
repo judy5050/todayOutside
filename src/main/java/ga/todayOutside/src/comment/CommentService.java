@@ -26,6 +26,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -196,4 +197,21 @@ public class CommentService {
         return result;
     }
 
+    /**
+     * 댓글 반환
+     * @param commentIdx
+     * @return
+     */
+    public Comment getComments(Long commentIdx) throws BaseException {
+
+        Comment comment = commentRepository.findById(commentIdx).orElse(null);
+        if(comment==null){
+
+            throw new BaseException(BaseResponseStatus.EMPTY_COMMENT);
+        }
+
+
+
+        return comment;
+    }
 }

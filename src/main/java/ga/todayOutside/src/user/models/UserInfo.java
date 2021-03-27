@@ -3,6 +3,8 @@ package ga.todayOutside.src.user.models;
 import ga.todayOutside.config.BaseEntity;
 import ga.todayOutside.src.address.model.Address;
 import ga.todayOutside.src.comment.model.Comment;
+//import ga.todayOutside.src.commentNotificationHistory.model.CommentNotificationHistory;
+import ga.todayOutside.src.commentNotificationHistory.model.CommentNotificationHistory;
 import ga.todayOutside.src.heartHistory.model.HeartHistory;
 import ga.todayOutside.src.messageBoard.models.MessageBoard;
 import ga.todayOutside.src.notificationHistory.model.NotificationHistory;
@@ -103,10 +105,17 @@ public class UserInfo extends BaseEntity {
     List<HeartHistory> heartHistories=new ArrayList<>();
 
     /**
-     * 신고
+     * 게시글 신고
      */
     @OneToMany(mappedBy = "userInfo")
     List<NotificationHistory> notificationHistories=new ArrayList<>();
+
+    /**
+     * 댓글 신고
+     */
+    @OneToMany(mappedBy = "userInfo")
+    List<CommentNotificationHistory> commentNotificationHistories=new ArrayList<>();
+
 
     /**
      *  나눔 이야기 수

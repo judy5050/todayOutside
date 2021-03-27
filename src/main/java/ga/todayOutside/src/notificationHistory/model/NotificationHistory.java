@@ -2,6 +2,7 @@ package ga.todayOutside.src.notificationHistory.model;
 
 
 import ga.todayOutside.config.BaseEntity;
+import ga.todayOutside.src.comment.model.Comment;
 import ga.todayOutside.src.heartHistory.model.HeartStatus;
 import ga.todayOutside.src.messageBoard.models.MessageBoard;
 import ga.todayOutside.src.user.models.UserInfo;
@@ -46,4 +47,5 @@ public class NotificationHistory extends BaseEntity {
 
 
     }
+
 }

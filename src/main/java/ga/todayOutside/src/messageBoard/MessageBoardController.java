@@ -271,7 +271,7 @@ public class MessageBoardController {
             System.out.println("messageBoard = " + messageBoard);
 
              heartHistory = heartHistoryService.postHeart(messageBoard, userInfo);
-             messageBoard1=messageBoardService.getMessageBoard(messageBoardIdx);
+
 
         }catch (BaseException exception){
             return new BaseResponse<>(exception.getStatus());
@@ -279,7 +279,7 @@ public class MessageBoardController {
 
 
 
-        return new BaseResponse(BaseResponseStatus.SUCCESS_POST_HEART,new PostHeartRes(messageBoard1));
+        return new BaseResponse(BaseResponseStatus.SUCCESS_POST_HEART,new PostHeartRes(heartHistory));
     }
 
     /**
