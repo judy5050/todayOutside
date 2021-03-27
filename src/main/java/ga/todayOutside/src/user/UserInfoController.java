@@ -105,6 +105,10 @@ public class UserInfoController {
             PostUserRes postUserRes = userInfoService.createUserInfo(params);
             return new BaseResponse<>(BaseResponseStatus.SUCCESS_POST_USER, postUserRes);
         } catch (BaseException exception) {
+            if (exception.getStatus().getCode() == 3011) {
+                PostUserRes postUserRes = userInfoService.existUser(params.getSnsId());
+                return new BaseResponse<>(BaseResponseStatus.DUPLICATED_USER, postUserRes);
+            }
             return new BaseResponse<>(exception.getStatus());
         }
 

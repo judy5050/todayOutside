@@ -73,7 +73,11 @@ public class UserInfoService {
         boolean duplication = userInfoProvider.checkDuplication(postUserReq.getNickname());
 
         // 1-3. 이미 존재하는 회원이 있다면 return DUPLICATED_USER
-        if (existsUserInfo != null || !duplication ) {
+        if (!duplication ) {
+            throw new BaseException(BaseResponseStatus.DUPlICATED_NICKNAME);
+        }
+
+        if (existsUserInfo != null) {
             throw new BaseException(BaseResponseStatus.DUPLICATED_USER);
         }
 
@@ -89,20 +93,12 @@ public class UserInfoService {
         String isDeleted = "N";
         List<Long> addressIds = new ArrayList<>();
 
-        try {
-            //password = new AES128(Secret.USER_INFO_PASSWORD_KEY).encrypt(postUserReq.getPassword());
-        } catch (Exception ignored) {
-            throw new BaseException(BaseResponseStatus.FAILED_TO_POST_USER);
-        }
-
         UserInfo userInfo = UserInfo.builder()
                 .email(email).nickname(nickname)
                 .picture(picture).snsId(snsId)
                 .noticeAlarmStatus(noticeAlarmStatus).disasterAlarmStatus(disasterAlarmStatus)
                 .heartNum(heartNum).isDeleted(isDeleted)
                 .build();
-
-
 
         // 3. 유저 정보 저장
         try {
@@ -133,6 +129,23 @@ public class UserInfoService {
         // 5. UserInfoLoginRes로 변환하여 return
         Long id = userInfo.getId();
         return new PostUserRes(id, email, snsId, jwt, addressIds);
+    }
+
+    /**
+     * 회원가입 -> 존재하는 유저일 경우 이용하는 서비스
+     * @param snsId
+     * @return
+     */
+    public PostUserRes existUser(Long snsId) {
+        UserInfo userInfo = userInfoRepository.findBySnsId(snsId).orElse(null);
+        Long userId = userInfo.getId();
+        String jwt = jwtService.createJwt(userId);
+        List<Long> addressIds = addressRepository.findByUserIdxForAddressId(userId);
+
+        PostUserRes postUserRes = new PostUserRes(userId, userInfo.getEmail(),
+                userInfo.getSnsId(), jwt, addressIds);
+
+        return postUserRes;
     }
 
     /**

@@ -54,6 +54,11 @@ public class DisasterController {
     public BaseResponse<Map<String, Object>> getMonth(@RequestParam String month, @RequestParam String city,
                                                       @RequestParam String state) {
 
+        int numberMonth = Integer.parseInt(month);
+
+        if (numberMonth > 12 || numberMonth < 1) {
+            return new BaseResponse<>(BaseResponseStatus.INVALID_MONTH_OR_DAY);
+        }
         try {
             ArrayList<DisasterInfo> infos = disasterService.filterByMonth(month);
             Map<String, Object> result = disasterService.filter(infos, city, state);
@@ -70,6 +75,13 @@ public class DisasterController {
                                                     @RequestParam String city, @RequestParam String state) {
 
         Map<String, Object> result = new HashMap<>();
+
+        int numberMonth = Integer.parseInt(month);
+        int numberDay = Integer.parseInt(day);
+
+        if (numberMonth > 12 || numberMonth < 1 || numberDay > 31 || numberDay < 1) {
+            return new BaseResponse<>(BaseResponseStatus.INVALID_MONTH_OR_DAY);
+        }
 
         try {
             ArrayList<DisasterInfo> infos = disasterService.filterByDay(month, day);

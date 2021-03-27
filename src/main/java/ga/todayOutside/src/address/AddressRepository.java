@@ -46,4 +46,7 @@ public interface AddressRepository extends JpaRepository<Address,Long> {
     @Query("update Address a set a.addressOrder=a.addressOrder+1 where a.id=:addressIdx")
     int plusBulkAddressOrder(@Param("addressIdx")Long addressIdx);
 
+    @Query("select a.id from Address a where a.userInfo.id= :userIdx")
+    List<Long> findByUserIdxForAddressId(@Param("userIdx") Long userIdx);
+
 }

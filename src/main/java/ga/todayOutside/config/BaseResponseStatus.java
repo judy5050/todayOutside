@@ -73,13 +73,13 @@ public enum BaseResponseStatus {
     EMPTY_MESSAGE_COMMENTS(false, 2300, "댓글을 작성해주세요"),
     EMPTY_DATE(false, 2301, "월, 일을 확인해주세요"),
     INVALID_ACCESSTOKEN(false, 2302, "유효하지 않은 accessToken 입니다."),
-
+    INVALID_MONTH_OR_DAY(false, 2303, "유효하지 않은 날짜입니다."),
 
 
     // 3000 : Response 오류
     RESPONSE_ERROR(false, 3000, "값을 불러오는데 실패하였습니다."),
     NOT_FOUND_USER(false, 3010, "존재하지 않는 회원입니다."),
-    DUPLICATED_USER(false, 3011, "이미 존재하는 회원입니다."),
+    DUPLICATED_USER(true, 3011, "이미 존재하는 회원입니다."),
     FAILED_TO_GET_USER(false, 3012, "회원 정보 조회에 실패하였습니다."),
     FAILED_TO_POST_USER(false, 3013, "회원가입에 실패하였습니다."),
     FAILED_TO_LOGIN(false, 3014, "로그인에 실패하였습니다."),
@@ -99,6 +99,7 @@ public enum BaseResponseStatus {
     FAILED_TO_GET_DISASTER(false, 3303, "재난 조회가 실패했습니다."),
     FAILED_TO_DELETE_COMMENTS(false, 3304, "댓글 삭제가 실패했습니다."),
     NOT_FOUND_MESSAGE_BY_USERS(false, 3305, "유저가 작성한 게시글이 없습니다."),
+    DUPlICATED_NICKNAME(false, 3306, "존재하는 닉네임 입니다."),
 
 
     // 4000 : Database 오류

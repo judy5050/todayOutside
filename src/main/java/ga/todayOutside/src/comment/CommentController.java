@@ -67,6 +67,12 @@ public class CommentController {
     @ResponseBody
     @PostMapping("/messageBoards/{messageBoardIdx}/comment")
     public BaseResponse<PostCommentRes> postComment(@RequestBody PostCommentReq req, @PathVariable Long messageBoardIdx) {
+        //구 동 띄어쓰기로 입력
+        String address = req.getAddressMsg();
+
+        if (address.split(" ").length < 2) {
+            return new BaseResponse<>(BaseResponseStatus.EMPTY_THIRD_ADDRESS);
+        }
 
         try {
             PostCommentRes result = commentService.postComments(req, messageBoardIdx);
@@ -88,8 +94,8 @@ public class CommentController {
     public BaseResponse<Void> deleteComments(@RequestParam Long userIdx, @PathVariable Long messageBoardIdx,
                                              @PathVariable Long commentIdx) {
 
-
         try {
+
             UserInfo userInfo = commentService.deleteComment(userIdx, commentIdx);
             userInfoService.updateUserTalkSub(userInfo);
 
