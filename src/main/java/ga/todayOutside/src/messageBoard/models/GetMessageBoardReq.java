@@ -10,21 +10,23 @@ import java.text.SimpleDateFormat;
 public class GetMessageBoardReq {
 
 
+    private Long userIdx;
     private String picture;
     private String userNickName;
     private String thirdAddressName;
     private String msg;
-    private Long heartNum;
-    private int commentNum; //댓글 수
+    private String heartNum;
+    private String commentNum; //댓글 수
     private String date;
 
 
 
     public GetMessageBoardReq(MessageBoard messageBoard) {
 
+        this.userIdx=messageBoard.getUserInfo().getId();
         this.userNickName=messageBoard.getUserInfo().getNickname();
         this.msg= messageBoard.getMessage();
-        this.heartNum=messageBoard.getHeartNum();
+        this.heartNum=messageBoard.getHeartNum().toString();
 
         String[]array=messageBoard.getAddressMsg().split(" ");
         if(array.length>1){
@@ -36,7 +38,7 @@ public class GetMessageBoardReq {
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         this.date= simpleDateFormat.format(messageBoard.getCreatedAt()); ;
-        this.commentNum=messageBoard.getComments().size();
+        this.commentNum=Integer.toString(messageBoard.getComments().size());
         this.picture= messageBoard.getUserInfo().getPicture();
 
 

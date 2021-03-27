@@ -8,6 +8,7 @@ import ga.todayOutside.src.address.model.GetAddressRes;
 import ga.todayOutside.src.messageBoard.models.*;
 import ga.todayOutside.src.user.UserInfoService;
 import ga.todayOutside.src.user.models.UserInfo;
+import ga.todayOutside.src.weather.WeatherService;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +29,7 @@ public class MessageBoardService {
 
     private final MessageBoardRepository messageBoardRepository;
     private final UserInfoService userInfoService;
+
 
         public MessageBoard getMessageBoard(Long messageBoardIdx) throws BaseException {
             MessageBoard messageBoard = messageBoardRepository.findById(messageBoardIdx).orElse(null);
@@ -55,10 +59,15 @@ public class MessageBoardService {
         return messageBoard;
     }
 
+    /**
+     *
+     * 메시지 조회
+     */
     //TODO 해당 코드 나중에 변경하기
     public MessageBoard findByMessage(Long messageIdx) throws BaseException {
         MessageBoard  messageBoard = messageBoardRepository.findById(messageIdx).orElse(null);
-        if(messageBoard==null){
+        System.out.println("messageBoard.getIsDeleted() = " + messageBoard.getIsDeleted());
+        if(messageBoard==null||messageBoard.getIsDeleted().equals("Y")){
             throw new BaseException(BaseResponseStatus.NOT_FOUND_MESSAGE_BOARD);
         }
 
@@ -128,6 +137,7 @@ public class MessageBoardService {
     public List<GetMessageBoardRecentlyRes> getHeartMessageBoardList(String secondAddressName, int page, BoardType boardType) {
 
         int index;
+
         String filter;
         List<GetMessageBoardRecentlyRes> getMessageBoardRecentlyRes;
 
@@ -149,7 +159,7 @@ public class MessageBoardService {
 
         //page 처리
         PageRequest pageRequest=PageRequest.of(page,10);
-        Page <MessageBoard> messageBoards= messageBoardRepository.findByAddressMsgLike(filter,pageRequest,boardType);
+        Page <MessageBoard> messageBoards= messageBoardRepository.findByAddressMsgLike(filter,pageRequest,boardType,"N");
         List<GetMessageBoardRecentlyRes> getMessageBoardHeartRes1=messageBoards.map(GetMessageBoardRecentlyRes::new).getContent();
 
         return getMessageBoardHeartRes1;
@@ -180,7 +190,7 @@ public class MessageBoardService {
 
         //page 처리
         PageRequest pageRequest=PageRequest.of(page,10);
-        Page <MessageBoard> messageBoards= messageBoardRepository.findByAddressRecentlyMsg(filter,pageRequest,boardType);
+        Page <MessageBoard> messageBoards= messageBoardRepository.findByAddressRecentlyMsg(filter,pageRequest,boardType,"N");
         List<GetMessageBoardRecentlyRes> getMessageBoardHeartRes1=messageBoards.map(GetMessageBoardRecentlyRes::new).getContent();
 
         return getMessageBoardHeartRes1;
@@ -209,7 +219,7 @@ public class MessageBoardService {
         System.out.println("filter = " + filter);
 
         PageRequest pageRequest=PageRequest.of(0,1);
-        Page <MessageBoard> messageBoards= messageBoardRepository.findByAddressRecentlyMsg(filter,pageRequest,BoardType.WEATHER);
+        Page <MessageBoard> messageBoards= messageBoardRepository.findByAddressRecentlyMsg(filter,pageRequest,BoardType.WEATHER,"N");
         getMessageBoardRecentlyRes=messageBoards.map(GetMessageBoardRecentlyRes::new).getContent();
         if(getMessageBoardRecentlyRes.isEmpty()){
             System.out.println("데이터 없음");
@@ -248,7 +258,7 @@ public class MessageBoardService {
         System.out.println("filter = " + filter);
 
         PageRequest pageRequest=PageRequest.of(0,1);
-        Page <MessageBoard> messageBoards= messageBoardRepository.findByAddressRecentlyMsg(filter,pageRequest,BoardType.DISASTER);
+        Page <MessageBoard> messageBoards= messageBoardRepository.findByAddressRecentlyMsg(filter,pageRequest,BoardType.DISASTER,"N");
         getMessageBoardRecentlyRes=messageBoards.map(GetMessageBoardRecentlyRes::new).getContent();
         if(getMessageBoardRecentlyRes.isEmpty()){
             System.out.println("데이터 없음");
@@ -292,7 +302,7 @@ public class MessageBoardService {
 
         //page 처리
         PageRequest pageRequest=PageRequest.of(page,10);
-        Page <MessageBoard> messageBoards= messageBoardRepository.findByAddressMsgLike(filter,pageRequest,boardType);
+        Page <MessageBoard> messageBoards= messageBoardRepository.findByAddressMsgLike(filter,pageRequest,boardType,"N");
         List<GetMessageBoardRecentlyRes> getMessageBoardListHeartRes=messageBoards.map(GetMessageBoardRecentlyRes::new).getContent();
 
         return getMessageBoardListHeartRes;
@@ -326,7 +336,7 @@ public class MessageBoardService {
 
         //page 처리
         PageRequest pageRequest=PageRequest.of(page,10);
-        Page <MessageBoard> messageBoards= messageBoardRepository.findByAddressRecentlyMsg(filter,pageRequest,boardType);
+        Page <MessageBoard> messageBoards= messageBoardRepository.findByAddressRecentlyMsg(filter,pageRequest,boardType,"N");
         List<GetMessageBoardRecentlyRes> getMessageBoardListHeartRes=messageBoards.map(GetMessageBoardRecentlyRes::new).getContent();
 
         return getMessageBoardListHeartRes;
@@ -377,5 +387,19 @@ public class MessageBoardService {
     public UserInfo findByUser(MessageBoard messageBoard) throws BaseException {
         UserInfo userInfo = userInfoService.findByUserIdx(messageBoard.getUserInfo().getId());
         return userInfo;
+    }
+    public String todayDate(){
+
+        Calendar calendar;
+        SimpleDateFormat sdf;
+        String todayStr;
+        calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+
+
+        sdf = new SimpleDateFormat("yyyyMMdd");
+        todayStr = sdf.format(calendar.getTime());
+
+        return todayStr;
     }
 }

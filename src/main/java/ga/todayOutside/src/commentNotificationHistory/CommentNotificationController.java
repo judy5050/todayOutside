@@ -70,6 +70,12 @@ public class CommentNotificationController {
             //게시글 신고
             commentNotificationRepository.save(new CommentNotificationHistory(comment,userInfo));
 
+            //게시글 신고 개수 확인
+            int count = commentNotificationRepository.findByCommentIdx(commentIdx);
+            if(count>=5){
+                comment.setIsDeleted("Y");
+                commentService.save(comment);
+            }
 
 
         } catch (BaseException exception) {

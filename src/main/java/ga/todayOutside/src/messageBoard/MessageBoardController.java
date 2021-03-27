@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import static ga.todayOutside.config.BaseResponseStatus.SUCCESS_GET_HEART_STATUS;
 import static ga.todayOutside.config.BaseResponseStatus.SUCCESS_POST_HEART;
@@ -165,6 +166,8 @@ public class MessageBoardController {
         String addressMsg=" ";
         MessageBoard messageBoard;
         String addressMdl=" ";
+        String todayDate = messageBoardService.todayDate();
+
         try {
             userIdx = jwtService.getUserId();
             userInfo = userInfoService.findByUserIdx(userIdx);
@@ -182,6 +185,7 @@ public class MessageBoardController {
             if(recentlyMessageBoardList.isEmpty()){
                 return new BaseResponse<>(BaseResponseStatus.EMPTY_MESSAGE_BOARD_LIST);
             }
+
             return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_MESSAGE_BOARD_HEART,recentlyMessageBoardList);
 
         }
@@ -237,15 +241,17 @@ public class MessageBoardController {
     public BaseResponse<GetMessageBoardReq> test(@PathVariable Long messageBoardIdx) throws BaseException {
         UserInfo userInfo;
         Long userIdx;
+
+
         MessageBoard messageBoard;
         try {
             userIdx = jwtService.getUserId();
             userInfo = userInfoService.findByUserIdx(userIdx);
              messageBoard = messageBoardService.findByMessage(messageBoardIdx);
-
         }catch (BaseException baseException){
             return new BaseResponse<>(baseException.getStatus());
         }
+
 
 
         return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_MESSAGE_BOARD,new GetMessageBoardReq(messageBoard));

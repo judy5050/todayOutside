@@ -12,4 +12,7 @@ public interface CommentNotificationRepository extends JpaRepository<CommentNoti
 
     @Query("select c from CommentNotificationHistory c where c.userInfo.id =:userIdx and c.comment.id =:commentIdx")
     List<CommentNotificationHistory> findByUserIdxAndCommentIdx(@Param("userIdx") Long userIdx,@Param("commentIdx") Long commentIdx);
+
+    @Query("select count (c) from  CommentNotificationHistory  c where c.comment.id =:commentIdx")
+    int findByCommentIdx(@Param("commentIdx") Long commentIdx);
 }

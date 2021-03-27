@@ -14,10 +14,10 @@ import java.util.List;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment,Long> {
 
-    @Query("select c  from Comment  c where  c.messageBoard.id =:messageIdx order by c.createdAt asc ")
-    Page<Comment> findAllByMessageId(@Param("messageIdx")Long messageIdx, Pageable pageable);
+    @Query("select c  from Comment  c where  c.messageBoard.id =:messageIdx and c.isDeleted =:isDeleted order by c.createdAt asc ")
+    Page<Comment> findAllByMessageId(@Param("messageIdx")Long messageIdx, Pageable pageable,@Param("isDeleted") String N);
 
-    @Query("select c  from Comment  c where  c.userInfo.id =:userIdx order by c.createdAt desc ")
-    Page<Comment> findAllByUserIdx(Long userIdx, Pageable pageable);
+    @Query("select c  from Comment  c where  c.userInfo.id =:userIdx and c.isDeleted =:isDeleted order by c.createdAt desc ")
+    Page<Comment> findAllByUserIdx(@Param("userIdx") Long userIdx, Pageable pageable,@Param("isDeleted")String N);
 
 }
