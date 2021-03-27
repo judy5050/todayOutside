@@ -197,7 +197,7 @@ public class DisasterService {
      */
     public Map<String, ArrayList<DisasterFilterRes>> filterByDisaster(ArrayList<DisasterInfo> disasterInfos, Long userIdx) {
 
-        DisasterAlarm disasterAlarm = disasterAlarmRepository.findByUserIdx(userIdx);
+        DisasterAlarm disasterAlarm = disasterAlarmRepository.findByUserIdx(userIdx).orElse(null);
 
         Map<String, ArrayList<DisasterFilterRes>> result = new HashMap<>();
         Set<String> filter = disasterProvider.filterDisaster(disasterAlarm);
@@ -264,18 +264,22 @@ public class DisasterService {
             throw new BaseException(BaseResponseStatus.NOT_FOUND_USER);
         }
 
+        //등록된 알람이 있는지 확인
+        DisasterAlarm disasterAlarm = disasterAlarmRepository.findByUserIdx(userId).orElse(null);
+
         try {
-            DisasterAlarm disasterAlarm = disasterProvider.makeDisasterAlarm(name);
+            disasterAlarm = disasterProvider.makeDisasterAlarm(name, disasterAlarm);
             disasterAlarm.setUserIdx(userId);
-            System.out.println(userId);
-            System.out.println(disasterAlarm);
 
             disasterAlarmRepository.save(disasterAlarm);
 
-        } catch (Exception igored) {
+        } catch (Exception e) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_POST_ALARAM);
 
         }
+
+
+
     }
 
 }

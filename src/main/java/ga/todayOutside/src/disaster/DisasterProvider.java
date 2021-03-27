@@ -235,14 +235,16 @@ public class DisasterProvider {
         return result;
     }
 
-    public DisasterAlarm makeDisasterAlarm(List<String> names) {
+    public DisasterAlarm makeDisasterAlarm(List<String> names, DisasterAlarm disasterAlarm) {
 /* 필터 키워드 - 넘버링
 
         감염병 - 1, 지진 - 2, 태풍 - 3, 해일 - 4, 홍수 - 5, 호우 - 6, 강풍 - 7, 대설- 8, 한파 -9, 폭염 - 10, 건조 - 11, 황사 - 12
         미세먼지 13, 화재 14, 민방공 15, 수질 16  테러 17, 방사능 18, 위험물 19
 
          */
-        DisasterAlarm disasterAlarm = new DisasterAlarm();
+        if (disasterAlarm == null) {
+            disasterAlarm = new DisasterAlarm();
+        }
 
         disasterAlarm.setDisaster_1("N");
         disasterAlarm.setDisaster_2("N");
