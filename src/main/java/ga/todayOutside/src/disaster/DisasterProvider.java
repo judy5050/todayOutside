@@ -1,6 +1,7 @@
 package ga.todayOutside.src.disaster;
 
 import ga.todayOutside.src.disaster.model.DisasterAlarm;
+import ga.todayOutside.src.disaster.model.DisasterFilterRes;
 import ga.todayOutside.src.disaster.model.DisasterInfo;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -65,7 +66,7 @@ public class DisasterProvider {
      * @param map
      * @return
      */
-    public JSONObject MapToJSON(Map<String, ArrayList<DisasterInfo>> map) {
+    public JSONObject MapToJSON(Map<String, ArrayList<DisasterFilterRes>> map) {
 
         JSONObject resultMap = new JSONObject();
         int total = 0;
@@ -73,19 +74,19 @@ public class DisasterProvider {
         //각 재난 정보 가져오기
         for (String key : map.keySet()) {
 
-            ArrayList<DisasterInfo> al = map.get(key);
+            ArrayList<DisasterFilterRes> al = map.get(key);
             JSONArray ja = new JSONArray();
             int cnt = 0;
 
             //각 재난별 정보 가져오기
-            for (DisasterInfo d : al){
+            for (DisasterFilterRes d : al){
                 ja.add(d);
                 total += 1;
                 cnt += 1;
             }
 
             resultMap.put(key, ja);
-            resultMap.put(key + " 발생 건", cnt);
+
         }
         resultMap.put("total", total);
         return resultMap;
