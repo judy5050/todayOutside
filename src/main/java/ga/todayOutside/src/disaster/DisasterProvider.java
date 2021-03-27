@@ -1,6 +1,7 @@
 package ga.todayOutside.src.disaster;
 
 import ga.todayOutside.src.disaster.model.DisasterAlarm;
+import ga.todayOutside.src.disaster.model.DisasterFilterRes;
 import ga.todayOutside.src.disaster.model.DisasterInfo;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -65,7 +66,7 @@ public class DisasterProvider {
      * @param map
      * @return
      */
-    public JSONObject MapToJSON(Map<String, ArrayList<DisasterInfo>> map) {
+    public JSONObject MapToJSON(Map<String, ArrayList<DisasterFilterRes>> map) {
 
         JSONObject resultMap = new JSONObject();
         int total = 0;
@@ -73,19 +74,19 @@ public class DisasterProvider {
         //각 재난 정보 가져오기
         for (String key : map.keySet()) {
 
-            ArrayList<DisasterInfo> al = map.get(key);
+            ArrayList<DisasterFilterRes> al = map.get(key);
             JSONArray ja = new JSONArray();
             int cnt = 0;
 
             //각 재난별 정보 가져오기
-            for (DisasterInfo d : al){
+            for (DisasterFilterRes d : al){
                 ja.add(d);
                 total += 1;
                 cnt += 1;
             }
 
             resultMap.put(key, ja);
-            resultMap.put(key + " 발생 건", cnt);
+
         }
         resultMap.put("total", total);
         return resultMap;
@@ -234,14 +235,16 @@ public class DisasterProvider {
         return result;
     }
 
-    public DisasterAlarm makeDisasterAlarm(List<String> names) {
+    public DisasterAlarm makeDisasterAlarm(List<String> names, DisasterAlarm disasterAlarm) {
 /* 필터 키워드 - 넘버링
 
         감염병 - 1, 지진 - 2, 태풍 - 3, 해일 - 4, 홍수 - 5, 호우 - 6, 강풍 - 7, 대설- 8, 한파 -9, 폭염 - 10, 건조 - 11, 황사 - 12
         미세먼지 13, 화재 14, 민방공 15, 수질 16  테러 17, 방사능 18, 위험물 19
 
          */
-        DisasterAlarm disasterAlarm = new DisasterAlarm();
+        if (disasterAlarm == null) {
+            disasterAlarm = new DisasterAlarm();
+        }
 
         disasterAlarm.setDisaster_1("N");
         disasterAlarm.setDisaster_2("N");
