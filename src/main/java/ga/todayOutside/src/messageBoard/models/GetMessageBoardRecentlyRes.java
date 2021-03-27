@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 @Setter
 public class GetMessageBoardRecentlyRes {
 
+    private Long userIdx;
     private Long messageBoardIdx;
     private String picture;
     private String userNickName;
@@ -23,6 +24,7 @@ public class GetMessageBoardRecentlyRes {
 
 
     public GetMessageBoardRecentlyRes(MessageBoard messageBoard) {
+        this.userIdx=messageBoard.getUserInfo().getId();
         int size=0;
         if(messageBoard==null){
             this.isExistent="N";

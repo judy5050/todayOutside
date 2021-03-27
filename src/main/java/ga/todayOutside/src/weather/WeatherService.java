@@ -1174,12 +1174,17 @@ public class WeatherService {
         if (object.get("fcstDate").equals(todayStr)) {
             if (object.get("category").equals("TMN")) {
 //                System.out.println("object = " + object);
+                System.out.println("obje = " + object.get("fcstValue").getClass());
                 String skyValue = object.get("fcstValue").toString();
                 todayWeatherHighAndResult.put("TMN", skyValue);
             } else if (object.get("category").equals("TMX")) {
 //                System.out.println("object = " + object);
                 String ptyValue = object.get("fcstValue").toString();
+                String []array2=ptyValue.split(".");
+//                System.out.println("array2 = " + array2[0]);
                 todayWeatherHighAndResult.put("TMX", ptyValue);
+
+                //:TODO 해당 부분 실행시 탈출하도록 하기
 
             }
         }
