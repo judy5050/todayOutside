@@ -420,4 +420,22 @@ public class AddressService {
         return weatherList;
     }
 
+    /**
+     *  구 정보만 반환하기
+     *
+     */
+
+    public String convertSecondAddressName(String secondAddressName){
+
+        int index=0;
+        //시가 존재할 경우 구 정보만 반환
+        if(secondAddressName.matches(".*시.*")){
+            index=secondAddressName.indexOf("시");
+            secondAddressName=secondAddressName.substring(index+1);
+            System.out.println("index = " + index);
+        }
+
+        return secondAddressName;
+    }
+
 }

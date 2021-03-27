@@ -176,6 +176,9 @@ public class MessageBoardController {
         if(sortType.equals("heart")&&boardType.equals(BoardType.WEATHER)){
 
             List<GetMessageBoardRecentlyRes> recentlyMessageBoardList = messageBoardService.getHeartMessageBoardList(address.getSecondAddressName(), page,boardType);
+            if(recentlyMessageBoardList.isEmpty()){
+                return new BaseResponse<>(BaseResponseStatus.EMPTY_MESSAGE_BOARD_LIST);
+            }
             return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_MESSAGE_BOARD_HEART,recentlyMessageBoardList);
 
         }
@@ -184,7 +187,11 @@ public class MessageBoardController {
         else if(sortType.equals("recently")&&boardType.equals(BoardType.WEATHER)){
 
             List<GetMessageBoardRecentlyRes> recentlyMessageBoardList = messageBoardService.getRecentlyMessageBoardList(address.getSecondAddressName(), page,boardType);
+            if(recentlyMessageBoardList.isEmpty()){
+                return new BaseResponse<>(BaseResponseStatus.EMPTY_MESSAGE_BOARD_LIST);
+            }
             return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_MESSAGE_BOARD_RECENTLY,recentlyMessageBoardList);
+
 
 
         }
@@ -192,6 +199,9 @@ public class MessageBoardController {
         else if(sortType.equals("heart")&&boardType.equals(BoardType.DISASTER)){
 
             List<GetMessageBoardRecentlyRes> recentlyMessageBoardList = messageBoardService.getHeartMessageBoardDisasterList(address.getSecondAddressName(), page,boardType);
+            if(recentlyMessageBoardList.isEmpty()){
+                return new BaseResponse<>(BaseResponseStatus.EMPTY_MESSAGE_BOARD_LIST);
+            }
             return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_MESSAGE_BOARD_HEART,recentlyMessageBoardList);
 
 
@@ -199,6 +209,9 @@ public class MessageBoardController {
         else if(sortType.equals("recently")&&boardType.equals(BoardType.DISASTER)){
 
             List<GetMessageBoardRecentlyRes> recentlyMessageBoardList = messageBoardService.getRecentlyMessageBoardDisasterList(address.getSecondAddressName(), page,boardType);
+            if(recentlyMessageBoardList.isEmpty()){
+                return new BaseResponse<>(BaseResponseStatus.EMPTY_MESSAGE_BOARD_LIST);
+            }
             return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_MESSAGE_BOARD_RECENTLY,recentlyMessageBoardList);
 
 

@@ -90,6 +90,8 @@ public class WeatherController {
 
         Long userIdx;
         Address address;
+        String secondAddressName;
+        String secondAddressNameConvert;
         weatherService.date();
         try {
             userIdx = jwtService.getUserId();
@@ -104,7 +106,8 @@ public class WeatherController {
         catch (BaseException exception){
             return new BaseResponse<>(exception.getStatus());
         }
-
+        secondAddressName=address.getSecondAddressName();
+        secondAddressNameConvert = addressService.convertSecondAddressName(secondAddressName);
         // 시,도 구 정보 받아 nx ny로 좌표 변경
         Map<String, String> nxNy = weatherService.convertNxNy(address.getFirstAddressName(), address.getSecondAddressName());
 
@@ -118,8 +121,9 @@ public class WeatherController {
 //        System.out.println("userIdx :"+userIdx);
         Map res;
 
-        res = weatherService.getTodayWeatherNow(nx, ny);
 
+        res = weatherService.getTodayWeatherNow(nx, ny);
+        res.put("SecondAddressName",secondAddressNameConvert);
 
         return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_NOW_WEATHER,res); //TODO:성공 코드 바꾸기
 
