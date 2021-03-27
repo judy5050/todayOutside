@@ -71,11 +71,6 @@ public class UserInfo extends BaseEntity {
     @Column(name = "userProfile")
     private String picture;
 
-    /**
-     * 계정 삭제 여부
-     */
-    @Column(name = "isDeleted")
-    private String isDeleted;
 
     /**
      * 하트 개수
@@ -146,14 +141,13 @@ public class UserInfo extends BaseEntity {
     public UserInfo(Long id, String nickname,
                     String email, String noticeAlarmStatus,
                     String disasterAlarmStatus,String picture,
-                    String isDeleted, Long heartNum, Long snsId) {
+                    Long heartNum, Long snsId) {
         this.id = id;
         this.nickname = nickname;
         this.email = email;
         this.noticeAlarmStatus = noticeAlarmStatus;
         this.disasterAlarmStatus = disasterAlarmStatus;
         this.picture = picture;
-        this.isDeleted = isDeleted;
         this.heartNum = heartNum;
         this.snsId = snsId;
     }

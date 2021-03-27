@@ -253,7 +253,7 @@ public class MessageBoardController {
      *
      * */
     @ResponseBody
-    @GetMapping("/messageBoards/{messageBoardIdx}/heart")
+    @PostMapping("/messageBoards/{messageBoardIdx}/heart")
     public BaseResponse<PostHeartRes> postHeart(@PathVariable Long messageBoardIdx){
         Long userIdx;
         UserInfo userInfo;

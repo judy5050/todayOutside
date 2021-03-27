@@ -99,7 +99,7 @@ public class UserInfoService {
                 .email(email).nickname(nickname)
                 .picture(picture).snsId(snsId)
                 .noticeAlarmStatus(noticeAlarmStatus).disasterAlarmStatus(disasterAlarmStatus)
-                .heartNum(heartNum).isDeleted(isDeleted)
+                .heartNum(heartNum)
                 .build();
 
 

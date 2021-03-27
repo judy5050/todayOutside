@@ -26,7 +26,13 @@ public abstract class BaseEntity {
     @Column(name = "updatedAt", nullable = false)
     private Date updatedAt;
 
+    @Column(name = "isDeleted", nullable = false , columnDefinition = "char(1) default 'N'")
+    private String isDeleted;
 
+    @PrePersist
+    public void prePersist() {
+        this.isDeleted = this.isDeleted == null ? "N" : this.isDeleted;
+    }
 
 //    @PrePersist
 //    void prePersist() {
