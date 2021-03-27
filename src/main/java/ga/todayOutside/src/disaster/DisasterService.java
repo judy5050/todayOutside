@@ -5,6 +5,8 @@ import ga.todayOutside.config.BaseResponse;
 import ga.todayOutside.config.BaseResponseStatus;
 import ga.todayOutside.src.disaster.model.DisasterAlarm;
 import ga.todayOutside.src.disaster.model.DisasterInfo;
+import ga.todayOutside.src.user.UserInfoProvider;
+import ga.todayOutside.src.user.models.UserInfo;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,9 @@ public class DisasterService {
     private DisasterRepository disasterRepository;
     @Autowired
     private DisasterAlarmRepository disasterAlarmRepository;
+    @Autowired
+    private UserInfoProvider userInfoProvider;
+
     /**
      *  재난 정보 가져오기
      */
@@ -91,13 +96,18 @@ public class DisasterService {
     /**
     재난 필터 로직
      **/
-    public JSONObject filter(ArrayList<DisasterInfo> disasterInfos, String city, String state, Long userIdx) {
+    public JSONObject filter(ArrayList<DisasterInfo> disasterInfos, String city, String state, Long userIdx) throws BaseException{
 
         JSONObject resultState = new JSONObject();
         JSONObject resultDisaster = new JSONObject();
         JSONObject result = new JSONObject();
+        UserInfo userInfo = userInfoProvider.retrieveUserInfoByUserId(userIdx);
 
         Map<String, ArrayList<DisasterInfo>> stateFilter = null;
+
+        if (userInfo == null) {
+            throw new BaseException(BaseResponseStatus.NOT_FOUND_USER);
+        }
 
         //도 필터
         stateFilter = filterByState(disasterInfos, state);
@@ -238,7 +248,18 @@ public class DisasterService {
         return result;
     }
 
+    /**
+     * 알람 등록
+     * @param name
+     * @param userId
+     * @throws BaseException
+     */
+
     public void postAlarm(List<String> name, Long userId) throws BaseException {
+        UserInfo userInfo = userInfoProvider.retrieveUserInfoByUserId(userId);
+        if (userInfo == null) {
+            throw new BaseException(BaseResponseStatus.NOT_FOUND_USER);
+        }
 
         try {
             DisasterAlarm disasterAlarm = disasterProvider.makeDisasterAlarm(name);

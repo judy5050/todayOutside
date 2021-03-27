@@ -34,7 +34,6 @@ public class CommentController {
     /**
      * 게시글과 관련된 댓글 조회
      */
-    @ResponseBody
     @GetMapping("/messageBoards/{messageBoardIdx}/commentList")
     public BaseResponse<List<GetCommentRes>> getCommentList(@PathVariable Long messageBoardIdx, @RequestParam("page")String page){
 
@@ -64,14 +63,13 @@ public class CommentController {
      * @return
      * @throws BaseException
      */
-    @ResponseBody
     @PostMapping("/messageBoards/{messageBoardIdx}/comment")
     public BaseResponse<PostCommentRes> postComment(@RequestBody PostCommentReq req, @PathVariable Long messageBoardIdx) {
         //구 동 띄어쓰기로 입력
         String address = req.getAddressMsg();
 
         if (address.split(" ").length < 2) {
-            return new BaseResponse<>(BaseResponseStatus.EMPTY_THIRD_ADDRESS);
+            return new BaseResponse<>(BaseResponseStatus.EMPTY_TOWN_INFO);
         }
 
         try {
@@ -89,7 +87,6 @@ public class CommentController {
      * @param commentIdx
      * @return
      */
-    @ResponseBody
     @DeleteMapping("/messageBoards/{messageBoardIdx}/comment/{commentIdx}")
     public BaseResponse<Void> deleteComments(@RequestParam Long userIdx, @PathVariable Long messageBoardIdx,
                                              @PathVariable Long commentIdx) {
@@ -109,7 +106,6 @@ public class CommentController {
     /**
      * 내 댓글 조회
      */
-    @ResponseBody
     @GetMapping("/comments")
     public BaseResponse<List<GetCommentRes>> getMyComments(@RequestParam Long userId, @RequestParam int start) {
 
@@ -125,7 +121,7 @@ public class CommentController {
     /**
      * 내 댓글단 게시글 조회
      */
-    @ResponseBody
+
     @GetMapping("/comments/board")
     public BaseResponse<JSONObject> getMyCommentBoard(@RequestParam Long userId, @RequestParam int start) {
 
@@ -137,4 +133,5 @@ public class CommentController {
         }
 
     }
+
 }
