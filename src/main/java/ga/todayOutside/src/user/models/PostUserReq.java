@@ -9,7 +9,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PUBLIC) // Unit Test 를 위해 PUBLIC
 @Getter
 public class PostUserReq {
-    private Integer id;
+
     private String email;
     private String nickname;
     private String picture;

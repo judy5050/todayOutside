@@ -13,6 +13,7 @@ import ga.todayOutside.src.messageBoard.models.GetMessageBoardRecentlyRes;
 import ga.todayOutside.src.messageBoard.models.MessageBoard;
 import ga.todayOutside.src.user.UserInfoRepository;
 import ga.todayOutside.src.user.models.UserInfo;
+import ga.todayOutside.utils.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,8 @@ public class CommentService {
     private final UserInfoRepository userInfoRepository;
     @Autowired
     private final MessageBoardRepository messageBoardRepository;
+    @Autowired
+    private final JwtService jwtService;
 
     @Transactional
     public List<GetCommentRes> findAllByMessageId(Long messageBoardIdx,int page) throws BaseException {

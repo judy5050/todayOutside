@@ -1,15 +1,13 @@
 package ga.todayOutside.src.disaster;
 
+import ga.todayOutside.src.disaster.model.DisasterAlarm;
 import ga.todayOutside.src.disaster.model.DisasterInfo;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -137,15 +135,13 @@ public class DisasterProvider {
 
     public String findKeyword(String msg) {
         String result = "";
+/* 필터 키워드 - 넘버링
 
-        /* 필터 키워드 - 넘버링
-
-        질병 - 1, 지진 - 2, 태풍 - 3, 해일 - 4, 홍수 - 5, 호우 - 6, 강풍 - 7, 대설- 8, 한파 -9, 폭염 - 10, 건조 - 11, 황사 - 12
-        미세먼지 13, 화재 14, 민방공 15,물 16  테러 17, 방사능 18, 감염병 19, 미세먼지 20, 화재 21 , 수질 22, 위험 23
+        감염병 - 1, 지진 - 2, 태풍 - 3, 해일 - 4, 홍수 - 5, 호우 - 6, 강풍 - 7, 대설- 8, 한파 -9, 폭염 - 10, 건조 - 11, 황사 - 12
+        미세먼지 13, 화재 14, 민방공 15, 수질 16  테러 17, 방사능 18, 위험물 19
 
          */
-
-        //질병
+        //감염병
         Pattern pattern1 = Pattern.compile("[\\w\\W\\d\\D\\s\\S]*코로나+[\\w\\W\\d\\D\\s\\S]*");
         Pattern pattern2 = Pattern.compile("[\\w\\W\\d\\D\\s\\S]*방역+[\\w\\W\\d\\D\\s\\S]*");
         Pattern pattern3 = Pattern.compile("[\\w\\W\\d\\D\\s\\S]*확진자+[\\w\\W\\d\\D\\s\\S]*");
@@ -180,13 +176,24 @@ public class DisasterProvider {
         Pattern pattern16_1 = Pattern.compile("[\\w\\W\\d\\D\\s\\S]*산불+[\\w\\W\\d\\D\\s\\S]*");
         //미세먼지
         Pattern pattern17 = Pattern.compile("[\\w\\W\\d\\D\\s\\S]*미세먼지+[\\w\\W\\d\\D\\s\\S]*");
+        //민방공
+        Pattern pattern18 = Pattern.compile("[\\w\\W\\d\\D\\s\\S]*민방공+[\\w\\W\\d\\D\\s\\S]*");
+        //수질
+        Pattern pattern19 = Pattern.compile("[\\w\\W\\d\\D\\s\\S]*수질+[\\w\\W\\d\\D\\s\\S]*");
+        //테러
+        Pattern pattern20 = Pattern.compile("[\\w\\W\\d\\D\\s\\S]*테러+[\\w\\W\\d\\D\\s\\S]*");
+        //방사능
+        Pattern pattern21 = Pattern.compile("[\\w\\W\\d\\D\\s\\S]*테러+[\\w\\W\\d\\D\\s\\S]*");
+        //위험물
+        Pattern pattern22 = Pattern.compile("[\\w\\W\\d\\D\\s\\S]*위험물+[\\w\\W\\d\\D\\s\\S]*");
+
 
         Matcher matcher;
         if (pattern1.matcher(msg).matches() || pattern2.matcher(msg).matches() ||
                 pattern3.matcher(msg).matches() || pattern4.matcher(msg).matches() ||
                 pattern1_1.matcher(msg).matches()) {
 
-            result = "코로나";
+            result = "감염병";
 
         } else if (pattern5.matcher(msg).matches()) {
             result = "지진";
@@ -214,7 +221,103 @@ public class DisasterProvider {
             result = "화재";
         } else if (pattern17.matcher(msg).matches()) {
             result = "미세먼지";
+        } else if (pattern18.matcher(msg).matches()) {
+            result = "민방공";
+        } else if (pattern19.matcher(msg).matches()) {
+            result = "수질";
+        } else if (pattern20.matcher(msg).matches()) {
+            result = "테러";
+        } else if (pattern21.matcher(msg).matches()) {
+            result = "방사능";
         }
+
+        return result;
+    }
+
+    public DisasterAlarm makeDisasterAlarm(List<String> names) {
+/* 필터 키워드 - 넘버링
+
+        감염병 - 1, 지진 - 2, 태풍 - 3, 해일 - 4, 홍수 - 5, 호우 - 6, 강풍 - 7, 대설- 8, 한파 -9, 폭염 - 10, 건조 - 11, 황사 - 12
+        미세먼지 13, 화재 14, 민방공 15, 수질 16  테러 17, 방사능 18, 위험물 19
+
+         */
+        DisasterAlarm disasterAlarm = new DisasterAlarm();
+
+        disasterAlarm.setDisaster_1("N");
+        disasterAlarm.setDisaster_2("N");
+        disasterAlarm.setDisaster_3("N");
+        disasterAlarm.setDisaster_4("N");
+        disasterAlarm.setDisaster_5("N");
+        disasterAlarm.setDisaster_6("N");
+        disasterAlarm.setDisaster_7("N");
+        disasterAlarm.setDisaster_8("N");
+        disasterAlarm.setDisaster_9("N");
+        disasterAlarm.setDisaster_10("N");
+        disasterAlarm.setDisaster_11("N");
+        disasterAlarm.setDisaster_12("N");
+        disasterAlarm.setDisaster_13("N");
+        disasterAlarm.setDisaster_14("N");
+        disasterAlarm.setDisaster_15("N");
+        disasterAlarm.setDisaster_16("N");
+        disasterAlarm.setDisaster_17("N");
+        disasterAlarm.setDisaster_18("N");
+        disasterAlarm.setDisaster_19("N");
+
+        for (String name : names) {
+
+            if (name.equals("감염병"))  disasterAlarm.setDisaster_1("Y");
+            else if (name.equals("지진"))  disasterAlarm.setDisaster_2("Y");
+            else if (name.equals("태풍"))  disasterAlarm.setDisaster_3("Y");
+            else if (name.equals("해일"))  disasterAlarm.setDisaster_4("Y");
+            else if (name.equals("홍수"))  disasterAlarm.setDisaster_5("Y");
+            else if (name.equals("호우"))  disasterAlarm.setDisaster_6("Y");
+            else if (name.equals("강풍"))  disasterAlarm.setDisaster_7("Y");
+            else if (name.equals("대설"))  disasterAlarm.setDisaster_8("Y");
+            else if (name.equals("한파"))  disasterAlarm.setDisaster_9("Y");
+            else if (name.equals("폭염"))  disasterAlarm.setDisaster_10("Y");
+            else if (name.equals("건조"))  disasterAlarm.setDisaster_11("Y");
+            else if (name.equals("황사"))  disasterAlarm.setDisaster_12("Y");
+            else if (name.equals("미세먼지"))  disasterAlarm.setDisaster_13("Y");
+            else if (name.equals("화재"))  disasterAlarm.setDisaster_14("Y");
+            else if (name.equals("민방공"))  disasterAlarm.setDisaster_15("Y");
+            else if (name.equals("수질"))  disasterAlarm.setDisaster_16("Y");
+            else if (name.equals("테러"))  disasterAlarm.setDisaster_17("Y");
+            else if (name.equals("방사능"))  disasterAlarm.setDisaster_18("Y");
+            else if (name.equals("위험물"))  disasterAlarm.setDisaster_19("Y");
+
+        }
+
+        return disasterAlarm;
+    }
+
+    public Set<String> filterDisaster(DisasterAlarm disasterAlarm) {
+        /* 필터 키워드 - 넘버링
+
+        감염병 - 1, 지진 - 2, 태풍 - 3, 해일 - 4, 홍수 - 5, 호우 - 6, 강풍 - 7, 대설- 8, 한파 -9, 폭염 - 10, 건조 - 11, 황사 - 12
+        미세먼지 13, 화재 14, 민방공 15, 수질 16  테러 17, 방사능 18, 위험물 19
+
+         */
+        Set<String> result = new HashSet<>();
+
+        if (disasterAlarm.getDisaster_1().equals("Y")) result.add("감염병");
+        if (disasterAlarm.getDisaster_2().equals("Y")) result.add("지진");
+        if (disasterAlarm.getDisaster_3().equals("Y")) result.add("태풍");
+        if (disasterAlarm.getDisaster_4().equals("Y")) result.add("해일");
+        if (disasterAlarm.getDisaster_5().equals("Y")) result.add("홍수");
+        if (disasterAlarm.getDisaster_6().equals("Y")) result.add("호우");
+        if (disasterAlarm.getDisaster_7().equals("Y")) result.add("강풍");
+        if (disasterAlarm.getDisaster_8().equals("Y")) result.add("대설");
+        if (disasterAlarm.getDisaster_9().equals("Y")) result.add("한파");
+        if (disasterAlarm.getDisaster_10().equals("Y")) result.add("폭염");
+        if (disasterAlarm.getDisaster_11().equals("Y")) result.add("건조");
+        if (disasterAlarm.getDisaster_12().equals("Y")) result.add("황사");
+        if (disasterAlarm.getDisaster_13().equals("Y")) result.add("미세먼지");
+        if (disasterAlarm.getDisaster_14().equals("Y")) result.add("화재");
+        if (disasterAlarm.getDisaster_15().equals("Y")) result.add("민방공");
+        if (disasterAlarm.getDisaster_16().equals("Y")) result.add("수질");
+        if (disasterAlarm.getDisaster_17().equals("Y")) result.add("테러");
+        if (disasterAlarm.getDisaster_18().equals("Y")) result.add("방사능");
+        if (disasterAlarm.getDisaster_19().equals("Y")) result.add("위험물");
 
         return result;
     }
