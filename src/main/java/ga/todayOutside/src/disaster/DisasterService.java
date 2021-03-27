@@ -4,6 +4,7 @@ import ga.todayOutside.config.BaseException;
 import ga.todayOutside.config.BaseResponse;
 import ga.todayOutside.config.BaseResponseStatus;
 import ga.todayOutside.src.disaster.model.DisasterAlarm;
+import ga.todayOutside.src.disaster.model.DisasterFilterRes;
 import ga.todayOutside.src.disaster.model.DisasterInfo;
 import ga.todayOutside.src.user.UserInfoProvider;
 import ga.todayOutside.src.user.models.UserInfo;
@@ -50,8 +51,8 @@ public class DisasterService {
             factory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.NONE);
 
             String serviceKey = "BtXq5fRG2%2Bv%2B%2FEVKm3iuwIj%2BjPQnTRsO3yp6ZhtElvdMODumC6aSKDBkKtamNx9yp6YDVxes2fz5bK5FxZJI1Q%3D%3D";
-            String pageNo = "9";
-            String numOfRows = "10";
+            String pageNo = "1";
+            String numOfRows = "100";
             String type = "json";
 
             String flag = "y";
@@ -76,7 +77,6 @@ public class DisasterService {
             result.put("statusCode", e.getRawStatusCode());
 
         }
-        System.out.println(result);
         return result;
     }
 
@@ -125,7 +125,7 @@ public class DisasterService {
                 for (String cityKey : cityFilter.keySet()) {
 
                     //재난 필터
-                    Map<String, ArrayList<DisasterInfo>> disasterFilter = filterByDisaster(cityFilter.get(cityKey), userIdx);
+                    Map<String, ArrayList<DisasterFilterRes>> disasterFilter = filterByDisaster(cityFilter.get(cityKey), userIdx);
                     resultDisaster = disasterProvider.MapToJSON(disasterFilter);
 
                     return resultDisaster;
@@ -195,23 +195,26 @@ public class DisasterService {
      * @param disasterInfos
      * @return
      */
-    public Map<String, ArrayList<DisasterInfo>> filterByDisaster(ArrayList<DisasterInfo> disasterInfos, Long userIdx) {
+    public Map<String, ArrayList<DisasterFilterRes>> filterByDisaster(ArrayList<DisasterInfo> disasterInfos, Long userIdx) {
 
         DisasterAlarm disasterAlarm = disasterAlarmRepository.findByUserIdx(userIdx);
 
-        Map<String, ArrayList<DisasterInfo>> result = new HashMap<>();
+        Map<String, ArrayList<DisasterFilterRes>> result = new HashMap<>();
         Set<String> filter = disasterProvider.filterDisaster(disasterAlarm);
 
         for (DisasterInfo o : disasterInfos) {
 
             String msg = o.getMsg();
             String disaster = disasterProvider.findKeyword(msg);
+
             //알람 등록 안해놓은 재난은 건너뛰기
             if (!filter.contains(disaster)) continue;
 
-            ArrayList<DisasterInfo> infos = result.getOrDefault(disaster, new ArrayList<DisasterInfo>());
-            infos.add(o);
-            result.put(disaster, infos);
+            DisasterFilterRes res = new DisasterFilterRes(o.getState(), o.getCity(), o.getMsg(), o.getCreateDate(), o.getMsgIdx(), disaster);
+
+            ArrayList<DisasterFilterRes> infos = result.getOrDefault("calamity", new ArrayList<DisasterFilterRes>());
+            infos.add(res);
+            result.put("calamity", infos);
         }
 
         return result;
