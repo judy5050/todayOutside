@@ -39,9 +39,9 @@ public class CommentService {
     private final MessageBoardRepository messageBoardRepository;
 
     @Transactional
-    public List<GetCommentRes> findAllByMessageId(Long messageBoardIdx,String page) throws BaseException {
+    public List<GetCommentRes> findAllByMessageId(Long messageBoardIdx,int page) throws BaseException {
 
-        PageRequest pageRequest=PageRequest.of(Integer.parseInt(page),10);
+        PageRequest pageRequest=PageRequest.of(page,10);
         Page<Comment> comments = commentRepository.findAllByMessageId(messageBoardIdx, pageRequest);
         List<GetCommentRes> getCommentRes=comments.map(GetCommentRes::new).getContent();
         if(getCommentRes.isEmpty()){

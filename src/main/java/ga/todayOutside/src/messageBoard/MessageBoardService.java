@@ -90,6 +90,22 @@ public class MessageBoardService {
     }
 
     /**
+     * 메시지 인덱스로 찾기
+     */
+    public MessageBoard findMessageBoardByIdx(Long messageBoardIdx) throws BaseException {
+
+        MessageBoard messageBoard = messageBoardRepository.findById(messageBoardIdx).orElse(null);
+
+        if(messageBoard==null){
+            throw new BaseException(BaseResponseStatus.NOT_FOUND_MESSAGE_BOARD);
+        }
+
+
+
+        return messageBoard;
+    }
+
+    /**
      * 저장
      */
     @Transactional

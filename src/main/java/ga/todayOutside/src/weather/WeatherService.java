@@ -499,9 +499,15 @@ public class WeatherService {
         System.out.println("cmp = " + cp);
         String baseDate = "";    //조회하고싶은 날짜
         String baseTime="";
-        if(t<20){
-            baseTime = "2000";    //API 제공 시간
+
+
+        if(t<17){
+            baseTime = "2300";    //API 제공 시간
             baseDate=yesterdayStr;
+        }
+        else if(t>=17&&t<20){
+            baseTime = "1400";    //API 제공 시간
+            baseDate=todayStr;
         }
         else{
             baseTime="2000";

@@ -44,6 +44,8 @@ public enum BaseResponseStatus {
     SUCCESS_KAKAO_LOGIN(true, 1224, "카카오 로그인 성공."),
     SUCCESS_READ_WEEKLY_WEATHER(true,1225,"주간 날씨정보 조회에 성공하였습니다."),
     EMPTY_MESSAGE_BOARD_LIST(true, 1226, "조회할 게시글이 없습니다."),
+    NOU_FOUND_COMMENT(true, 1227, "게시글에 해당하는 댓글이 없습니다."),
+    SUCCESS_POST_NOTIFICATION(true, 1228, "게시판 글 신고에 성공하였습니다."),
     SUCCESS_POST_COMMENTS(true, 1300, "댓글 등록이 성공하였습니다."),
     SUCCESS_GET_COMMENTS(true, 1301, "댓글 조회가 성공하였습니다."),
     SUCCESS_PATCH_COMMENTS(true, 1302, "댓글 수정이 성공하였습니다."),
@@ -69,10 +71,12 @@ public enum BaseResponseStatus {
     EMPTY_ADDRESS_ORDER(false, 2201, "변경하고 싶은 주소 순서를 입력해주세요."),
     INVALID_ADDRESS_ORDER(false, 2202, "변경하고 싶은 순서 값을 확인해주세요."),
     EMPTY_MESSAGE_BOARD(false, 2203, "게시글을 작성해주세요."),
+    EMPTY_MESSAGE_BOARD_IDX(false, 2204, "게시글 인덱스를 입력해주세요."),
     INVALID_KAKAO(false, 2204, "유효하지 않은 access-token입니다."),
     EMPTY_MESSAGE_COMMENTS(false, 2300, "댓글을 작성해주세요"),
     EMPTY_DATE(false, 2301, "월, 일을 확인해주세요"),
     INVALID_ACCESSTOKEN(false, 2302, "유효하지 않은 accessToken 입니다."),
+
 
 
 
@@ -92,13 +96,15 @@ public enum BaseResponseStatus {
     EMPTY_THIRD_ADDRESS(false, 3204, "동 정보가 비어있습니다."),
     NOT_FOUND_MESSAGE_BOARD(false, 3205, "존재하지 않는 게시글 입니다."),
     NOT_MATCH_USER_MESSAGE_BOARD(false, 3206, "해당 유저가 작성한 게시글이 아닙니다."),
-    NOU_FOUND_COMMENT(false, 3207, "게시글에 해당하는 댓글이 없습니다."),
+    ALREADY_POST_NOTIFICATION(false, 3207, "이미 신고한 게시글입니다."),
+    NOT_POST_MY_MESSAGE_BOARD_NOTIFICATION(false, 3208, "내 게시글은 신고할 수 없습니다."),
     FAILED_TO_POST_COMMENTS(false, 3300, "댓글 등록이 실패했습니다."),
     FAILED_TO_GET_COMMENTS(false, 3301, "댓글 조회가 실패했습니다."),
     FAILED_TO_PATCH_COMMENTS(false, 3302, "댓글 수정이 실패했습니다."),
     FAILED_TO_GET_DISASTER(false, 3303, "재난 조회가 실패했습니다."),
     FAILED_TO_DELETE_COMMENTS(false, 3304, "댓글 삭제가 실패했습니다."),
     NOT_FOUND_MESSAGE_BY_USERS(false, 3305, "유저가 작성한 게시글이 없습니다."),
+
 
 
     // 4000 : Database 오류

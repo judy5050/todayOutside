@@ -36,7 +36,7 @@ public class CommentController {
      */
     @ResponseBody
     @GetMapping("/messageBoards/{messageBoardIdx}/commentList")
-    public BaseResponse<List<GetCommentRes>> getCommentList(@PathVariable Long messageBoardIdx, @RequestParam("page")String page){
+    public BaseResponse<List<GetCommentRes>> getCommentList(@PathVariable Long messageBoardIdx, @RequestParam("page")int page){
 
         Long userIdx;
         Address address;

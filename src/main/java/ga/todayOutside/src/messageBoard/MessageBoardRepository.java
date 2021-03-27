@@ -26,7 +26,7 @@ public interface MessageBoardRepository extends JpaRepository<MessageBoard,Long>
 
 
     //구에 필터링 된 게시글만 조회
-    @Query("select m from MessageBoard  m  where m.addressMsg like  %:filter%  and m.boardType =:boardType and m.heartNum>0 order by m.heartNum desc ")
+    @Query("select m from MessageBoard  m  where m.addressMsg like  %:filter%  and m.boardType =:boardType and m.heartNum>0  order by m.heartNum desc ")
     Page<MessageBoard> findByAddressMsgLike(@Param("filter") String filter, Pageable pageable,@Param("boardType") BoardType boardType);
 
     @Query("select m from MessageBoard  m where m.addressMsg like  %:filter%  and m.boardType =:boardType order by m.createdAt desc ")

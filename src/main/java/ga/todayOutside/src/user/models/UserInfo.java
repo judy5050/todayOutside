@@ -5,6 +5,7 @@ import ga.todayOutside.src.address.model.Address;
 import ga.todayOutside.src.comment.model.Comment;
 import ga.todayOutside.src.heartHistory.model.HeartHistory;
 import ga.todayOutside.src.messageBoard.models.MessageBoard;
+import ga.todayOutside.src.notificationHistory.model.NotificationHistory;
 import lombok.*;
 
 import javax.persistence.*;
@@ -105,6 +106,12 @@ public class UserInfo extends BaseEntity {
      */
     @OneToMany(mappedBy = "userInfo")
     List<HeartHistory> heartHistories=new ArrayList<>();
+
+    /**
+     * 신고
+     */
+    @OneToMany(mappedBy = "userInfo")
+    List<NotificationHistory> notificationHistories=new ArrayList<>();
 
     /**
      *  나눔 이야기 수

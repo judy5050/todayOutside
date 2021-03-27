@@ -3,6 +3,7 @@ package ga.todayOutside.src.messageBoard.models;
 
 import ga.todayOutside.config.BaseEntity;
 import ga.todayOutside.src.comment.model.Comment;
+import ga.todayOutside.src.notificationHistory.model.NotificationHistory;
 import ga.todayOutside.src.user.models.UserInfo;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -45,6 +46,11 @@ public class MessageBoard extends BaseEntity {
     @OneToMany(mappedBy = "messageBoard")
     private List<Comment> comments=new ArrayList<>();
 
+    /**
+     *신고 기록
+     */
+    @OneToMany(mappedBy = "messageBoard")
+    private List<NotificationHistory> notificationHistories=new ArrayList<>();
 
     /**
      * 게시글
