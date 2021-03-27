@@ -168,7 +168,7 @@ public class UserInfoService {
 
             boolean duplication = userInfoProvider.checkDuplication(nickname);
             if (!duplication) {
-                throw new BaseException(BaseResponseStatus.DUPLICATED_USER);
+                throw new BaseException(BaseResponseStatus.DUPlICATED_NICKNAME);
             }
 
             userInfoRepository.save(userInfo);
