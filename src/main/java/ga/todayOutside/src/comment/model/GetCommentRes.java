@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 @NoArgsConstructor
 public class GetCommentRes {
 
+    private Long userIdx;
     private Long commentIdx;
     private String thirdAddressName;
     private String userNickName;
@@ -17,6 +18,7 @@ public class GetCommentRes {
     private String picture;
 
     public GetCommentRes(Comment comment){
+        this.userIdx=comment.getUserInfo().getId();
         this.commentIdx=comment.getId();
         this.picture=comment.getUserInfo().getPicture();
         this.msg=comment.getCommentMsg();
