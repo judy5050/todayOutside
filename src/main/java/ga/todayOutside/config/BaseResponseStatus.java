@@ -48,6 +48,7 @@ public enum BaseResponseStatus {
     SUCCESS_POST_NOTIFICATION(true, 1228, "게시판 글 신고에 성공하였습니다."),
     SUCCESS_POST_NOTIFICATION_COMMENT(true, 1229, "댓글 신고에 성공하였습니다."),
     SUCCESS_GET_HEART_STATUS(true, 1230, "하트 상태 조회에 성공하였습니다."),
+    EMPTY_USER_MESSAGE_BOARD(true, 1231, "유저가 작성한 게시글이 없습니다."),
     SUCCESS_POST_COMMENTS(true, 1300, "댓글 등록이 성공하였습니다."),
     SUCCESS_GET_COMMENTS(true, 1301, "댓글 조회가 성공하였습니다."),
     SUCCESS_PATCH_COMMENTS(true, 1302, "댓글 수정이 성공하였습니다."),

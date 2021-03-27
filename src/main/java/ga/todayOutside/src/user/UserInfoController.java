@@ -266,7 +266,7 @@ public class UserInfoController {
      */
     @ResponseBody
     @GetMapping("/messageList")
-    public BaseResponse<List<GetMyMessageListRes>> getUserMessageList(@RequestParam("page")String page)
+    public BaseResponse<List<GetMyMessageListRes>> getUserMessageList(@RequestParam("page")int page)
     {
         Long userIdx;
         UserInfo userInfo;

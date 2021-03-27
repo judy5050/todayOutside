@@ -368,12 +368,12 @@ public class MessageBoardService {
     /**
      * 작성한 모든 게시물 보기
      */
-    public List<GetMyMessageListRes> findMessageAllByUserIdx(Long userIdx,String page) throws BaseException {
+    public List<GetMyMessageListRes> findMessageAllByUserIdx(Long userIdx,int page) throws BaseException {
 
-        PageRequest pageRequest=PageRequest.of(Integer.parseInt(page),10);
+        PageRequest pageRequest=PageRequest.of(page,10);
         Page<MessageBoard> messageBoardList = messageBoardRepository.findByUserIdx(userIdx, pageRequest);
         if(messageBoardList.isEmpty()||messageBoardList.getContent()==null){
-            throw new BaseException(BaseResponseStatus.NOT_FOUND_MESSAGE_BY_USERS);
+            throw new BaseException(BaseResponseStatus.EMPTY_USER_MESSAGE_BOARD);
         }
         List<GetMyMessageListRes> myMessageListRes=messageBoardList.map(GetMyMessageListRes::new).getContent();
 
