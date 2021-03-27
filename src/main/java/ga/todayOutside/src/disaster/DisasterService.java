@@ -1,6 +1,9 @@
 package ga.todayOutside.src.disaster;
 
 import ga.todayOutside.config.BaseException;
+import ga.todayOutside.config.BaseResponse;
+import ga.todayOutside.config.BaseResponseStatus;
+import ga.todayOutside.src.disaster.model.DisasterAlarm;
 import ga.todayOutside.src.disaster.model.DisasterInfo;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -15,10 +18,7 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriBuilder;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class DisasterService {
@@ -27,7 +27,8 @@ public class DisasterService {
     private DisasterProvider disasterProvider;
     @Autowired
     private DisasterRepository disasterRepository;
-
+    @Autowired
+    private DisasterAlarmRepository disasterAlarmRepository;
     /**
      *  재난 정보 가져오기
      */
@@ -90,7 +91,7 @@ public class DisasterService {
     /**
     재난 필터 로직
      **/
-    public JSONObject filter(ArrayList<DisasterInfo> disasterInfos, String city, String state) {
+    public JSONObject filter(ArrayList<DisasterInfo> disasterInfos, String city, String state, Long userIdx) {
 
         JSONObject resultState = new JSONObject();
         JSONObject resultDisaster = new JSONObject();
@@ -114,11 +115,11 @@ public class DisasterService {
                 for (String cityKey : cityFilter.keySet()) {
 
                     //재난 필터
-                    Map<String, ArrayList<DisasterInfo>> disasterFilter = filterByDisaster(cityFilter.get(cityKey));
+                    Map<String, ArrayList<DisasterInfo>> disasterFilter = filterByDisaster(cityFilter.get(cityKey), userIdx);
                     resultDisaster = disasterProvider.MapToJSON(disasterFilter);
 
-                    resultCity.put(cityKey, resultDisaster);
-
+                    return resultDisaster;
+                    //resultCity.put(cityKey, resultDisaster);
                 }
                 resultState.put(key, resultCity);
 
@@ -184,15 +185,19 @@ public class DisasterService {
      * @param disasterInfos
      * @return
      */
-    public Map<String, ArrayList<DisasterInfo>> filterByDisaster(ArrayList<DisasterInfo> disasterInfos) {
+    public Map<String, ArrayList<DisasterInfo>> filterByDisaster(ArrayList<DisasterInfo> disasterInfos, Long userIdx) {
 
+        DisasterAlarm disasterAlarm = disasterAlarmRepository.findByUserIdx(userIdx);
 
         Map<String, ArrayList<DisasterInfo>> result = new HashMap<>();
+        Set<String> filter = disasterProvider.filterDisaster(disasterAlarm);
 
         for (DisasterInfo o : disasterInfos) {
 
             String msg = o.getMsg();
             String disaster = disasterProvider.findKeyword(msg);
+            //알람 등록 안해놓은 재난은 건너뛰기
+            if (!filter.contains(disaster)) continue;
 
             ArrayList<DisasterInfo> infos = result.getOrDefault(disaster, new ArrayList<DisasterInfo>());
             infos.add(o);
@@ -203,7 +208,7 @@ public class DisasterService {
     }
 
     /**
-     * 월 별 데이터
+     * 월 별 데이터 조회
      * @return
      */
     public ArrayList<DisasterInfo> filterByMonth(String month) throws BaseException {
@@ -216,6 +221,13 @@ public class DisasterService {
         return result;
     }
 
+    /**
+     * 일별 데이터 조회
+     * @param month
+     * @param day
+     * @return
+     * @throws BaseException
+     */
     public ArrayList<DisasterInfo> filterByDay(String month, String day) throws BaseException {
 
         String s = "2021-"+ month +"-"+ day +" 00:00:00";
@@ -224,6 +236,22 @@ public class DisasterService {
         ArrayList<DisasterInfo> result = disasterRepository.findAllByCreateDateBetween(s, e);
 
         return result;
+    }
+
+    public void postAlarm(List<String> name, Long userId) throws BaseException {
+
+        try {
+            DisasterAlarm disasterAlarm = disasterProvider.makeDisasterAlarm(name);
+            disasterAlarm.setUserIdx(userId);
+            System.out.println(userId);
+            System.out.println(disasterAlarm);
+
+            disasterAlarmRepository.save(disasterAlarm);
+
+        } catch (Exception igored) {
+            throw new BaseException(BaseResponseStatus.FAILED_TO_POST_ALARAM);
+
+        }
     }
 
 }

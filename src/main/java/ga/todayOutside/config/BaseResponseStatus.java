@@ -49,8 +49,7 @@ public enum BaseResponseStatus {
     SUCCESS_PATCH_COMMENTS(true, 1302, "댓글 수정이 성공하였습니다."),
     SUCCESS_GET_DISASTER(true, 1303, "재난정보 조회가 성공하였습니다."),
     SUCCESS_DELETE_COMMENTS(true, 1304, "댓글 삭제가 성공하였습니다."),
-
-
+    SUCCESS_POST_DISASTER_ALARM(true, 1305, "알람 등록이 성공하였습니다."),
 
 
 
@@ -100,7 +99,7 @@ public enum BaseResponseStatus {
     FAILED_TO_DELETE_COMMENTS(false, 3304, "댓글 삭제가 실패했습니다."),
     NOT_FOUND_MESSAGE_BY_USERS(false, 3305, "유저가 작성한 게시글이 없습니다."),
     DUPlICATED_NICKNAME(false, 3306, "존재하는 닉네임 입니다."),
-
+    FAILED_TO_POST_ALARAM(false, 3307, "알람 등록이 실패했습니다."),
 
     // 4000 : Database 오류
     SERVER_ERROR(false, 4000, "서버와의 통신에 실패하였습니다."),
