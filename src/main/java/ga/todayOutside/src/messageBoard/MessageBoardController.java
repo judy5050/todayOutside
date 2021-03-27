@@ -25,6 +25,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static ga.todayOutside.config.BaseResponseStatus.SUCCESS_GET_HEART_STATUS;
+import static ga.todayOutside.config.BaseResponseStatus.SUCCESS_POST_HEART;
+
 @RestController
 @RequiredArgsConstructor
 public class MessageBoardController {
@@ -279,8 +282,44 @@ public class MessageBoardController {
 
 
 
-        return new BaseResponse(BaseResponseStatus.SUCCESS_POST_HEART,new PostHeartRes(heartHistory));
+        return new BaseResponse(SUCCESS_POST_HEART,new PostHeartRes(heartHistory));
     }
+
+    /**
+     *하트 상태 조회
+     *
+     * */
+    @ResponseBody
+    @GetMapping("/messageBoards/{messageBoardIdx}/heart")
+    public BaseResponse<GetHeartRes> getHeartStatus(@PathVariable Long messageBoardIdx){
+        Long userIdx;
+        UserInfo userInfo;
+        MessageBoard messageBoard;
+        HeartHistory heartHistory;
+        MessageBoard messageBoard1;
+        try {
+            userIdx = jwtService.getUserId();
+
+            userInfo = userInfoService.findByUserIdx(userIdx);
+
+            messageBoard= messageBoardService.getMessageBoard(messageBoardIdx);
+
+            heartHistory=heartHistoryService.getHeartStatus(userInfo.getId(),messageBoard.getId());
+
+            if(heartHistory==null){
+                return new BaseResponse(SUCCESS_GET_HEART_STATUS,new GetHeartRes("N"));
+            }
+
+        }catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+
+
+
+        return new BaseResponse(SUCCESS_GET_HEART_STATUS,new GetHeartRes(heartHistory));
+    }
+
+
 
     /**
      *
