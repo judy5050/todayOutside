@@ -52,9 +52,8 @@ public class DisasterService {
 
             String serviceKey = "BtXq5fRG2%2Bv%2B%2FEVKm3iuwIj%2BjPQnTRsO3yp6ZhtElvdMODumC6aSKDBkKtamNx9yp6YDVxes2fz5bK5FxZJI1Q%3D%3D";
             String pageNo = "1";
-            String numOfRows = "100";
+            String numOfRows = "10";
             String type = "json";
-
             String flag = "y";
 
             UriBuilder uriBuilder = factory.builder();
@@ -84,13 +83,11 @@ public class DisasterService {
      * DB 등록
      * @param messages
      */
-    public void postMsg(JSONArray messages) {
+    public ArrayList<DisasterInfo> postMsg(JSONArray messages) {
         //모델 매핑
         ArrayList<DisasterInfo> disasterInfos = disasterProvider.makeModel(messages);
         //DB 등록
-        disasterProvider.postMsg(disasterInfos);
-
-        return;
+        return disasterProvider.postMsg(disasterInfos);
     }
 
     /**
@@ -204,13 +201,12 @@ public class DisasterService {
 
         for (DisasterInfo o : disasterInfos) {
 
-            String msg = o.getMsg();
-            String disaster = disasterProvider.findKeyword(msg);
+            String kind = o.getKind();
 
             //알람 등록 안해놓은 재난은 건너뛰기
-            if (!filter.contains(disaster)) continue;
+            if (!filter.contains(kind)) continue;
 
-            DisasterFilterRes res = new DisasterFilterRes(o.getState(), o.getCity(), o.getMsg(), o.getCreateDate(), o.getMsgIdx(), disaster);
+            DisasterFilterRes res = new DisasterFilterRes(o.getState(), o.getCity(), o.getMsg(), o.getCreateDate(), o.getMsgIdx(), kind);
 
             ArrayList<DisasterFilterRes> infos = result.getOrDefault("calamity", new ArrayList<DisasterFilterRes>());
             infos.add(res);
@@ -251,35 +247,6 @@ public class DisasterService {
         return result;
     }
 
-    /**
-     * 알람 등록
-     * @param name
-     * @param userId
-     * @throws BaseException
-     */
 
-    public void postAlarm(List<String> name, Long userId) throws BaseException {
-        UserInfo userInfo = userInfoProvider.retrieveUserInfoByUserId(userId);
-        if (userInfo == null) {
-            throw new BaseException(BaseResponseStatus.NOT_FOUND_USER);
-        }
-
-        //등록된 알람이 있는지 확인
-        DisasterAlarm disasterAlarm = disasterAlarmRepository.findByUserIdx(userId).orElse(null);
-
-        try {
-            disasterAlarm = disasterProvider.makeDisasterAlarm(name, disasterAlarm);
-            disasterAlarm.setUserIdx(userId);
-
-            disasterAlarmRepository.save(disasterAlarm);
-
-        } catch (Exception e) {
-            throw new BaseException(BaseResponseStatus.FAILED_TO_POST_ALARAM);
-
-        }
-
-
-
-    }
 
 }

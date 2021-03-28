@@ -14,5 +14,6 @@ public class DisasterInfo {
     private String msg;
     private String createDate;
     private Long msgIdx;
+    private String kind;
 
 }

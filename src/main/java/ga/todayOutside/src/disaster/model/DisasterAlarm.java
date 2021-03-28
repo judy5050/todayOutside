@@ -2,6 +2,7 @@ package ga.todayOutside.src.disaster.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 
@@ -9,6 +10,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Table
 @Data
+@DynamicInsert
 public class DisasterAlarm {
 
     @Id
@@ -19,51 +21,51 @@ public class DisasterAlarm {
     @Column(nullable = false, updatable = false)
     private Long userIdx;
 
-    @Column(nullable = false)
+    @Column()
     private String disaster_1;
-    @Column(nullable = false)
+    @Column()
     private String disaster_2;
-    @Column(nullable = false)
+    @Column()
     private String disaster_3;
-    @Column(nullable = false)
+    @Column()
     private String disaster_4;
-    @Column(nullable = false)
+    @Column()
     private String disaster_5;
-    @Column(nullable = false)
+    @Column()
     private String disaster_6;
-    @Column(nullable = false)
+    @Column()
     private String disaster_7;
-    @Column(nullable = false)
+    @Column()
     private String disaster_8;
-    @Column(nullable = false)
+    @Column()
     private String disaster_9;
-    @Column(nullable = false)
+    @Column()
     private String disaster_10;
-    @Column(nullable = false)
+    @Column()
     private String disaster_11;
-    @Column(nullable = false)
+    @Column()
     private String disaster_12;
-    @Column(nullable = false)
+    @Column()
     private String disaster_13;
-    @Column(nullable = false)
+    @Column()
     private String disaster_14;
-    @Column(nullable = false)
+    @Column()
     private String disaster_15;
-    @Column(nullable = false)
+    @Column()
     private String disaster_16;
-    @Column(nullable = false)
+    @Column()
     private String disaster_17;
-    @Column(nullable = false)
+    @Column()
     private String disaster_18;
-    @Column(nullable = false)
+    @Column()
     private String disaster_19;
-    @Column(nullable = false)
+    @Column()
     private String disaster_20;
-    @Column(nullable = false)
+    @Column()
     private String disaster_21;
-    @Column(nullable = false)
+    @Column()
     private String disaster_22;
-    @Column(nullable = false)
+    @Column()
     private String disaster_23;
 
 }

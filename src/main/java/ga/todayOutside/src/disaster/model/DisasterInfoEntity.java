@@ -1,4 +1,4 @@
-package ga.todayOutside.src.disaster;
+package ga.todayOutside.src.disaster.model;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -32,10 +32,13 @@ public class DisasterInfoEntity {
     @Column(name = "msgIdx",nullable = false)
     private Long msgIdx;
 
+    @Column(name = "kind", nullable = false)
+    private String kind;
+
     @Builder
     public DisasterInfoEntity(Long id, String state, String city,
                               String msg, String createDate,
-                              Long msgIdx) {
+                              Long msgIdx, String kind) {
 
         this.id = id;
         this.state = state;
@@ -43,6 +46,7 @@ public class DisasterInfoEntity {
         this.msg = msg;
         this.createDate = createDate;
         this.msgIdx = msgIdx;
+        this.kind = kind;
     }
 
     @Override
