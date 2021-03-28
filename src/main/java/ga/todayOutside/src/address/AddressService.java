@@ -439,4 +439,21 @@ public class AddressService {
         return secondAddressName;
     }
 
+    /**
+     * 유저 인덱스로 주소 리스트 받기
+     * @param userIdx
+     */
+    public List<Address> findByAddressList(Long userIdx) {
+        List<Address> addressList = addressRepository.findByUserAddress(userIdx);
+
+        return addressList;
+
+    }
+
+    @Transactional
+    public void saveList(List<Address> addressList) {
+        for(int i=0;i<addressList.size();i++){
+            addressRepository.save(addressList.get(i));
+        }
+    }
 }

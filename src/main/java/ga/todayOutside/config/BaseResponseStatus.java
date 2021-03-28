@@ -103,6 +103,7 @@ public enum BaseResponseStatus {
     EMPTY_COMMENT(false, 3209, "존재하지 않는 댓글입니다."),
     NOT_POST_MY_COMMENT_NOTIFICATION(false, 3210, "내 댓글은 신고할 수 없습니다."),
     ALREADY_POST_NOTIFICATION_COMMENT(false, 3211, "이미 신고한 댓글입니다."),
+    FAILED_TO_PATCH_ADDRESS_ORDER(false, 3212, "주소 순서 수정에 실패했습니다."),
     FAILED_TO_POST_COMMENTS(false, 3300, "댓글 등록이 실패했습니다."),
     FAILED_TO_GET_COMMENTS(false, 3301, "댓글 조회가 실패했습니다."),
     FAILED_TO_PATCH_COMMENTS(false, 3302, "댓글 수정이 실패했습니다."),
