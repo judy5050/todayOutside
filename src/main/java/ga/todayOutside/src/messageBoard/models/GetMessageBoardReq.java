@@ -28,12 +28,13 @@ public class GetMessageBoardReq {
         this.msg= messageBoard.getMessage();
         this.heartNum=messageBoard.getHeartNum().toString();
 
-        String[]array=messageBoard.getAddressMsg().split(" ");
-        if(array.length>1){
-            this.thirdAddressName=array[(array.length)-1];
+        int index=0;
+        index=messageBoard.getAddressMsg().indexOf("구");
+        if(index!=-1){
+            this.thirdAddressName=messageBoard.getAddressMsg().substring(index+1).trim();
         }
         else{
-            this.thirdAddressName=getThirdAddressName();
+            this.thirdAddressName=messageBoard.getAddressMsg();
         }
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

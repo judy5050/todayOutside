@@ -43,7 +43,7 @@ public class AddressService {
     private final DustService dustService;
      Map<String,String> thirdAddressResult =new LinkedHashMap<>();
      JSONObject jsonObject=new JSONObject();
-     JSONArray jsonArray=new JSONArray();
+
 //    ArrayList<Map> weatherList=new ArrayList<>();
     /**
      *회원 주소 등록
@@ -252,7 +252,7 @@ public class AddressService {
         String areaTop=firstAddressName;
         String areaMdl=secondAddressName;
         String code="";	//지역 코드
-
+        JSONArray jsonArray=new JSONArray();
         URL url;
         BufferedReader br;
         URLConnection conn;
@@ -374,7 +374,8 @@ public class AddressService {
             Long addressIdx = addresses.get(i).getId();
             String firstAddressName=addresses.get(i).getFirstAddressName();
             String secondAddressName=addresses.get(i).getSecondAddressName();
-
+            System.out.println("secondAddressName = " + secondAddressName);
+            System.out.println("firstAddressName = " + firstAddressName);
             // 시,도 구 정보 받아 nx ny로 좌표 변경
 
             Map<String, String> nxNy = weatherService.convertNxNy(firstAddressName, secondAddressName);

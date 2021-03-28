@@ -324,10 +324,10 @@ public class WeatherController {
         ArrayList allAddressesByUserIdx3=null;
 
         try {
-            System.out.println("try");
+
             userIdx = jwtService.getUserId();
             UserInfo byUser = userInfoService.findByUserIdx(userIdx);
-            System.out.println(byUser.getEmail());
+            System.out.println(byUser.getId());
             allAddressesByUserIdx2 = addressService.getAllAddressesByUserIdx(userIdx);
 
 

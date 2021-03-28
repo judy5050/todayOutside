@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,12 +26,17 @@ public interface MessageBoardRepository extends JpaRepository<MessageBoard,Long>
 
 
 
-    //구에 필터링 된 게시글만 조회
-    @Query("select m from MessageBoard  m  where m.addressMsg like  %:filter%  and m.boardType =:boardType and m.heartNum>0 and m.isDeleted =:isDeleted  order by m.heartNum desc ")
-    Page<MessageBoard> findByAddressMsgLike(@Param("filter") String filter, Pageable pageable,@Param("boardType") BoardType boardType,@Param("isDeleted")String N);
+    //TODO 오늘 게시한 글들만 조회하도록
+    @Query("select m from MessageBoard m  where m.addressMsg like  %:filter%  and m.boardType =:boardType and m.heartNum>0 and m.isDeleted =:isDeleted and m.createdAt >=:createdAt  order by m.heartNum desc ")
+    Page<MessageBoard> findByAddressMsgLike(@Param("filter") String filter, Pageable pageable,@Param("boardType") BoardType boardType,@Param("isDeleted")String N,@Param("createdAt")Date date);
 
-    @Query("select m from MessageBoard  m where m.addressMsg like  %:filter%  and m.boardType =:boardType and m.isDeleted =:isDeleted order by m.createdAt desc ")
-    Page<MessageBoard> findByAddressRecentlyMsg(@Param("filter") String filter, Pageable pageable,@Param("boardType") BoardType boardType,@Param("isDeleted")String N);
+
+    //구에 필터링 된 게시글만 조회
+//    @Query("select m from MessageBoard m  where m.addressMsg like  %:filter%  and m.boardType =:boardType and m.heartNum>0 and m.isDeleted =:isDeleted  order by m.heartNum desc ")
+//    Page<MessageBoard> findByAddressMsgLike(@Param("filter") String filter, Pageable pageable,@Param("boardType") BoardType boardType,@Param("isDeleted")String N);
+
+    @Query("select m from MessageBoard  m where m.addressMsg like  %:filter%  and m.boardType =:boardType and m.isDeleted =:isDeleted and m.createdAt >=:createdAt order by m.createdAt desc ")
+    Page<MessageBoard> findByAddressRecentlyMsg(@Param("filter") String filter, Pageable pageable,@Param("boardType") BoardType boardType,@Param("isDeleted")String N,@Param("createdAt")Date date);
 
 
 

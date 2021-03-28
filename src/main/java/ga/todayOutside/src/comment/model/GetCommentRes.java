@@ -23,12 +23,13 @@ public class GetCommentRes {
         this.picture=comment.getUserInfo().getPicture();
         this.msg=comment.getCommentMsg();
         this.userNickName=comment.getUserInfo().getNickname();
-        String[]array=comment.getAddressMsg().split(" ");
-        if(array.length>1){
-            this.thirdAddressName=array[(array.length)-1];
+        int index=0;
+        index=comment.getAddressMsg().indexOf("구");
+        if(index!=-1){
+            this.thirdAddressName=comment.getAddressMsg().substring(index+1).trim();
         }
         else{
-            this.thirdAddressName=getThirdAddressName();
+            this.thirdAddressName=comment.getAddressMsg().trim();
         }
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         this.date= simpleDateFormat.format(comment.getCreatedAt()); ;
