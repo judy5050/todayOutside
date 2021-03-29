@@ -69,6 +69,8 @@ public class CommentService {
         MessageBoard messageBoard = null;
 
         // 유저 존재 여부 로직
+        if (userId != jwtService.getUserId()) throw new BaseException(BaseResponseStatus.NOT_MATCH_USER);
+
         try {
             userInfo = userInfoRepository.findById(userId).orElse(null);
 
@@ -111,6 +113,8 @@ public class CommentService {
 
         Comment comment = null;
         UserInfo userInfo = null;
+
+        if (userIdx != jwtService.getUserId()) throw new BaseException(BaseResponseStatus.NOT_MATCH_USER);
 
         try {
             comment = commentRepository.findById(commentIdx).orElse(null);

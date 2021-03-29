@@ -6,6 +6,7 @@ import ga.todayOutside.src.disaster.model.DisasterAlarm;
 import ga.todayOutside.src.disaster.model.DisasterAlarmReq;
 import ga.todayOutside.src.disaster.model.DisasterInfo;
 import ga.todayOutside.src.user.UserInfoProvider;
+import ga.todayOutside.src.user.UserInfoRepository;
 import ga.todayOutside.src.user.models.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,12 +17,18 @@ import java.util.List;
 @Service
 public class DisasterAlarmService {
 
+    private final UserInfoProvider userInfoProvider;
+    private final DisasterAlarmRepository disasterAlarmRepository;
+    private final DisasterProvider disasterProvider;
+    private final UserInfoRepository userInfoRepository;
+
     @Autowired
-    UserInfoProvider userInfoProvider;
-    @Autowired
-    DisasterAlarmRepository disasterAlarmRepository;
-    @Autowired
-    DisasterProvider disasterProvider;
+    public DisasterAlarmService(UserInfoProvider userInfoProvider, DisasterAlarmRepository disasterAlarmRepository, DisasterProvider disasterProvider, UserInfoRepository userInfoRepository) {
+        this.userInfoProvider = userInfoProvider;
+        this.disasterAlarmRepository = disasterAlarmRepository;
+        this.disasterProvider = disasterProvider;
+        this.userInfoRepository = userInfoRepository;
+    }
 
     /**
      * 알람 등록
@@ -52,6 +59,16 @@ public class DisasterAlarmService {
 
     public void alarm(ArrayList<DisasterInfo> infos) {
 
+        //유저 리스트 조회
+        List<UserInfo> userInfos = userInfoRepository.findAll();
+        // 각 리스트마다 시, 도, 재난 정보 확인해서 모두 일치하면 알람 송신
+        for (UserInfo user : userInfos) {
+
+        }
+
+        for (DisasterInfo disasterInfo : infos) {
+
+        }
 
     }
 

@@ -174,8 +174,8 @@ public class DisasterService {
 
             String city = o.getCity();
 
-            //유저 동 아니면 건너뛰기
-            if (!userCity.equals(city)) continue;
+            //유저 동, 구 아니면 건너뛰기
+            if (!userCity.equals(city) && !city.equals("전체")) continue;
 
             ArrayList<DisasterInfo> infos = result.getOrDefault(city, new ArrayList<DisasterInfo>());
             infos.add(o);
