@@ -139,10 +139,12 @@ public class DisasterService {
                     return resultDisaster;
                     //resultCity.put(cityKey, resultDisaster);
                 }
-                resultState.put(key, resultCity);
+
 
             }
         }
+        resultState.put("calamity", null);
+        resultState.put("total", 0);
 
         return resultState;
     }

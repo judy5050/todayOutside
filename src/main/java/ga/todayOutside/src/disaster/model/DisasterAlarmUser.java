@@ -10,4 +10,5 @@ import java.util.List;
 public class DisasterAlarmUser {
     private List<String> alarmKinds;
     private String targetToken;
+    private String secondAddress;
 }

@@ -99,6 +99,7 @@ public class DisasterProvider {
             resultMap.put(key, ja);
 
         }
+
         resultMap.put("total", total);
         return resultMap;
     }
