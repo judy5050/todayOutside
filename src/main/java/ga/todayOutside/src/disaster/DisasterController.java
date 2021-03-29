@@ -10,13 +10,11 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/disaster")
@@ -29,10 +27,13 @@ public class DisasterController {
     }
 
     /**
-     * 재난 정보 조회, DB 저장
+     * 재난 정보 조회, DB 저장 -> 여기서 알람이랑 연동될 예정
+     * -> 주기적으로 조회 알림 기능할 예
      */
     @GetMapping("/info")
     public Map<String, Object> getInfomation() throws ParseException {
+        //재난페이지 조회
+
         Map<String, Object> result = disasterService.getImfomation();
 
         Integer status = (Integer) result.get("status");
@@ -45,7 +46,9 @@ public class DisasterController {
         JSONObject row = (JSONObject) disasterMsg.get(1);
         JSONArray messages = (JSONArray) row.get("row");
 
-        disasterService.postMsg(messages);
+        //DB 등록
+        ArrayList<DisasterInfo> newInfo = disasterService.postMsg(messages);
+
 
         return result;
     }
@@ -106,17 +109,5 @@ public class DisasterController {
         }
     }
 
-    /**
-     * 알람등록
-     */
-    @PostMapping("/alarm")
-    public BaseResponse<Void> postAlarm(@RequestBody DisasterAlarmReq disasterAlarmReq) {
 
-        try {
-            disasterService.postAlarm(disasterAlarmReq.getName(), disasterAlarmReq.getUserIdx());
-            return new BaseResponse<>(BaseResponseStatus.SUCCESS_POST_DISASTER_ALARM);
-        } catch (BaseException exception){
-            return new BaseResponse<>(exception.getStatus());
-        }
-    }
 }

@@ -3,6 +3,7 @@ package ga.todayOutside.src.disaster;
 import ga.todayOutside.src.disaster.model.DisasterAlarm;
 import ga.todayOutside.src.disaster.model.DisasterFilterRes;
 import ga.todayOutside.src.disaster.model.DisasterInfo;
+import ga.todayOutside.src.disaster.model.DisasterInfoEntity;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,9 @@ public class DisasterProvider {
 
     @Autowired
     DisasterRepository disasterRepository;
+
+    @Autowired
+    DisasterProvider disasterProvider;
 
     /**
      * 재난 정보 모델 만들기
@@ -55,7 +59,9 @@ public class DisasterProvider {
                 city = location[1];
             }
 
-            result.add(new DisasterInfo(state, city, msg, createDate, msgIdx));
+            String kind = disasterProvider.findKeyword(msg);
+
+            result.add(new DisasterInfo(state, city, msg, createDate, msgIdx, kind));
         }
 
         return result;
@@ -97,10 +103,11 @@ public class DisasterProvider {
      * @param disasterInfos
      * @return
      */
-    public void postMsg(ArrayList<DisasterInfo> disasterInfos) {
+    public ArrayList<DisasterInfo> postMsg(ArrayList<DisasterInfo> disasterInfos) {
 
         ArrayList<DisasterInfo> result = new ArrayList<>();
         DisasterInfoEntity resultInfo = null;
+        ArrayList<DisasterInfo> newInfo = new ArrayList<>();
 
         for (DisasterInfo info : disasterInfos) {
 
@@ -108,17 +115,19 @@ public class DisasterProvider {
             //등록 되지 않은 데이터만 등록
             if (resultInfo != null) continue;
 
+            newInfo.add(info);
+
             DisasterInfoEntity saveInfo = DisasterInfoEntity.builder()
                     .msg(info.getMsg()).msgIdx(info.getMsgIdx())
                     .state(info.getState()).city(info.getCity())
-                    .createDate(info.getCreateDate())
+                    .createDate(info.getCreateDate()).kind(info.getKind())
                     .build();
 
             disasterRepository.save(saveInfo);
 
         }
 
-        return;
+        return newInfo;
     }
 
     public Set<String> alarmSeting() {

@@ -1,9 +1,10 @@
 package ga.todayOutside.src.user;
 
-import com.fasterxml.jackson.databind.ser.Serializers;
 import ga.todayOutside.src.address.AddressRepository;
 import ga.todayOutside.src.address.model.Address;
 import ga.todayOutside.src.address.model.PostAddressReq;
+import ga.todayOutside.src.disaster.DisasterAlarmRepository;
+import ga.todayOutside.src.disaster.model.DisasterAlarm;
 import ga.todayOutside.utils.JwtService;
 import ga.todayOutside.config.BaseException;
 import ga.todayOutside.config.BaseResponseStatus;
@@ -25,13 +26,15 @@ public class UserInfoService {
     private final UserInfoProvider userInfoProvider;
     private final JwtService jwtService;
     private final AddressRepository addressRepository;
+    private final DisasterAlarmRepository disasterAlarmRepository;
 
     @Autowired
-    public UserInfoService(UserInfoRepository userInfoRepository, UserInfoProvider userInfoProvider, JwtService jwtService, AddressRepository addressRepository) {
+    public UserInfoService(UserInfoRepository userInfoRepository, UserInfoProvider userInfoProvider, JwtService jwtService, AddressRepository addressRepository, DisasterAlarmRepository disasterAlarmRepository) {
         this.userInfoRepository = userInfoRepository;
         this.userInfoProvider = userInfoProvider;
         this.jwtService = jwtService;
         this.addressRepository = addressRepository;
+        this.disasterAlarmRepository = disasterAlarmRepository;
     }
 
         /**
@@ -123,6 +126,12 @@ public class UserInfoService {
             throw new BaseException(BaseResponseStatus.FAILED_TO_POST_USER);
         }
 
+        //유저 알람 생성
+        DisasterAlarm disasterAlarm = new DisasterAlarm();
+        disasterAlarm.setUserIdx(userInfo.getId());
+
+        disasterAlarmRepository.save(disasterAlarm);
+
         // 4. JWT 생성
         String jwt = jwtService.createJwt(userInfo.getId());
 
@@ -139,7 +148,7 @@ public class UserInfoService {
     public PostUserRes existUser(Long snsId) {
         UserInfo userInfo = userInfoRepository.findBySnsId(snsId).orElse(null);
         Long userId = userInfo.getId();
-        String jwt = jwtService.createJwt(userId);
+        String jwt = "";
         List<Long> addressIds = addressRepository.findByUserIdxForAddressId(userId);
 
         PostUserRes postUserRes = new PostUserRes(userId, userInfo.getEmail(),
@@ -195,15 +204,8 @@ public class UserInfoService {
             throw new BaseException(BaseResponseStatus.FAILED_TO_DELETE_USER);
         }
 
-        // 2-2. 해당 UserInfo의 status를 INACTIVE로 설정
-
-//        userInfo.setStatus("INACTIVE");
-//        try {
-//            userInfoRepository.save(userInfo);
-//        } catch (Exception ignored) {
-//            throw new BaseException(BaseResponseStatus.FAILED_TO_DELETE_USER);
-//        }
     }
+
     public void changeAlarm(UserInfo userInfo, boolean notice, boolean disaster) throws BaseException {
 
         if (notice) {
