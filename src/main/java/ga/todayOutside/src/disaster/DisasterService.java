@@ -133,6 +133,7 @@ public class DisasterService {
 
                     //재난 필터
                     Map<String, ArrayList<DisasterFilterRes>> disasterFilter = filterByDisaster(cityFilter.get(cityKey), userIdx);
+
                     resultDisaster = disasterProvider.MapToJSON(disasterFilter);
 
                     return resultDisaster;
@@ -222,6 +223,8 @@ public class DisasterService {
             infos.add(res);
             result.put("calamity", infos);
         }
+
+        if (result.size() == 0 ) result.put("calamity", null);
 
         return result;
     }
