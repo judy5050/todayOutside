@@ -84,7 +84,7 @@ public class DisasterController {
     }
 
     @GetMapping("/home/disaster")
-    public BaseResponse<DisasterHomeInfoRes> getHomeInfo() {
+    public BaseResponse<List<DisasterHomeInfoRes>> getHomeInfo() {
         Date today = new Date();
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String result = df.format(today);
@@ -93,7 +93,9 @@ public class DisasterController {
 
         try {
             ArrayList<DisasterInfo> todayDisaster = disasterService.filterByDay(month, day);
-            DisasterHomeInfoRes disasterHomeInfoRes = disasterService.getHomeInfo(todayDisaster);
+            if (todayDisaster == null) return new BaseResponse<>(BaseResponseStatus.FAILED_TO_GET_DISASTER);
+
+            List<DisasterHomeInfoRes> disasterHomeInfoRes = disasterService.getHomeInfo(todayDisaster);
 
             return new BaseResponse<>(BaseResponseStatus.SUCCESS_GET_DISASTER, disasterHomeInfoRes);
         }catch (BaseException e) {

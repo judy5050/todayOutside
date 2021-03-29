@@ -81,6 +81,7 @@ public enum BaseResponseStatus {
     INVALID_MONTH_OR_DAY(false, 2303, "유효하지 않은 날짜입니다."),
     EMPTY_TOWN_INFO(false, 2304, "동 정보를 입력하세요."),
     NOT_MATCH_USER(false,  2305, "유저가 일치하지 않습니다."),
+    NOT_FOUND_ALARM(false,  2306, "알람을 찾을수 없습니다."),
 
     // 3000 : Response 오류
     RESPONSE_ERROR(false, 3000, "값을 불러오는데 실패하였습니다."),

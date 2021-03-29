@@ -95,7 +95,6 @@ public class DisasterProvider {
                 }
             }
 
-
             resultMap.put(key, ja);
 
         }
