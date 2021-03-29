@@ -3,27 +3,26 @@ package ga.todayOutside.src.disaster;
 import ga.todayOutside.config.BaseException;
 import ga.todayOutside.config.BaseResponse;
 import ga.todayOutside.config.BaseResponseStatus;
-import ga.todayOutside.src.disaster.model.DisasterAlarmReq;
 import ga.todayOutside.src.disaster.model.DisasterInfo;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Timestamp;
 import java.util.*;
 
 @RestController
 @RequestMapping("/disaster")
 public class DisasterController {
     private final DisasterService disasterService;
+    private final DisasterAlarmService disasterAlarmService;
 
     @Autowired
-    public DisasterController(DisasterService disasterService) {
+    public DisasterController(DisasterService disasterService, DisasterAlarmService disasterAlarmService) {
         this.disasterService = disasterService;
+        this.disasterAlarmService = disasterAlarmService;
     }
 
     /**
@@ -48,7 +47,7 @@ public class DisasterController {
 
         //DB 등록
         ArrayList<DisasterInfo> newInfo = disasterService.postMsg(messages);
-
+        disasterAlarmService.alarm(newInfo);
 
         return result;
     }

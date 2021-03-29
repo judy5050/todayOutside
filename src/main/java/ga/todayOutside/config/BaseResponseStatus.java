@@ -80,7 +80,7 @@ public enum BaseResponseStatus {
     INVALID_ACCESSTOKEN(false, 2302, "유효하지 않은 accessToken 입니다."),
     INVALID_MONTH_OR_DAY(false, 2303, "유효하지 않은 날짜입니다."),
     EMPTY_TOWN_INFO(false, 2304, "동 정보를 입력하세요."),
-
+    NOT_MATCH_USER(false,  2305, "유저가 일치하지 않습니다."),
 
     // 3000 : Response 오류
     RESPONSE_ERROR(false, 3000, "값을 불러오는데 실패하였습니다."),
