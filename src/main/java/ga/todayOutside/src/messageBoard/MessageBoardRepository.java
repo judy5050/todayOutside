@@ -21,6 +21,7 @@ import java.util.Optional;
 public interface MessageBoardRepository extends JpaRepository<MessageBoard,Long> {
 
 
+    //내 게시글 조회
     @Query("select m from MessageBoard  m   where m.userInfo.id =:userIdx  ")
      Page<MessageBoard> findByUserIdx(@Param("userIdx") Long userIdx,Pageable pageable);
 
