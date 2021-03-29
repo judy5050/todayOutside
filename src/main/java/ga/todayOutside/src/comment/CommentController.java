@@ -64,7 +64,7 @@ public class CommentController {
      * @throws BaseException
      */
     @PostMapping("/messageBoards/{messageBoardIdx}/comment")
-    public BaseResponse<PostCommentRes> postComment(@RequestBody PostCommentReq req, @PathVariable Long messageBoardIdx) {
+    public BaseResponse<Void> postComment(@RequestBody PostCommentReq req, @PathVariable Long messageBoardIdx) {
         //구 동 띄어쓰기로 입력
         String address = req.getAddressMsg();
 
@@ -74,7 +74,7 @@ public class CommentController {
 
         try {
             PostCommentRes result = commentService.postComments(req, messageBoardIdx);
-            return new BaseResponse<>(BaseResponseStatus.SUCCESS_POST_COMMENTS, result);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS_POST_COMMENTS);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
