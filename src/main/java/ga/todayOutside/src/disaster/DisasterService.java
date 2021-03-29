@@ -2,11 +2,14 @@ package ga.todayOutside.src.disaster;
 
 import ga.todayOutside.config.BaseException;
 import ga.todayOutside.config.BaseResponseStatus;
+import ga.todayOutside.src.address.AddressRepository;
+import ga.todayOutside.src.address.model.Address;
 import ga.todayOutside.src.disaster.model.DisasterAlarm;
 import ga.todayOutside.src.disaster.model.DisasterFilterRes;
 import ga.todayOutside.src.disaster.model.DisasterHomeInfoRes;
 import ga.todayOutside.src.disaster.model.DisasterInfo;
 import ga.todayOutside.src.user.UserInfoProvider;
+import ga.todayOutside.src.user.UserInfoRepository;
 import ga.todayOutside.src.user.models.UserInfo;
 import ga.todayOutside.utils.JwtService;
 import org.json.simple.JSONArray;
@@ -21,8 +24,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriBuilder;
 
-import java.lang.reflect.Array;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -32,13 +33,17 @@ public class DisasterService {
     private final DisasterRepository disasterRepository;
     private final DisasterAlarmRepository disasterAlarmRepository;
     private final JwtService jwtService;
+    private final AddressRepository addressRepository;
+    private final UserInfoRepository userInfoRepository;
 
     @Autowired
-    public DisasterService(DisasterProvider disasterProvider, DisasterRepository disasterRepository, DisasterAlarmRepository disasterAlarmRepository, JwtService jwtService, UserInfoProvider userInfoProvider) {
+    public DisasterService(DisasterProvider disasterProvider, DisasterRepository disasterRepository, DisasterAlarmRepository disasterAlarmRepository, JwtService jwtService, AddressRepository addressRepository, UserInfoRepository userInfoRepository, UserInfoProvider userInfoProvider) {
         this.disasterProvider = disasterProvider;
         this.disasterRepository = disasterRepository;
         this.disasterAlarmRepository = disasterAlarmRepository;
         this.jwtService = jwtService;
+        this.addressRepository = addressRepository;
+        this.userInfoRepository = userInfoRepository;
         this.userInfoProvider = userInfoProvider;
     }
 
@@ -265,13 +270,45 @@ public class DisasterService {
     /**
      * home 재난정보 조회
      */
-
-    public DisasterHomeInfoRes getHomeInfo(ArrayList<DisasterInfo> todayDisaster) throws BaseException {
+    public List<DisasterHomeInfoRes> getHomeInfo(ArrayList<DisasterInfo> todayDisaster) throws BaseException {
 
         Long userId = jwtService.getUserId();
+        List<DisasterHomeInfoRes> infos = new ArrayList<>();
+
+        //동네 2개
+        List<Address> address = addressRepository.findByUserAddress(userId);
+        UserInfo userInfo = userInfoRepository.findById(userId).orElse(null);
+        DisasterAlarm disasterAlarm = disasterAlarmRepository.findByUserIdx(userId).orElse(null);
+        Set<String> filter = disasterProvider.filterDisaster(disasterAlarm);
 
 
-        return new DisasterHomeInfoRes(123, "kind");
+        if (userInfo == null) throw new BaseException(BaseResponseStatus.NOT_FOUND_USER);
+        if (disasterAlarm == null) throw new BaseException(BaseResponseStatus.NOT_FOUND_ALARM);
+
+        for (Address a : address) {
+            int total = 0;
+            String resultKind = null;
+            String state = a.getFirstAddressName();
+            String city = a.getSecondAddressName();
+
+            for (DisasterInfo disasterInfo : todayDisaster) {
+
+                String curState = disasterInfo.getState();
+                String curCity = disasterInfo.getCity();
+                String curKind = disasterInfo.getKind();
+
+                if (state.equals(curState) && city.equals(curCity) && filter.contains(curKind)) {
+                    total += 1;
+                    if (resultKind == null) resultKind = curKind;
+                }
+
+            }
+
+            DisasterHomeInfoRes disasterHomeInfoRes = new DisasterHomeInfoRes(total, resultKind);
+            infos.add(disasterHomeInfoRes);
+        }
+
+        return infos;
     }
 
 }
