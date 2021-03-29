@@ -3,6 +3,7 @@ package ga.todayOutside.src.disaster;
 import ga.todayOutside.config.BaseException;
 import ga.todayOutside.config.BaseResponse;
 import ga.todayOutside.config.BaseResponseStatus;
+import ga.todayOutside.src.disaster.model.DisasterHomeInfoRes;
 import ga.todayOutside.src.disaster.model.DisasterInfo;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -11,10 +12,11 @@ import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RestController
-@RequestMapping("/disaster")
+@RequestMapping("")
 public class DisasterController {
     private final DisasterService disasterService;
     private final DisasterAlarmService disasterAlarmService;
@@ -26,40 +28,13 @@ public class DisasterController {
     }
 
     /**
-     * 재난 정보 조회, DB 저장 -> 여기서 알람이랑 연동될 예정
-     * -> 주기적으로 조회 알림 기능할 예
-     */
-    @GetMapping("/info")
-    public Map<String, Object> getInfomation() throws ParseException {
-        //재난페이지 조회
-
-        Map<String, Object> result = disasterService.getImfomation();
-
-        Integer status = (Integer) result.get("status");
-        String jsonString = (String) result.get("body");
-
-        JSONParser parser = new JSONParser();
-        Object obj = parser.parse(jsonString);
-        JSONObject jsonObj = (JSONObject) obj;
-        JSONArray disasterMsg = (JSONArray) jsonObj.get("DisasterMsg");
-        JSONObject row = (JSONObject) disasterMsg.get(1);
-        JSONArray messages = (JSONArray) row.get("row");
-
-        //DB 등록
-        ArrayList<DisasterInfo> newInfo = disasterService.postMsg(messages);
-        disasterAlarmService.alarm(newInfo);
-
-        return result;
-    }
-
-    /**
      * 월별 조회
      * @param month
      * @param city
      * @param state
      * @return
      */
-    @GetMapping("/month/{userIdx}")
+    @GetMapping("/disaster/month/{userIdx}")
     public BaseResponse<Map<String, Object>> getMonth(@RequestParam String month, @RequestParam String city,
                                                       @RequestParam String state, @PathVariable Long userIdx) {
 
@@ -86,7 +61,7 @@ public class DisasterController {
      * @param state
      * @return
      */
-    @GetMapping("/day/{userIdx}")
+    @GetMapping("/disaster/day/{userIdx}")
     public BaseResponse<Map<String, Object>> getDay(@RequestParam String month, @RequestParam String day,
                                                     @RequestParam String city, @RequestParam String state, @PathVariable Long userIdx) {
 
@@ -108,5 +83,22 @@ public class DisasterController {
         }
     }
 
+    @GetMapping("/home/disaster")
+    public BaseResponse<DisasterHomeInfoRes> getHomeInfo() {
+        Date today = new Date();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        String result = df.format(today);
+        String month = result.split("-")[1];
+        String day = result.split("-")[2];
+
+        try {
+            ArrayList<DisasterInfo> todayDisaster = disasterService.filterByDay(month, day);
+            DisasterHomeInfoRes disasterHomeInfoRes = disasterService.getHomeInfo(todayDisaster);
+
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS_GET_DISASTER, disasterHomeInfoRes);
+        }catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 
 }

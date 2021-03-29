@@ -64,7 +64,8 @@ public class CommentService {
 
         Long userId = postCommentReq.getUserIdx();
         String commentMsg = postCommentReq.getCommentMsg();
-        String address = postCommentReq.getAddressMsg();
+        String secondAddress = postCommentReq.getSecondAddress();
+        String thirdAddress = postCommentReq.getThirdAddress();
         UserInfo userInfo = null;
         MessageBoard messageBoard = null;
 
@@ -95,7 +96,7 @@ public class CommentService {
 
         Comment comment = Comment.builder()
                 .userInfo(userInfo)
-                .addressMsg(address)
+                .addressMsg(secondAddress + " " + thirdAddress)
                 .commentMsg(commentMsg)
                 .messageBoard(messageBoard)
                 .build();

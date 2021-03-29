@@ -5,7 +5,8 @@ import lombok.Getter;
 @Getter
 public class PostCommentReq {
 
-    private String addressMsg;
+    private String secondAddress;
+    private String thirdAddress;
     private String commentMsg;
     private Long userIdx;
 

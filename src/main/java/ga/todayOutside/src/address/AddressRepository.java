@@ -54,4 +54,7 @@ public interface AddressRepository extends JpaRepository<Address,Long> {
     @Query("select a.id from Address a where a.userInfo.id= :userIdx")
     List<Long> findByUserIdxForAddressId(@Param("userIdx") Long userIdx);
 
+    @Query("select a from Address a where a.userInfo.id= :userIdx and a.addressOrder = 1")
+    Address findByUserIdxForFirstOrder(@Param("userIdx") Long userIdx);
+
 }

@@ -15,15 +15,17 @@ public class PostUserReq {
     private String picture;
     private List<PostAddressReq> addressInfos;
     private Long snsId;
+    private String targetToken;
 
     @Builder
     public PostUserReq(String email, String nickname, String picture,
-                       List<PostAddressReq> addressInfos, Long snsId) {
+                       List<PostAddressReq> addressInfos, Long snsId, String targetToken) {
 
         this.email = email;
         this.nickname = nickname;
         this.picture = picture;
         this.addressInfos = addressInfos;
         this.snsId = snsId;
+        this.targetToken = targetToken;
     }
 }

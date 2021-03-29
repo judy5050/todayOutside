@@ -1,13 +1,14 @@
 package ga.todayOutside.src.disaster;
 
 import ga.todayOutside.config.BaseException;
-import ga.todayOutside.config.BaseResponse;
 import ga.todayOutside.config.BaseResponseStatus;
 import ga.todayOutside.src.disaster.model.DisasterAlarm;
 import ga.todayOutside.src.disaster.model.DisasterFilterRes;
+import ga.todayOutside.src.disaster.model.DisasterHomeInfoRes;
 import ga.todayOutside.src.disaster.model.DisasterInfo;
 import ga.todayOutside.src.user.UserInfoProvider;
 import ga.todayOutside.src.user.models.UserInfo;
+import ga.todayOutside.utils.JwtService;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,20 +21,29 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriBuilder;
 
-import java.sql.Timestamp;
+import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
 public class DisasterService {
 
+    private final DisasterProvider disasterProvider;
+    private final DisasterRepository disasterRepository;
+    private final DisasterAlarmRepository disasterAlarmRepository;
+    private final JwtService jwtService;
+
     @Autowired
-    private DisasterProvider disasterProvider;
-    @Autowired
-    private DisasterRepository disasterRepository;
-    @Autowired
-    private DisasterAlarmRepository disasterAlarmRepository;
-    @Autowired
+    public DisasterService(DisasterProvider disasterProvider, DisasterRepository disasterRepository, DisasterAlarmRepository disasterAlarmRepository, JwtService jwtService, UserInfoProvider userInfoProvider) {
+        this.disasterProvider = disasterProvider;
+        this.disasterRepository = disasterRepository;
+        this.disasterAlarmRepository = disasterAlarmRepository;
+        this.jwtService = jwtService;
+        this.userInfoProvider = userInfoProvider;
+    }
+
     private UserInfoProvider userInfoProvider;
+
 
     /**
      *  재난 정보 가져오기
@@ -247,6 +257,16 @@ public class DisasterService {
         return result;
     }
 
+    /**
+     * home 재난정보 조회
+     */
 
+    public DisasterHomeInfoRes getHomeInfo(ArrayList<DisasterInfo> todayDisaster) throws BaseException {
+
+        Long userId = jwtService.getUserId();
+
+
+        return new DisasterHomeInfoRes(123, "kind");
+    }
 
 }

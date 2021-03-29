@@ -21,6 +21,9 @@ public class DisasterAlarm {
     @Column(nullable = false, updatable = false)
     private Long userIdx;
 
+    @Column(nullable = false)
+    private String targetToken;
+
     @Column()
     private String disaster_1;
     @Column()
