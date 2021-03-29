@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.*;
 
 @RestController
@@ -68,15 +69,16 @@ public class DisasterAlaramController {
      * -> 주기적으로 조회 알림 기능할 예
      */
     @GetMapping("/info")
-    public Map<String, Object> getInfomation() throws ParseException {
+    public void getInfomation() throws ParseException, IOException {
         //재난페이지 조회
 
         Map<String, Object> result = disasterService.getImfomation();
         JSONArray messages = disasterProvider.MapToMessage(result);
         //DB 등록
         ArrayList<DisasterInfo> newInfo = disasterService.postMsg(messages);
-        disasterAlarmService.alarm(newInfo);
+        List<DisasterAlarmUser> disasterAlarmUsers = disasterAlarmService.alarm(newInfo);
+        disasterAlarmService.sendMessage(disasterAlarmUsers);
 
-        return result;
+        return;
     }
 }
