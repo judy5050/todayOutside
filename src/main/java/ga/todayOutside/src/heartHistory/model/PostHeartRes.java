@@ -8,9 +8,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PostHeartRes {
 
-    private Long heartNum;
+    private String status;
 
-    public PostHeartRes(MessageBoard messageBoard) {
-        this.heartNum= messageBoard.getHeartNum();
+
+    public PostHeartRes(HeartHistory heartHistory) {
+        this.status=heartHistory.getHeartStatus().toString();
     }
 }

@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.management.Notification;
 import java.util.List;
 
 @RestController
@@ -41,6 +40,7 @@ public class NotificationController {
         Long userIdx;
         UserInfo userInfo=null;
         MessageBoard messageBoard;
+
 
         try {
             userIdx = jwtService.getUserId();
@@ -67,7 +67,13 @@ public class NotificationController {
 
             //게시글 신고
             notificationRepository.save(new NotificationHistory(messageBoard,userInfo));
-
+            int count = notificationRepository.findByMessageBoardIdx(messageBoard.getId());
+            //게시글 신고수 5개 넘을경우 게시글 상태 바꿈
+            if(count>=5){
+                messageBoard.setIsDeleted("Y");
+                messageBoardService.save(messageBoard);
+            }
+            System.out.println("count = " + count);
 
 
         } catch (BaseException exception) {

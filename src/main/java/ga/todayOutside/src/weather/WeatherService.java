@@ -577,6 +577,8 @@ public class WeatherService {
         conn.disconnect();
         String data = sb.toString();
 
+        System.out.println("data = " + data);
+
         // Json parser를 만들어 만들어진 문자열 데이터를 객체화
         JSONParser parser = new JSONParser();
         JSONObject obj = (JSONObject) parser.parse(data);
@@ -1171,15 +1173,29 @@ public class WeatherService {
     //최고기온은 15시 데이터
     //최저 기온은 6시 데이터
     public void todayWeatherHighAndLowParsing(JSONObject object) {
+        int index=0;
         if (object.get("fcstDate").equals(todayStr)) {
             if (object.get("category").equals("TMN")) {
 //                System.out.println("object = " + object);
+                System.out.println("obje = " + object.get("fcstValue").getClass());
                 String skyValue = object.get("fcstValue").toString();
+                index=skyValue.indexOf(".");
+                if(index!=-1){
+                    skyValue=skyValue.substring(0,index);
+                }
+
                 todayWeatherHighAndResult.put("TMN", skyValue);
             } else if (object.get("category").equals("TMX")) {
 //                System.out.println("object = " + object);
                 String ptyValue = object.get("fcstValue").toString();
+                index=ptyValue.indexOf(".");
+                if(index!=-1){
+                    ptyValue=ptyValue.substring(0,index);
+                }
+
                 todayWeatherHighAndResult.put("TMX", ptyValue);
+
+                //:TODO 해당 부분 실행시 탈출하도록 하기
 
             }
         }
@@ -1344,7 +1360,7 @@ public class WeatherService {
         System.out.println("currentTime = " + currentTime);
 
         String date;
-        if(currentTime<6){
+        if(currentTime<18){
             date=yesterdayStr;
         }
         else{
@@ -1363,7 +1379,7 @@ public class WeatherService {
 
         //발표시각 0600 1800시
 
-        String tmFc = date+ "0600";    //발표시각 입력
+        String tmFc = date+ "1800";    //발표시각 입력
         String dataType = "json";    //타입 xml, json
         String numOfRows = "250";    //한 페이지 결과 수
 
@@ -1427,32 +1443,93 @@ public class WeatherService {
      * 중기 기온 최고, 최저 파싱 함수
      */
     ArrayList weekHighAndLowParsing(JSONObject object) {
+
+        int index1=0;
+        int index2=0;
+        int index3=0;
+        int index4=0;
+        int index5=0;
+        int index6=0;
+        int index7=0;
+        int index8=0;
+        int index9=0;
+        int index10=0;
+        int index11=0;
+        int index12=0;
+        int index13=0;
+        int index14=0;
+
         ArrayList  arrayList=new ArrayList<>();
         String day2HighResult = object.get("taMax3").toString();
+        index1=day2HighResult.indexOf('.');
+        if(index1!=-1){
+            day2HighResult=day2HighResult.substring(0,index1);
+        }
+
+
         day2.put("taMax", day2HighResult);
         String day2LowResult = object.get("taMin3").toString();
+        index2=day2LowResult.indexOf('.');
+        if(index2!=-1){
+            day2LowResult=day2LowResult.substring(0,index2);
+        }
+
+
         day2.put("taMin", day2LowResult);
         day2.put("week",day2Name);
         day2.put("day",mon2);
 
         String day3HighResult = object.get("taMax4").toString();
+        index3=day3HighResult.indexOf('.');
+        if(index3!=-1){
+            day3HighResult=day3HighResult.substring(0,index3);
+        }
+
         day3.put("taMax", day3HighResult);
         String day3LowResult = object.get("taMin4").toString();
+
+        index4=day3LowResult.indexOf('.');
+        if(index4!=-1){
+            day3LowResult=day3LowResult.substring(0,index4);
+        }
+
         day3.put("taMin", day3LowResult);
         day3.put("week",day3Name);
         day3.put("day",mon3);
 
 
         String day4HighResult = object.get("taMax5").toString();
+        index5=day4HighResult.indexOf('.');
+        if(index5!=-1){
+            day4HighResult=day4HighResult.substring(0,index5);
+        }
+
         day4.put("taMax", day4HighResult);
         String day4LowResult = object.get("taMin5").toString();
+        index6=day4LowResult.indexOf('.');
+        if(index6!=-1){
+            day4LowResult=day4LowResult.substring(0,index6);
+        }
+
         day4.put("taMin", day4LowResult);
+
         day4.put("week",day4Name);
         day4.put("day",mon4);
 
         String day5HighResult = object.get("taMax6").toString();
+        index7=day5HighResult.indexOf('.');
+        if(index7!=-1){
+            day5HighResult=day5HighResult.substring(0,index7);
+        }
+
         day5.put("taMax", day5HighResult);
         String day5LowResult = object.get("taMin6").toString();
+
+        index8=day5LowResult.indexOf('.');
+        if(index8!=-1){
+            day5LowResult=day5LowResult.substring(0,index8);
+        }
+
         day5.put("taMin", day5LowResult);
         day5.put("week",day5Name);
         day5.put("day",mon5);
@@ -1460,8 +1537,18 @@ public class WeatherService {
 
 
         String day6HighResult = object.get("taMax7").toString();
+        index9=day6HighResult.indexOf('.');
+        if(index9!=-1){
+            day6HighResult=day6HighResult.substring(0,index9);
+        }
+
         day6.put("taMax", day6HighResult);
         String day6LowResult = object.get("taMin7").toString();
+        index10=day6LowResult.indexOf('.');
+        if(index10!=-1){
+            day6LowResult=day6LowResult.substring(0,index10);
+        }
+
         day6.put("taMin", day6LowResult);
         day6.put("week",day6Name);
         day6.put("day",mon6);
@@ -1469,8 +1556,19 @@ public class WeatherService {
 
 
         String day7HighResult = object.get("taMax8").toString();
+        index11=day7HighResult.indexOf('.');
+        if(index11!=-1){
+            day7HighResult=day7HighResult.substring(0,index11);
+        }
+
         day7.put("taMax", day7HighResult);
         String day7LowResult = object.get("taMin8").toString();
+        index12=day7LowResult.indexOf('.');
+        if(index12!=-1){
+            day7LowResult=day7LowResult.substring(0,index12);
+        }
+
+
         day7.put("taMin", day7LowResult);
         day7.put("week",day7Name);
         day7.put("day",mon7);
@@ -1736,6 +1834,7 @@ public class WeatherService {
 //            System.out.println(e);
         }
 
+
 //        System.out.println(result);
 
         jArr=null;
@@ -1839,10 +1938,15 @@ public class WeatherService {
     //최저 기온은 6시 데이터
     ArrayList weeklyDay1HighAndLowParsing(JSONObject object) {
         ArrayList weeklyDay1HighAndLow=new ArrayList();
+        int index=0;
         if (object.get("fcstDate").equals(tomorrowStr)) {
             if (object.get("category").equals("TMN")) {
 //                System.out.println("object = " + object);
                 String skyValue = object.get("fcstValue").toString();
+                index=skyValue.indexOf(".");
+                if(index!=-1){
+                    skyValue=skyValue.substring(0,index);
+                }
                 day1.put("taMin", skyValue);
 //                weeklyDay1HighAndLow.add(day1_low);
 
@@ -1850,6 +1954,10 @@ public class WeatherService {
             } else if (object.get("category").equals("TMX")) {
 //                System.out.println("object = " + object);
                 String ptyValue = object.get("fcstValue").toString();
+                index=ptyValue.indexOf(".");
+                if(index!=-1){
+                    ptyValue=ptyValue.substring(0,index);
+                }
                 day1.put("taMax", ptyValue);
                 day1.put("week",day1Name);
                 day1.put("day",mon1);
@@ -1982,7 +2090,7 @@ public class WeatherService {
 //        date();
 //        System.out.println("yesterdayStr = " + yesterdayStr);
         String apiUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService/getVilageFcst";    //동네예보조회
-
+        String baseDate=null;
         // 홈페이지에서 받은 키
         String serviceKey = Secret.WEATHER_OPEN_APIKEY;
         String nx = x;    //위도
@@ -1994,11 +2102,14 @@ public class WeatherService {
 
 
         if(currentTime<23){
-
+            baseDate = yesterdayStr;    //조회하고싶은 날짜
 
         }
+        else{
+            baseDate = todayStr;
+        }
         String baseTime = "2300";    //API 제공 시간
-        String baseDate = yesterdayStr;    //조회하고싶은 날짜
+
         System.out.println("yesterdayStr = " + yesterdayStr);
         String dataType = "json";    //타입 xml, json
         String numOfRows = "256";    //한 페이지 결과 수

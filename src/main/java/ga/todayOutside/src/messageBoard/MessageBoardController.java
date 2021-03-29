@@ -16,14 +16,15 @@ import ga.todayOutside.src.user.UserInfoService;
 import ga.todayOutside.src.user.models.UserInfo;
 import ga.todayOutside.utils.JwtService;
 import lombok.RequiredArgsConstructor;
-import org.json.simple.parser.ParseException;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+
+import static ga.todayOutside.config.BaseResponseStatus.SUCCESS_GET_HEART_STATUS;
+import static ga.todayOutside.config.BaseResponseStatus.SUCCESS_POST_HEART;
 
 @RestController
 @RequiredArgsConstructor
@@ -63,18 +64,24 @@ public class MessageBoardController {
             //TODO 서비스 로직으로 넘기기 (개발 얼른 끝내고 코드 수정하기)
             else{
 
-                if(address.getSecondAddressName().length()>=2&&address.getSecondAddressName().length()<=4){
-                    addressMsg=address.getThirdAddressName()+" "+address.getThirdAddressName();
-                }
+//                if(address.getSecondAddressName().length()>=2&&address.getSecondAddressName().length()<=4){
+//                    addressMsg=address.getThirdAddressName()+" "+address.getThirdAddressName();
+//                }
                 //시 구 두개 다 합쳐있을경우 구 정보만 자르고 +동정보 반환
-                else{
+
                     index=address.getSecondAddressName().indexOf("시");
-                    addressMdl=address.getSecondAddressName().substring(index+1);
+                    if(index!=-1){
+                        addressMdl=address.getSecondAddressName().substring(index+1);
+                    }
+                    else{
+                        addressMdl=address.getSecondAddressName();
+                    }
+
                     System.out.println("index = " + index);
                     addressMsg=addressMdl+" "+address.getThirdAddressName();
-                }
+                System.out.println("addressMsg = " + addressMsg);
 
-                 messageBoard = messageBoardService.postMessageBoard(userInfo, addressMdl, postMessageBoardReq);
+                 messageBoard = messageBoardService.postMessageBoard(userInfo, addressMsg, postMessageBoardReq);
             }
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
@@ -154,7 +161,7 @@ public class MessageBoardController {
      */
     @ResponseBody
     @GetMapping("/address/{addressIdx}/messageBoardList")
-    public BaseResponse<List<GetMessageBoardRecentlyRes>>getMessageBoardList(@PathVariable Long addressIdx, @RequestParam("sortType")String sortType, @RequestParam("boardType") BoardType boardType, @RequestParam("page")int page){
+    public BaseResponse<List<GetMessageBoardRecentlyRes>>getMessageBoardList(@PathVariable Long addressIdx, @RequestParam("sortType")String sortType, @RequestParam("boardType") BoardType boardType, @RequestParam("page")int page) throws BaseException, ParseException {
 
         Long userIdx;
         Address address=null;
@@ -162,6 +169,8 @@ public class MessageBoardController {
         String addressMsg=" ";
         MessageBoard messageBoard;
         String addressMdl=" ";
+        String todayDate = messageBoardService.todayDate();
+
         try {
             userIdx = jwtService.getUserId();
             userInfo = userInfoService.findByUserIdx(userIdx);
@@ -176,9 +185,10 @@ public class MessageBoardController {
         if(sortType.equals("heart")&&boardType.equals(BoardType.WEATHER)){
 
             List<GetMessageBoardRecentlyRes> recentlyMessageBoardList = messageBoardService.getHeartMessageBoardList(address.getSecondAddressName(), page,boardType);
-            if(recentlyMessageBoardList.isEmpty()){
+            if(recentlyMessageBoardList.isEmpty()||recentlyMessageBoardList==null){
                 return new BaseResponse<>(BaseResponseStatus.EMPTY_MESSAGE_BOARD_LIST);
             }
+
             return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_MESSAGE_BOARD_HEART,recentlyMessageBoardList);
 
         }
@@ -234,15 +244,17 @@ public class MessageBoardController {
     public BaseResponse<GetMessageBoardReq> test(@PathVariable Long messageBoardIdx) throws BaseException {
         UserInfo userInfo;
         Long userIdx;
+
+
         MessageBoard messageBoard;
         try {
             userIdx = jwtService.getUserId();
             userInfo = userInfoService.findByUserIdx(userIdx);
              messageBoard = messageBoardService.findByMessage(messageBoardIdx);
-
         }catch (BaseException baseException){
             return new BaseResponse<>(baseException.getStatus());
         }
+
 
 
         return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_MESSAGE_BOARD,new GetMessageBoardReq(messageBoard));
@@ -271,7 +283,7 @@ public class MessageBoardController {
             System.out.println("messageBoard = " + messageBoard);
 
              heartHistory = heartHistoryService.postHeart(messageBoard, userInfo);
-             messageBoard1=messageBoardService.getMessageBoard(messageBoardIdx);
+
 
         }catch (BaseException exception){
             return new BaseResponse<>(exception.getStatus());
@@ -279,8 +291,44 @@ public class MessageBoardController {
 
 
 
-        return new BaseResponse(BaseResponseStatus.SUCCESS_POST_HEART,new PostHeartRes(messageBoard1));
+        return new BaseResponse(SUCCESS_POST_HEART,new PostHeartRes(heartHistory));
     }
+
+    /**
+     *하트 상태 조회
+     *
+     * */
+    @ResponseBody
+    @GetMapping("/messageBoards/{messageBoardIdx}/heart")
+    public BaseResponse<GetHeartRes> getHeartStatus(@PathVariable Long messageBoardIdx){
+        Long userIdx;
+        UserInfo userInfo;
+        MessageBoard messageBoard;
+        HeartHistory heartHistory;
+        MessageBoard messageBoard1;
+        try {
+            userIdx = jwtService.getUserId();
+
+            userInfo = userInfoService.findByUserIdx(userIdx);
+
+            messageBoard= messageBoardService.getMessageBoard(messageBoardIdx);
+
+            heartHistory=heartHistoryService.getHeartStatus(userInfo.getId(),messageBoard.getId());
+
+            if(heartHistory==null){
+                return new BaseResponse(SUCCESS_GET_HEART_STATUS,new GetHeartRes("N"));
+            }
+
+        }catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+
+
+
+        return new BaseResponse(SUCCESS_GET_HEART_STATUS,new GetHeartRes(heartHistory));
+    }
+
+
 
     /**
      *
@@ -288,7 +336,7 @@ public class MessageBoardController {
      */
     @ResponseBody
     @GetMapping("/homeMessageBoard")
-    public BaseResponse<ArrayList> homeTalk(){
+    public BaseResponse<ArrayList> homeTalk() throws ParseException {
 
         Long userIdx;
         UserInfo userInfo;
@@ -297,6 +345,7 @@ public class MessageBoardController {
         MessageBoard messageBoard1;
         List<Address> address=null;
         ArrayList arrayList=new ArrayList();
+  
         try {
             //유저 정보 받기
             userIdx = jwtService.getUserId();
@@ -306,14 +355,17 @@ public class MessageBoardController {
                 throw new BaseException(BaseResponseStatus.FAILED_TO_GET_ADDRESS);
             }
             else{
+
                 for(int i=0;i<address.size();i++){
                     System.out.println("i = " + i);
                     address.get(i).getId();
+                    System.out.println("address.get(i).getId() = " + address.get(i).getId());
                     arrayList.addAll( messageBoardService.getRecentlyTop1(address.get(i).getSecondAddressName()));
                     if(arrayList.size()-1!=i){
                         arrayList.add(new GetMessageBoardRecentlyRes("N"));
 
                     }
+
                 }
 
             }
@@ -335,7 +387,7 @@ public class MessageBoardController {
      */
     @ResponseBody
     @GetMapping("/home/disaster/talk")
-    public BaseResponse<ArrayList> homeDisasterTalk(){
+    public BaseResponse<ArrayList> homeDisasterTalk() throws ParseException {
 
         Long userIdx;
         UserInfo userInfo;

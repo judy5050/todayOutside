@@ -12,8 +12,8 @@ public class GetMyMessageListRes {
     private Long messageBoardIdx;
     private String userNickName;
     private String userPicture;
-    private Long commentNum;
-    private Long heartNum;
+    private String  commentNum;
+    private String heartNum;
     private String thirdAddressName;
     private String date;
     private String msg;
@@ -22,7 +22,7 @@ public class GetMyMessageListRes {
         this.messageBoardIdx=messageBoard.getId();
         this.userNickName=messageBoard.getUserInfo().getNickname();
         this.userPicture=messageBoard.getUserInfo().getPicture();
-        this.commentNum=messageBoard.getComments().stream().count();
+        this.commentNum=Integer.toString((int) messageBoard.getComments().stream().count());
 
         int index;
         //게시글 필터링 구 정보 받기
@@ -35,7 +35,7 @@ public class GetMyMessageListRes {
             this.thirdAddressName=messageBoard.getAddressMsg();
 
         }
-        this.heartNum=messageBoard.getHeartNum();
+        this.heartNum=messageBoard.getHeartNum().toString();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         this.date= simpleDateFormat.format(messageBoard.getCreatedAt());
         this.msg=messageBoard.getMessage();

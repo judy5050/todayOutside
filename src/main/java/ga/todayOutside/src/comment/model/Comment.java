@@ -1,13 +1,17 @@
 package ga.todayOutside.src.comment.model;
 
 import ga.todayOutside.config.BaseEntity;
+import ga.todayOutside.src.commentNotificationHistory.model.CommentNotificationHistory;
 import ga.todayOutside.src.messageBoard.models.MessageBoard;
+import ga.todayOutside.src.notificationHistory.model.NotificationHistory;
 import ga.todayOutside.src.user.models.UserInfo;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @Data
@@ -46,6 +50,14 @@ public class Comment extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "messageBoardIdx")
     private MessageBoard messageBoard;
+
+
+
+    /**
+     *신고 기록
+     */
+    @OneToMany(mappedBy = "comment")
+    private List<CommentNotificationHistory> commentNotificationHistories=new ArrayList<>();
 
     @Builder
     public Comment(UserInfo userInfo, String addressMsg, String commentMsg, MessageBoard messageBoard) {

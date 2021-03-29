@@ -43,7 +43,7 @@ public class AddressService {
     private final DustService dustService;
      Map<String,String> thirdAddressResult =new LinkedHashMap<>();
      JSONObject jsonObject=new JSONObject();
-     JSONArray jsonArray=new JSONArray();
+
 //    ArrayList<Map> weatherList=new ArrayList<>();
     /**
      *회원 주소 등록
@@ -252,7 +252,7 @@ public class AddressService {
         String areaTop=firstAddressName;
         String areaMdl=secondAddressName;
         String code="";	//지역 코드
-
+        JSONArray jsonArray=new JSONArray();
         URL url;
         BufferedReader br;
         URLConnection conn;
@@ -374,7 +374,8 @@ public class AddressService {
             Long addressIdx = addresses.get(i).getId();
             String firstAddressName=addresses.get(i).getFirstAddressName();
             String secondAddressName=addresses.get(i).getSecondAddressName();
-
+            System.out.println("secondAddressName = " + secondAddressName);
+            System.out.println("firstAddressName = " + firstAddressName);
             // 시,도 구 정보 받아 nx ny로 좌표 변경
 
             Map<String, String> nxNy = weatherService.convertNxNy(firstAddressName, secondAddressName);
@@ -438,4 +439,21 @@ public class AddressService {
         return secondAddressName;
     }
 
+    /**
+     * 유저 인덱스로 주소 리스트 받기
+     * @param userIdx
+     */
+    public List<Address> findByAddressList(Long userIdx) {
+        List<Address> addressList = addressRepository.findByUserAddress(userIdx);
+
+        return addressList;
+
+    }
+
+    @Transactional
+    public void saveList(List<Address> addressList) {
+        for(int i=0;i<addressList.size();i++){
+            addressRepository.save(addressList.get(i));
+        }
+    }
 }

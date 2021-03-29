@@ -26,6 +26,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,7 +46,7 @@ public class CommentService {
     public List<GetCommentRes> findAllByMessageId(Long messageBoardIdx,int page) throws BaseException {
 
         PageRequest pageRequest=PageRequest.of(page,10);
-        Page<Comment> comments = commentRepository.findAllByMessageId(messageBoardIdx, pageRequest);
+        Page<Comment> comments = commentRepository.findAllByMessageId(messageBoardIdx, pageRequest,"N");
         List<GetCommentRes> getCommentRes=comments.map(GetCommentRes::new).getContent();
         if(getCommentRes.isEmpty()){
             throw new BaseException(BaseResponseStatus.NOU_FOUND_COMMENT);
@@ -139,8 +140,8 @@ public class CommentService {
         Page<Comment> comment = null;
 
         try {
-            PageRequest pageRequest = PageRequest.of(start, 4);
-            comment = commentRepository.findAllByUserIdx(userIdx, pageRequest);
+            PageRequest pageRequest = PageRequest.of(start, 10);
+            comment = commentRepository.findAllByUserIdx(userIdx, pageRequest,"N");
 
         } catch (Exception exception){
             throw new BaseException(BaseResponseStatus.FAILED_TO_GET_COMMENTS);
@@ -165,8 +166,8 @@ public class CommentService {
         int total = 0;
 
         try {
-            PageRequest pageRequest = PageRequest.of(start, 4);
-            comment = commentRepository.findAllByUserIdx(userIdx, pageRequest);
+            PageRequest pageRequest = PageRequest.of(start, 10);
+            comment = commentRepository.findAllByUserIdx(userIdx, pageRequest,"N");
 
         } catch (Exception exception){
             throw new BaseException(BaseResponseStatus.FAILED_TO_GET_COMMENTS);
@@ -196,4 +197,27 @@ public class CommentService {
         return result;
     }
 
+    /**
+     * 댓글 반환
+     * @param commentIdx
+     * @return
+     */
+    public Comment getComments(Long commentIdx) throws BaseException {
+
+        Comment comment = commentRepository.findById(commentIdx).orElse(null);
+        if(comment==null){
+
+            throw new BaseException(BaseResponseStatus.EMPTY_COMMENT);
+        }
+
+
+
+        return comment;
+    }
+
+    @Transactional
+    public void save(Comment comment) {
+        commentRepository.save(comment);
+
+    }
 }

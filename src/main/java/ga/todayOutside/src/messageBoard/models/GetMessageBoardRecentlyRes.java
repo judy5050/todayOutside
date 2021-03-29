@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 @Setter
 public class GetMessageBoardRecentlyRes {
 
+    private Long userIdx;
     private Long messageBoardIdx;
     private String picture;
     private String userNickName;
@@ -22,7 +23,9 @@ public class GetMessageBoardRecentlyRes {
     private String isExistent;
 
 
+
     public GetMessageBoardRecentlyRes(MessageBoard messageBoard) {
+        this.userIdx=messageBoard.getUserInfo().getId();
         int size=0;
         if(messageBoard==null){
             this.isExistent="N";
@@ -34,15 +37,15 @@ public class GetMessageBoardRecentlyRes {
         this.userNickName=messageBoard.getUserInfo().getNickname();
         this.msg= messageBoard.getMessage();
         this.heartNum=messageBoard.getHeartNum().toString();
+        int index=0;
+        index=messageBoard.getAddressMsg().indexOf("구");
+        if(index!=-1){
+            this.thirdAddressName=messageBoard.getAddressMsg().substring(index+1).trim();
 
-        String[]array=messageBoard.getAddressMsg().split(" ");
-        if(array.length>1){
-            this.thirdAddressName=array[(array.length)-1];
         }
         else{
-            this.thirdAddressName=getThirdAddressName();
+            this.thirdAddressName=messageBoard.getAddressMsg().trim();
         }
-
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         this.date= simpleDateFormat.format(messageBoard.getCreatedAt());
 

@@ -83,4 +83,15 @@ public class HeartHistoryService {
         return heartHistory1;
 
     }
+
+    /**
+     * 하트 상태 조회
+     * @return
+     */
+    public HeartHistory getHeartStatus(Long userIdx, Long messageBoardIdx) {
+        HeartHistory heartHistory = heartHistoryRepository.findByUserIdxAndMessageIdx(userIdx, messageBoardIdx).orElse(null);
+
+
+            return  heartHistory;
+    }
 }

@@ -1,5 +1,6 @@
 package ga.todayOutside.config;
 
+import ga.todayOutside.src.notificationHistory.model.NotificationHistory;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -7,6 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -33,6 +35,8 @@ public abstract class BaseEntity {
     public void prePersist() {
         this.isDeleted = this.isDeleted == null ? "N" : this.isDeleted;
     }
+
+
 
 //    @PrePersist
 //    void prePersist() {

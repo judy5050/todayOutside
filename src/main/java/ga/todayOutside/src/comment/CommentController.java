@@ -24,11 +24,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommentController {
 
-    @Autowired
+
     private final JwtService jwtService;
-    @Autowired
+
     private final UserInfoService userInfoService;
-    @Autowired
+
     private final CommentService commentService;
 
     /**
