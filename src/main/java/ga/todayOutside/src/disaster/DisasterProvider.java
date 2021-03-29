@@ -6,6 +6,8 @@ import ga.todayOutside.src.disaster.model.DisasterInfo;
 import ga.todayOutside.src.disaster.model.DisasterInfoEntity;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -144,7 +146,7 @@ public class DisasterProvider {
      */
 
     public String findKeyword(String msg) {
-        String result = "";
+        String result = " ";
 /* 필터 키워드 - 넘버링
 
         감염병 - 1, 지진 - 2, 태풍 - 3, 해일 - 4, 홍수 - 5, 호우 - 6, 강풍 - 7, 대설- 8, 한파 -9, 폭염 - 10, 건조 - 11, 황사 - 12
@@ -241,6 +243,8 @@ public class DisasterProvider {
             result = "방사능";
         }
 
+        if (result.equals(" ")) result = "기타";
+
         return result;
     }
 
@@ -302,6 +306,11 @@ public class DisasterProvider {
         return disasterAlarm;
     }
 
+    /**
+     * 유저 DB 알람을 문자로 바꾸는 로직
+     * @param disasterAlarm
+     * @return
+     */
     public Set<String> filterDisaster(DisasterAlarm disasterAlarm) {
         /* 필터 키워드 - 넘버링
 
@@ -332,5 +341,20 @@ public class DisasterProvider {
         if (disasterAlarm.getDisaster_19().equals("Y")) result.add("위험물");
 
         return result;
+    }
+
+    public JSONArray MapToMessage(Map<String, Object> params) throws ParseException {
+
+        Integer status = (Integer) params.get("status");
+        String jsonString = (String) params.get("body");
+
+        JSONParser parser = new JSONParser();
+        Object obj = parser.parse(jsonString);
+        JSONObject jsonObj = (JSONObject) obj;
+        JSONArray disasterMsg = (JSONArray) jsonObj.get("DisasterMsg");
+        JSONObject row = (JSONObject) disasterMsg.get(1);
+        JSONArray messages = (JSONArray) row.get("row");
+
+        return messages;
     }
 }

@@ -93,8 +93,8 @@ public class UserInfoService {
         String noticeAlarmStatus = "Y";
         String disasterAlarmStatus = "Y";
         Long heartNum = (long) 0;
-        String isDeleted = "N";
         List<Long> addressIds = new ArrayList<>();
+        String targetToken = postUserReq.getTargetToken();
 
         UserInfo userInfo = UserInfo.builder()
                 .email(email).nickname(nickname)
@@ -129,7 +129,7 @@ public class UserInfoService {
         //유저 알람 생성
         DisasterAlarm disasterAlarm = new DisasterAlarm();
         disasterAlarm.setUserIdx(userInfo.getId());
-
+        disasterAlarm.setTargetToken(targetToken);
         disasterAlarmRepository.save(disasterAlarm);
 
         // 4. JWT 생성

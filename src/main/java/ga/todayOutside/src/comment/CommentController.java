@@ -66,9 +66,9 @@ public class CommentController {
     @PostMapping("/messageBoards/{messageBoardIdx}/comment")
     public BaseResponse<Void> postComment(@RequestBody PostCommentReq req, @PathVariable Long messageBoardIdx) {
         //구 동 띄어쓰기로 입력
-        String address = req.getAddressMsg();
 
-        if (address.split(" ").length < 2) {
+
+        if (req.getThirdAddress().equals("")) {
             return new BaseResponse<>(BaseResponseStatus.EMPTY_TOWN_INFO);
         }
 
