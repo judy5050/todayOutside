@@ -28,7 +28,7 @@ bin/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
-application-oauth.properties
+today_outside_firebase_key.json
 
 ### NetBeans ###
 /nbproject/private/

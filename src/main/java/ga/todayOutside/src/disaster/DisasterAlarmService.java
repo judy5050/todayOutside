@@ -53,7 +53,6 @@ public class DisasterAlarmService {
     public void alarm(ArrayList<DisasterInfo> infos) {
 
 
-
     }
 
 }

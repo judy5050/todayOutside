@@ -148,7 +148,7 @@ public class UserInfoService {
     public PostUserRes existUser(Long snsId) {
         UserInfo userInfo = userInfoRepository.findBySnsId(snsId).orElse(null);
         Long userId = userInfo.getId();
-        String jwt = jwtService.createJwt(userId);
+        String jwt = "";
         List<Long> addressIds = addressRepository.findByUserIdxForAddressId(userId);
 
         PostUserRes postUserRes = new PostUserRes(userId, userInfo.getEmail(),
