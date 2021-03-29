@@ -87,11 +87,14 @@ public class DisasterProvider {
             int cnt = 0;
 
             //각 재난별 정보 가져오기
-            for (DisasterFilterRes d : al){
-                ja.add(d);
-                total += 1;
-                cnt += 1;
+            if (al != null){
+                for (DisasterFilterRes d : al){
+                    ja.add(d);
+                    total += 1;
+                    cnt += 1;
+                }
             }
+
 
             resultMap.put(key, ja);
 

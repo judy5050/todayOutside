@@ -170,19 +170,19 @@ public class UserInfoService {
             String nickname = patchUserReq.getNickname();
             String picture = patchUserReq.getPicture();
 
-            userInfo.setEmail(email);
-            userInfo.setNickname(nickname);
-            userInfo.setPicture(picture);
-
-
             boolean duplication = userInfoProvider.checkDuplication(nickname);
             if (!duplication) {
                 throw new BaseException(BaseResponseStatus.DUPlICATED_NICKNAME);
             }
 
+            if (!nickname.equals(""))
+                userInfo.setNickname(nickname);
+            userInfo.setEmail(email);
+            userInfo.setPicture(picture);
+
             userInfoRepository.save(userInfo);
 
-            return new PatchUserRes(userId, nickname, picture, email);
+            return new PatchUserRes(userId, userInfo.getNickname(), picture, email);
         } catch (Exception ignored) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_PATCH_USER);
         }
