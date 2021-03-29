@@ -505,6 +505,10 @@ public class WeatherService {
             baseTime = "2300";    //API 제공 시간
             baseDate=yesterdayStr;
         }
+        else if(t>=4&&t<17){
+            baseTime = "0200";    //API 제공 시간
+            baseDate=todayStr;
+        }
         else if(t>=17&&t<20){
             baseTime = "1400";    //API 제공 시간
             baseDate=todayStr;

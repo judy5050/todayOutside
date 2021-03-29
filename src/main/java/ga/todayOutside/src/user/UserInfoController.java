@@ -5,12 +5,18 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ga.todayOutside.config.BaseException;
 import ga.todayOutside.config.BaseResponse;
+import ga.todayOutside.src.address.AddressService;
+import ga.todayOutside.src.address.model.Address;
 import ga.todayOutside.src.messageBoard.MessageBoardService;
+import ga.todayOutside.src.messageBoard.models.GetMessageBoardRecentlyRes;
 import ga.todayOutside.src.messageBoard.models.GetMyMessageListRes;
+import ga.todayOutside.src.weather.WeatherService;
 import ga.todayOutside.utils.JwtService;
 import ga.todayOutside.config.BaseResponseStatus;
 import ga.todayOutside.src.user.models.*;
 import lombok.RequiredArgsConstructor;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpEntity;
@@ -22,6 +28,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +45,8 @@ public class UserInfoController {
     private final JwtService jwtService;
     private final KakaoService kakaoService;
     private final MessageBoardService messageBoardService;
-
+    private final AddressService addressService;
+    private final WeatherService weatherService;
     // 변경전
 //    @Autowired
 //    public UserInfoController(UserInfoProvider userInfoProvider, UserInfoService userInfoService, JwtService jwtService, KakaoService kakaoService) {
@@ -310,5 +319,69 @@ public class UserInfoController {
         }
 
     }
+
+    /**
+     * 홈 화면 모든 데이터 합치기
+     */
+
+    @GetMapping("/home")
+    @ResponseBody
+    public BaseResponse<ArrayList> home() throws java.text.ParseException {
+
+
+        weatherService.date();
+        Long userIdx;
+        List<Address> address=null;
+        ArrayList arrayList=new ArrayList();
+        Map allAddressesByUserIdx=null;
+        JSONArray allAddressesByUserIdx1;
+        ArrayList allAddressesByUserIdx2=null;
+        ArrayList allAddressesByUserIdx3=null;
+
+        try {
+
+            //유저 정보 받아옴 토큰에서
+            userIdx = jwtService.getUserId();
+
+            //해당 유저 찾기 없을경우 오류값 반환
+            UserInfo byUser = userInfoService.findByUserIdx(userIdx);
+            System.out.println(byUser.getId());
+            allAddressesByUserIdx2 = addressService.getAllAddressesByUserIdx(userIdx);
+
+
+            address = addressService.findByAddressList(userIdx);
+
+            //날씨 게시글 쪽
+            if(address.size()==0){
+                throw new BaseException(BaseResponseStatus.FAILED_TO_GET_ADDRESS);
+            }
+            else{
+
+                for(int i=0;i<address.size();i++){
+                    System.out.println("i = " + i);
+                    address.get(i).getId();
+                    System.out.println("address.get(i).getId() = " + address.get(i).getId());
+                    arrayList.addAll( messageBoardService.getRecentlyTop1(address.get(i).getSecondAddressName()));
+                    if(arrayList.size()-1!=i){
+                        arrayList.add(new GetMessageBoardRecentlyRes("N"));
+
+                    }
+
+                }
+
+            }
+
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        allAddressesByUserIdx2.add(arrayList.get(0));
+        return new BaseResponse<>(BaseResponseStatus.SUCCESS_HOME_WEATHER, allAddressesByUserIdx2);
+    }
+
 
 }
