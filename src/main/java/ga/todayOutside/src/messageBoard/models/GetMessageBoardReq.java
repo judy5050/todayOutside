@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 public class GetMessageBoardReq {
 
 
+    private Long messageBoardIdx;
     private Long userIdx;
     private String picture;
     private String userNickName;
@@ -18,20 +19,26 @@ public class GetMessageBoardReq {
     private String heartNum;
     private String commentNum; //댓글 수
     private String date;
+    private String secondAddressName;
 
 
 
     public GetMessageBoardReq(MessageBoard messageBoard) {
 
+        this.messageBoardIdx=messageBoard.getId();
         this.userIdx=messageBoard.getUserInfo().getId();
         this.userNickName=messageBoard.getUserInfo().getNickname();
         this.msg= messageBoard.getMessage();
         this.heartNum=messageBoard.getHeartNum().toString();
 
         int index=0;
+
+
+
         index=messageBoard.getAddressMsg().indexOf("구");
         if(index!=-1){
             this.thirdAddressName=messageBoard.getAddressMsg().substring(index+1).trim();
+            this.secondAddressName=messageBoard.getAddressMsg().substring(0,index+1).trim();
         }
         else{
             this.thirdAddressName=messageBoard.getAddressMsg();
