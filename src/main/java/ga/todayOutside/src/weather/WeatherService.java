@@ -1412,7 +1412,8 @@ public class WeatherService {
         rd.close();
         conn.disconnect();
         String data = sb.toString();
-
+        System.out.println("localCode = " + localCode);
+        System.out.println("data = " + data);
         // Json parser를 만들어 만들어진 문자열 데이터를 객체화
         JSONParser parser = new JSONParser();
         JSONObject obj = (JSONObject) parser.parse(data);

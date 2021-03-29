@@ -267,6 +267,8 @@ public class WeatherController {
         Long userIdx;
         Address address;
         weatherService.date();
+
+
         //address ,user 정보 있다 유무 확인
         try {
             userIdx = jwtService.getUserId();
@@ -279,12 +281,17 @@ public class WeatherController {
         // 시,도 구 정보 받아 nx ny로 좌표 변경
         Map<String, String> nxNy = weatherService.convertNxNy(address.getFirstAddressName(), address.getSecondAddressName());
 
+
         //x,y 값 얻기
         String nx=nxNy.get("x");
         String ny=nxNy.get("y");
 
         // 예보 구역 코드로 변경 하기 위해 실행(주간 예보)
         String s = weatherService.convertForWeeklyWeatherForeCast(address.getFirstAddressName(),address.getSecondAddressName());
+
+        String w = weatherService.convertForWeeklyHighAndLowWeather(address.getFirstAddressName(),address.getSecondAddressName());
+
+
         //코드값 출력 해봄
         System.out.println("s = " + s);
         //강수확률 하늘  하루치 확인
@@ -300,7 +307,7 @@ public class WeatherController {
 
 
         //주간 최고 최저 정보
-        weeklyResult.addAll(weatherService.weeklyHighAndLow(s));
+        weeklyResult.addAll(weatherService.weeklyHighAndLow(w));
 
         System.out.println("weeklyResult = " + weeklyResult);
 
