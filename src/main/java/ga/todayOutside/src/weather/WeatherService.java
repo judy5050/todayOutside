@@ -501,7 +501,7 @@ public class WeatherService {
         String baseTime="";
 
 
-        if(t<17){
+        if(t<4){
             baseTime = "2300";    //API 제공 시간
             baseDate=yesterdayStr;
         }
