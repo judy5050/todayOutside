@@ -95,12 +95,13 @@ public class UserInfoService {
         Long heartNum = (long) 0;
         List<Long> addressIds = new ArrayList<>();
         String targetToken = postUserReq.getTargetToken();
+        Long talkNum = (long) 0;
 
         UserInfo userInfo = UserInfo.builder()
                 .email(email).nickname(nickname)
                 .picture(picture).snsId(snsId)
                 .noticeAlarmStatus(noticeAlarmStatus).disasterAlarmStatus(disasterAlarmStatus)
-                .heartNum(heartNum)
+                .heartNum(heartNum).talkNum(talkNum)
                 .build();
 
         // 3. 유저 정보 저장
@@ -125,13 +126,14 @@ public class UserInfoService {
         } catch (Exception exception) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_POST_USER);
         }
+        System.out.println(333);
 
         //유저 알람 생성
         DisasterAlarm disasterAlarm = new DisasterAlarm();
         disasterAlarm.setUserIdx(userInfo.getId());
         disasterAlarm.setTargetToken(targetToken);
         disasterAlarmRepository.save(disasterAlarm);
-
+        System.out.println(3333333);
         // 4. JWT 생성
         String jwt = jwtService.createJwt(userInfo.getId());
 
