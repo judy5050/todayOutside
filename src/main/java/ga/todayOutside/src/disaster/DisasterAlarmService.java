@@ -116,7 +116,7 @@ public class DisasterAlarmService {
 
             for (String kind : user.getAlarmKinds()) {
                 String title = "재난";
-                String message = user.getSecondAddress()+ "에서" + kind + "에 대한 재난문자가 왔어요!";
+                String message = user.getSecondAddress()+ "에서 " + kind + "에 대한 재난문자가 왔어요!";
                 firebaseCloudMessageService.sendMessageTo(token, title, message);
             }
 
