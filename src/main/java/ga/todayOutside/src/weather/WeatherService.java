@@ -67,7 +67,7 @@ public class WeatherService {
     static Map<String, String> clock_23 = new HashMap<>();
 
 
-//    static Map<String, Map> day1Result = new LinkedHashMap<>();
+    //    static Map<String, Map> day1Result = new LinkedHashMap<>();
     static JSONArray day1Result=new JSONArray();
     static JSONArray day2Result = new JSONArray();
 
@@ -206,6 +206,7 @@ public class WeatherService {
 
         //시간을 받아오는 코드
         //조회하는 시간에서 +1 정보만 가져온다.
+        todayWeatherList=new ArrayList();
         Integer currentTime = LocalDateTime.now().getHour();
         Integer min = LocalDateTime.now().getMinute();
 
@@ -463,7 +464,7 @@ public class WeatherService {
 
 
         //분에 따른 baseTime 조절
-        if (valueMin <= 30) {
+        if (valueMin <= 10) {
 
             if (t == 0) {
                 calTime = 23;
@@ -1141,28 +1142,28 @@ public class WeatherService {
      */
     void todayNowWeatherParsing(JSONObject object,String fcstTime) {
 
-            if(object.get("fcstTime").equals(fcstTime))
-            {
-                if (object.get("category").equals("T1H")) {
-                    String T1H = object.get("fcstValue").toString();
-                    nowWeatherResult.put("T1H", T1H);
-                    todayWeatherNowCount++;
+        if(object.get("fcstTime").equals(fcstTime))
+        {
+            if (object.get("category").equals("T1H")) {
+                String T1H = object.get("fcstValue").toString();
+                nowWeatherResult.put("T1H", T1H);
+                todayWeatherNowCount++;
 //                    System.out.println("todayWeatherNowCount = " + todayWeatherNowCount);
 
 
 
-                } else if (object.get("category").equals("PTY")) {
-                    String ptyValue = object.get("fcstValue").toString();
-                    nowWeatherResult.put("PTY", ptyValue);
+            } else if (object.get("category").equals("PTY")) {
+                String ptyValue = object.get("fcstValue").toString();
+                nowWeatherResult.put("PTY", ptyValue);
 
-                }
-
-                else if (object.get("category").equals("SKY")) {
-                    String ptyValue = object.get("fcstValue").toString();
-                    nowWeatherResult.put("SKY", ptyValue);
-
-                }
             }
+
+            else if (object.get("category").equals("SKY")) {
+                String ptyValue = object.get("fcstValue").toString();
+                nowWeatherResult.put("SKY", ptyValue);
+
+            }
+        }
 
 
 
@@ -1232,10 +1233,10 @@ public class WeatherService {
         String baseTime = "2300";    //API 제공 시간
 //        System.out.println("currentTime = " + currentTime);
         if(currentTime>=23){
-             baseDate = todayStr;
+            baseDate = todayStr;
         }
         else{
-             baseDate = yesterdayStr;    //조회하고싶은 날짜
+            baseDate = yesterdayStr;    //조회하고싶은 날짜
         }
 
 //        System.out.println("yesterdayStr = " + yesterdayStr);
@@ -1355,7 +1356,7 @@ public class WeatherService {
 
     public ArrayList weeklyHighAndLow(String localCode) throws IOException, ParseException {
         int index=0;// currentTime 에 따른 일주일 값 받아오는 코드의 차이를 위해 추가한 코드
-                    //currentTime<6일경우 전날의 데이터 값을 받아오기 때문에 +1개의 데이터 필요
+        //currentTime<6일경우 전날의 데이터 값을 받아오기 때문에 +1개의 데이터 필요
 
         ArrayList arrayList=new ArrayList();
 
@@ -1433,7 +1434,7 @@ public class WeatherService {
         System.out.println("parse_items = " + parse_items);
         for (int i=0;i<parse_item.size();i++){
 //            System.out.println("i = " + i);
-             object = (JSONObject) parse_item.get(i);
+            object = (JSONObject) parse_item.get(i);
 //            System.out.println("parse_item = " + parse_item.get(0));
             arrayList  = weekHighAndLowParsing(object);
 
@@ -1608,18 +1609,18 @@ public class WeatherService {
         String fistSub3=" ";
         String fistSub4=" ";
         if(firstAddressName.length()<=2){
-             fistSub2 = firstAddressName.substring(0, 2);
+            fistSub2 = firstAddressName.substring(0, 2);
 
 
         }
         else if(firstAddressName.length()<=3){
-             fistSub2 = firstAddressName.substring(0, 2);
-             fistSub3 = firstAddressName.substring(0, 3);
+            fistSub2 = firstAddressName.substring(0, 2);
+            fistSub3 = firstAddressName.substring(0, 3);
         }
         else if(firstAddressName.length()<=4){
-             fistSub2 = firstAddressName.substring(0, 2);
-             fistSub3 = firstAddressName.substring(0, 3);
-             fistSub4 = firstAddressName.substring(0, 4);
+            fistSub2 = firstAddressName.substring(0, 2);
+            fistSub3 = firstAddressName.substring(0, 3);
+            fistSub4 = firstAddressName.substring(0, 4);
 
         }
 
@@ -1804,7 +1805,7 @@ public class WeatherService {
     public Map<String, String> convertNxNy(String firstAddressName, String secondAddressName) throws IOException, ParseException {
 
 //        String test="금천구";
-             String result;
+        String result;
 //        String areaTop="서울특별시";	//지역
 //        String areaMdl="금천구";
 //        String areaLeaf="종로1가동";
@@ -2002,9 +2003,9 @@ public class WeatherService {
         String baseDate=null;
         String baseTime = "2300";    //API 제공 시간
         if(currentTime<23){
-             baseDate = yesterdayStr;    //조회하고싶은 날짜
+            baseDate = yesterdayStr;    //조회하고싶은 날짜
         }
-      else
+        else
         {
             baseDate = todayStr;
         }
@@ -2066,11 +2067,11 @@ public class WeatherService {
             {
 
                 object = (JSONObject) parse_item.get(i);
-               arrayList= weeklyDay1HighAndLowParsing(object);
+                arrayList= weeklyDay1HighAndLowParsing(object);
 
-               //최고 최저 기온 받을경우 바로 나옴
-               if(arrayList.size()==1)
-                   break;
+                //최고 최저 기온 받을경우 바로 나옴
+                if(arrayList.size()==1)
+                    break;
 //                System.out.println("arrayList = " + arrayList);
 //                System.out.println("arrayListSize = "+arrayList.size());
 
@@ -2078,7 +2079,7 @@ public class WeatherService {
 
 
         }
-            return arrayList;
+        return arrayList;
 //        return weeklyHighAndLowResult;
     }
 
@@ -2190,66 +2191,66 @@ public class WeatherService {
     //최저 기온은 6시 데이터
     void weeklyDay1WeatherParsing(JSONObject object) {
 
-            int index=0;
-            String ptyValue = "";
-            if (object.get("fcstDate").equals(tomorrowStr)) {
-                if (object.get("fcstTime").equals("1500")) {
-                    if (object.get("category").equals("POP")) {
-                        System.out.println("object = " + object);
-                        String rnValue = object.get("fcstValue").toString();
-                        day1.put("rnSt", rnValue);
-                    } else if (object.get("category").equals("PTY")) {
-                        if(object.get("fcstValue").toString().equals("0")){
-                            index=0;
-                        }
-                        else if ((object.get("fcstValue").toString().equals("1")) || (object.get("fcstValue").toString().equals("5"))) {
-                            ptyValue = "비";
-                            index=1;
-                        }
-                        else if ((object.get("fcstValue").toString().equals("2")) || (object.get("fcstValue").toString().equals("6"))) {
-                            ptyValue = "비/눈";
-                            index=1;
-                        }
-                        else if ((object.get("fcstValue").toString().equals("3")) || (object.get("fcstValue").toString().equals("7"))) {
-                            ptyValue = "눈";
-                            index=1;
-                        }
-                        else if ((object.get("fcstValue").toString().equals("4"))) {
-                            ptyValue = "소나기";
-                            index=1;
-                        }
-
-
-
+        int index=0;
+        String ptyValue = "";
+        if (object.get("fcstDate").equals(tomorrowStr)) {
+            if (object.get("fcstTime").equals("1500")) {
+                if (object.get("category").equals("POP")) {
+                    System.out.println("object = " + object);
+                    String rnValue = object.get("fcstValue").toString();
+                    day1.put("rnSt", rnValue);
+                } else if (object.get("category").equals("PTY")) {
+                    if(object.get("fcstValue").toString().equals("0")){
+                        index=0;
                     }
-                   else if (object.get("category").equals("SKY")) {
-//                        System.out.println("object = " + object);
-                        if(index==0){
-                            if (object.get("fcstValue").toString().equals("1")) {
-                                day1.put("wf", "맑음");
-                            } else if (object.get("fcstValue").toString().equals("3")) {
-                                day1.put("wf", "구름많음");
-                            } else if (object.get("fcstValue").toString().equals("4")) {
-                                day1.put("wf", "흐림");
-                            }
-                        }
-                       else if(index==1){
-                            if (object.get("fcstValue").toString().equals("1")) {
-                                day1.put("wf", "맑고" + " " + ptyValue);
-                            } else if (object.get("fcstValue").toString().equals("3")) {
-                                day1.put("wf", "구름많고" + " " + ptyValue);
-                            } else if (object.get("fcstValue").toString().equals("4")) {
-                                day1.put("wf", "흐리고" + " " + ptyValue);
-                            }
-
-
-
-                        }
-
+                    else if ((object.get("fcstValue").toString().equals("1")) || (object.get("fcstValue").toString().equals("5"))) {
+                        ptyValue = "비";
+                        index=1;
                     }
+                    else if ((object.get("fcstValue").toString().equals("2")) || (object.get("fcstValue").toString().equals("6"))) {
+                        ptyValue = "비/눈";
+                        index=1;
+                    }
+                    else if ((object.get("fcstValue").toString().equals("3")) || (object.get("fcstValue").toString().equals("7"))) {
+                        ptyValue = "눈";
+                        index=1;
+                    }
+                    else if ((object.get("fcstValue").toString().equals("4"))) {
+                        ptyValue = "소나기";
+                        index=1;
+                    }
+
+
+
                 }
+                else if (object.get("category").equals("SKY")) {
+//                        System.out.println("object = " + object);
+                    if(index==0){
+                        if (object.get("fcstValue").toString().equals("1")) {
+                            day1.put("wf", "맑음");
+                        } else if (object.get("fcstValue").toString().equals("3")) {
+                            day1.put("wf", "구름많음");
+                        } else if (object.get("fcstValue").toString().equals("4")) {
+                            day1.put("wf", "흐림");
+                        }
+                    }
+                    else if(index==1){
+                        if (object.get("fcstValue").toString().equals("1")) {
+                            day1.put("wf", "맑고" + " " + ptyValue);
+                        } else if (object.get("fcstValue").toString().equals("3")) {
+                            day1.put("wf", "구름많고" + " " + ptyValue);
+                        } else if (object.get("fcstValue").toString().equals("4")) {
+                            day1.put("wf", "흐리고" + " " + ptyValue);
+                        }
 
+
+
+                    }
+
+                }
             }
+
+        }
 
     }
 
