@@ -83,6 +83,10 @@ public class DisasterController {
         }
     }
 
+    /**
+     * 홈 화면 조회
+     * @return
+     */
     @GetMapping("/home/disaster")
     public BaseResponse<List<DisasterHomeInfoRes>> getHomeInfo() {
         Date today = new Date();
