@@ -389,7 +389,7 @@ public class WeatherService {
                 afterCalValue = afterCalValue - 2400;
                 returnTimeValue = "00" + Integer.toString(afterCalValue);
             } else {
-                if (afterCalValue < 1030 && afterCalValue >= 0030)
+                if (afterCalValue < 1030 && afterCalValue > 0030)
                     returnTimeValue = "0" + Integer.toString(afterCalValue);
                 else {
                     returnTimeValue = Integer.toString(afterCalValue);
@@ -402,16 +402,24 @@ public class WeatherService {
         else if (baseTime.equals("0130") || baseTime.equals("0430") || baseTime.equals("0730") || baseTime.equals("1030") || baseTime.equals("1330") || baseTime.equals("1630") || baseTime.equals("1930") || baseTime.equals("2230")) {
 
             Integer afterCalValue = beforeCalValue + 500;
-            if (afterCalValue >= 2430) {
+            if (afterCalValue > 2430) {
                 afterCalValue = afterCalValue - 2400;
                 returnTimeValue = "0" + afterCalValue;
-            } else if (afterCalValue < 1030 && afterCalValue > 0030) {
-
-                returnTimeValue = "0" + Integer.toString(afterCalValue);
-            } else {
-                returnTimeValue = Integer.toString(afterCalValue);
-
             }
+            else if (afterCalValue == 2430) {
+                afterCalValue = afterCalValue - 2400;
+                returnTimeValue = "00" + Integer.toString(afterCalValue);
+            }
+            else{
+                  if (afterCalValue < 1030 && afterCalValue > 0030) {
+
+                    returnTimeValue = "0" + Integer.toString(afterCalValue);
+                } else {
+                    returnTimeValue = Integer.toString(afterCalValue);
+
+                }
+            }
+
             System.out.println("returnTimeValue = " + returnTimeValue);
             return returnTimeValue;
         }
@@ -420,11 +428,16 @@ public class WeatherService {
         else if (baseTime.equals("0230") || baseTime.equals("0530") || baseTime.equals("0830") || baseTime.equals("1130") || baseTime.equals("1430") || baseTime.equals("1730") || baseTime.equals("2030") || baseTime.equals("2330")) {
 
             Integer afterCalValue = beforeCalValue + 400;
-            if (afterCalValue >= 2430) {
+            if (afterCalValue > 2430) {
                 afterCalValue = afterCalValue - 2400;
                 returnTimeValue = "0" + Integer.toString(afterCalValue);
-            } else {
-                if (afterCalValue < 1030 && afterCalValue >= 0030)
+            }
+            else if (afterCalValue == 2430) {
+                afterCalValue = afterCalValue - 2400;
+                returnTimeValue = "00" + Integer.toString(afterCalValue);
+            }
+            else {
+                if (afterCalValue < 1030 && afterCalValue > 0030)
                     returnTimeValue = "0" + Integer.toString(afterCalValue);
                 else {
                     returnTimeValue = Integer.toString(afterCalValue);
@@ -502,22 +515,38 @@ public class WeatherService {
         String baseTime="";
 
 
-        if(t<4){
-            baseTime = "2300";    //API 제공 시간
-            baseDate=yesterdayStr;
-        }
-        else if(t>=4&&t<17){
+
+        if(t>=3&&t<6){
             baseTime = "0200";    //API 제공 시간
             baseDate=todayStr;
         }
-        else if(t>=17&&t<20){
+        else if(t>=6&&t<9){
+            baseTime = "0500";    //API 제공 시간
+            baseDate=todayStr;
+        }
+        else if(t>=9&&t<12){
+            baseTime = "0800";    //API 제공 시간
+            baseDate=todayStr;
+        }
+        else if(t>=12&&t<15){
+            baseTime = "1100";    //API 제공 시간
+            baseDate=todayStr;
+        }
+        else if(t>=15&&t<18){
             baseTime = "1400";    //API 제공 시간
             baseDate=todayStr;
         }
-        else{
-            baseTime="2000";
+        else if(t>=18&&t<21){
+            baseTime = "1700";    //API 제공 시간
             baseDate=todayStr;
-
+        }
+        else if(t>=21&&t<23){
+            baseTime = "2000";    //API 제공 시간
+            baseDate=todayStr;
+        }
+        else{
+            baseTime = "2300";    //API 제공 시간
+            baseDate=yesterdayStr;
         }
 
 
@@ -530,7 +559,7 @@ public class WeatherService {
             getTime = t + "00";
         }
         System.out.println("getTime = " + getTime);
-
+        System.out.println("baseTime = " + baseTime);
 
         String apiUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService/getVilageFcst";    //동네예보조회
 
@@ -582,7 +611,7 @@ public class WeatherService {
         conn.disconnect();
         String data = sb.toString();
 
-        System.out.println("data = " + data);
+
 
         // Json parser를 만들어 만들어진 문자열 데이터를 객체화
         JSONParser parser = new JSONParser();
@@ -603,12 +632,13 @@ public class WeatherService {
 
         System.out.println("cp = " + cp);
         System.out.println("$$$$$$$$$$$$"+data);
+        System.out.println("data = " + data);
         for (int i = 0; i < parse_item.size(); i++) {
             if (count < 14) {
 
 
                 object = (JSONObject) parse_item.get(i);
-                today3HourWeatherParsing(object, "0000", per_00, "00시", cp);
+                today3HourWeatherParsing(object, "0000", per_00, "0시", cp);
                 today3HourWeatherParsing(object, "0300", per_03, "3시", cp);
                 today3HourWeatherParsing(object, "0600", per_06, "6시", cp);
                 today3HourWeatherParsing(object, "0900", per_09, "9시", cp);
@@ -631,8 +661,9 @@ public class WeatherService {
      */
     void today3HourWeatherParsing(JSONObject object, String clock, Map clockValue, String clockName, String clockCmp) {
         //오늘 일때
+
         if (object.get("fcstDate").equals(todayStr)) {
-            if (Integer.parseInt(clockCmp) < Integer.parseInt(clock)) {
+            if ((Integer.parseInt(clockCmp) < Integer.parseInt(clock))&&(!clockCmp.equals("0030"))) {
                 if (object.get("fcstTime").equals(clock)) {
                     if (object.get("category").equals("SKY")) {
                         System.out.println("count = " + count);
@@ -655,7 +686,10 @@ public class WeatherService {
             }
         } else if (object.get("fcstDate").equals(tomorrowStr)) {
             if (object.get("fcstTime").equals(clock)) {
-                if (object.get("category").equals("SKY")) {
+                if (clock.equals("0000") && clockCmp.equals("0030")){
+
+                }
+                else if (object.get("category").equals("SKY")) {
 //                    System.out.println("tomorrowStr = " + tomorrowStr);
                     String skyValue = object.get("fcstValue").toString();
                     clockValue.put("time",clockName);//TODO 수정된 부분
@@ -687,6 +721,7 @@ public class WeatherService {
                 } else if (object.get("category").equals("T3H")) {
                     count++;
                     System.out.println("count = " + count);
+                    System.out.println("object = " + object);
                     String T3H = object.get("fcstValue").toString();
                     clockValue.put("T3H", T3H);
                     day2Result.add(clockValue);
