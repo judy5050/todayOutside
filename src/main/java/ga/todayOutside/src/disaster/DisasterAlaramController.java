@@ -68,11 +68,12 @@ public class DisasterAlaramController {
      * 재난 정보 조회, DB 저장 -> 여기서 알람이랑 연동될 예정
      * -> 주기적으로 조회 알림 기능할 예
      */
-    @GetMapping("/info")
+    @Scheduled(cron = "* */5 * * * *")
     public void getInfomation() throws ParseException, IOException {
         //재난페이지 조회
 
         Map<String, Object> result = disasterService.getImfomation();
+        if (result == null) return;
         JSONArray messages = disasterProvider.MapToMessage(result);
         //DB 등록
         ArrayList<DisasterInfo> newInfo = disasterService.postMsg(messages);

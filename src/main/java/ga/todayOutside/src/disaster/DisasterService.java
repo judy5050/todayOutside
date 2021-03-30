@@ -86,6 +86,7 @@ public class DisasterService {
             result.put("body", response.getBody());
             result.put("status", response.getStatusCodeValue());
 
+            if (response.getBody() == null) result = null;
 
         } catch (HttpClientErrorException | HttpServerErrorException   e) {
             result.put("statusCode", e.getRawStatusCode());
