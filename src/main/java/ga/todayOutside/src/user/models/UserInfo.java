@@ -150,7 +150,7 @@ public class UserInfo extends BaseEntity {
     public UserInfo(Long id, String nickname,
                     String email, String noticeAlarmStatus,
                     String disasterAlarmStatus,String picture,
-                    Long heartNum, Long snsId) {
+                    Long heartNum, Long snsId, Long talkNum) {
         this.id = id;
         this.nickname = nickname;
         this.email = email;
@@ -159,6 +159,7 @@ public class UserInfo extends BaseEntity {
         this.picture = picture;
         this.heartNum = heartNum;
         this.snsId = snsId;
+        this.talkNum = talkNum;
     }
 
 }
