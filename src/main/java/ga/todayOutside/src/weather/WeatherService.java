@@ -540,7 +540,7 @@ public class WeatherService {
             baseTime = "1700";    //API 제공 시간
             baseDate=todayStr;
         }
-        else if(t>=21&&t<23){
+        else if(t>=21&&t<=23){
             baseTime = "2000";    //API 제공 시간
             baseDate=todayStr;
         }
@@ -661,9 +661,9 @@ public class WeatherService {
      */
     void today3HourWeatherParsing(JSONObject object, String clock, Map clockValue, String clockName, String clockCmp) {
         //오늘 일때
-
+//        System.out.println("object = " + object);
         if (object.get("fcstDate").equals(todayStr)) {
-            if ((Integer.parseInt(clockCmp) < Integer.parseInt(clock))&&(!clockCmp.equals("0030"))) {
+            if ((Integer.parseInt(clockCmp) < Integer.parseInt(clock))&&(!clockCmp.equals("0030"))&&(!clockCmp.equals("0330"))) {
                 if (object.get("fcstTime").equals(clock)) {
                     if (object.get("category").equals("SKY")) {
                         System.out.println("count = " + count);
@@ -685,27 +685,58 @@ public class WeatherService {
                 }
             }
         } else if (object.get("fcstDate").equals(tomorrowStr)) {
-            if (object.get("fcstTime").equals(clock)) {
-                if (clock.equals("0000") && clockCmp.equals("0030")){
-
-                }
-                else if (object.get("category").equals("SKY")) {
+            if((clockCmp.equals("0030"))||(clockCmp.equals("0330"))){
+                if ((Integer.parseInt(clockCmp) < Integer.parseInt(clock))) {
+                    if (object.get("fcstTime").equals(clock)) {
+                        if (object.get("category").equals("SKY")) {
+                            System.out.println("object = " + object);
+                            System.out.println("clockCmp = " + clockCmp);
+                            System.out.println("clock = " + clock);
+                            System.out.println(((Integer.parseInt(clockCmp) < Integer.parseInt(clock))));
 //                    System.out.println("tomorrowStr = " + tomorrowStr);
-                    String skyValue = object.get("fcstValue").toString();
-                    clockValue.put("time",clockName);//TODO 수정된 부분
-                    clockValue.put("SKY", skyValue);
-                } else if (object.get("category").equals("PTY")) {
-                    String ptyValue = object.get("fcstValue").toString();
-                    clockValue.put("PTY", ptyValue);
-                } else if (object.get("category").equals("T3H")) {
-                    count++;
-                    System.out.println("count = " + count);
-                    System.out.println("object = " + object);
-                    String T3H = object.get("fcstValue").toString();
-                    clockValue.put("T3H", T3H);
-                    day1Result.add(clockValue);
+                            String skyValue = object.get("fcstValue").toString();
+                            clockValue.put("time", clockName);//TODO 수정된 부분
+                            clockValue.put("SKY", skyValue);
+                        } else if (object.get("category").equals("PTY")) {
+                            String ptyValue = object.get("fcstValue").toString();
+                            clockValue.put("PTY", ptyValue);
+                        } else if (object.get("category").equals("T3H")) {
+                            count++;
+                            System.out.println("count = " + count);
+//                    System.out.println("object = " + object);
+                            String T3H = object.get("fcstValue").toString();
+                            clockValue.put("T3H", T3H);
+                            day1Result.add(clockValue);
+                        }
+
+                    }
                 }
 
+            }
+            else{
+                if (object.get("fcstTime").equals(clock)) {
+                    if (object.get("category").equals("SKY")) {
+                        System.out.println("object = " + object);
+                        System.out.println("clockCmp = " + clockCmp);
+                        System.out.println("clock = " + clock);
+                        System.out.println(((Integer.parseInt(clockCmp) < Integer.parseInt(clock))));
+//                    System.out.println("tomorrowStr = " + tomorrowStr);
+                        String skyValue = object.get("fcstValue").toString();
+                        clockValue.put("time", clockName);//TODO 수정된 부분
+                        clockValue.put("SKY", skyValue);
+                    } else if (object.get("category").equals("PTY")) {
+                        String ptyValue = object.get("fcstValue").toString();
+                        clockValue.put("PTY", ptyValue);
+                    } else if (object.get("category").equals("T3H")) {
+                        count++;
+                        System.out.println("count = " + count);
+//                    System.out.println("object = " + object);
+                        String T3H = object.get("fcstValue").toString();
+                        clockValue.put("T3H", T3H);
+                        day1Result.add(clockValue);
+                    }
+
+                }
             }
 
 
