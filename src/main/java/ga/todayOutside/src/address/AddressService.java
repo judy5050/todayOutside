@@ -413,6 +413,7 @@ public class AddressService {
             System.out.println("현재 날씨 하늘 정보 조회 함수 ");
             homeWeather.putAll(weatherService.getTodayWeatherNow(nx,ny));
             homeWeather.putAll(dustService.getDust(secondAddressName));
+
             homeWeather.putAll(address);
 
 

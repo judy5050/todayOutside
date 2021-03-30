@@ -336,7 +336,7 @@ public class UserInfoController {
         Map allAddressesByUserIdx=null;
         JSONArray allAddressesByUserIdx1;
         ArrayList allAddressesByUserIdx2=null;
-        ArrayList allAddressesByUserIdx3=null;
+        ArrayList allAddressesByUserIdx3=new ArrayList();
 
         try {
 
@@ -346,10 +346,10 @@ public class UserInfoController {
             //해당 유저 찾기 없을경우 오류값 반환
             UserInfo byUser = userInfoService.findByUserIdx(userIdx);
             System.out.println(byUser.getId());
-            allAddressesByUserIdx2 = addressService.getAllAddressesByUserIdx(userIdx);
 
-
+            //유저에 해당하는 주소 가져옴
             address = addressService.findByAddressList(userIdx);
+            allAddressesByUserIdx2 = addressService.getAllAddressesByUserIdx(userIdx);
 
             //날씨 게시글 쪽
             if(address.size()==0){
@@ -361,6 +361,7 @@ public class UserInfoController {
                     System.out.println("i = " + i);
                     address.get(i).getId();
                     System.out.println("address.get(i).getId() = " + address.get(i).getId());
+
                     arrayList.addAll( messageBoardService.getRecentlyTop1(address.get(i).getSecondAddressName()));
                     if(arrayList.size()-1!=i){
                         arrayList.add(new GetMessageBoardRecentlyRes("N"));
@@ -379,8 +380,11 @@ public class UserInfoController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        allAddressesByUserIdx2.add(arrayList.get(0));
-        return new BaseResponse<>(BaseResponseStatus.SUCCESS_HOME_WEATHER, allAddressesByUserIdx2);
+
+        allAddressesByUserIdx3.addAll(allAddressesByUserIdx2);
+        allAddressesByUserIdx3.addAll(arrayList);
+        allAddressesByUserIdx2.addAll(arrayList);
+        return new BaseResponse<>(BaseResponseStatus.SUCCESS_HOME_WEATHER, allAddressesByUserIdx3);
     }
 
 

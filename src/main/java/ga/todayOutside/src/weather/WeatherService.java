@@ -448,7 +448,7 @@ public class WeatherService {
          * 시간 관련
          */
 
-        Calendar cal = Calendar.getInstance();
+        Calendar cal = Calendar.getInstance(Locale.KOREA);
         cal.setTime(new Date());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
