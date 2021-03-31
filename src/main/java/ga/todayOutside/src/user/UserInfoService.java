@@ -99,24 +99,17 @@ public class UserInfoService {
         String targetToken = postUserReq.getTargetToken();
         Long talkNum = (long) 0;
         String isDeleted = "N";
-        UserInfo userInfo = null;
-        List<Address> existAddress = new ArrayList<>();
-        DisasterAlarm disasterAlarm = null;
 
-        if (existsUserInfo != null) {
-            existAddress = addressRepository.findByUserAddress(existsUserInfo.getId());
-            existsUserInfo.setIsDeleted(isDeleted);
-            userInfo = existsUserInfo;
-        }
-        else {
-            userInfo = UserInfo.builder()
-                .email(email).nickname(nickname)
-                .picture(picture).snsId(snsId)
-                .noticeAlarmStatus(noticeAlarmStatus).disasterAlarmStatus(disasterAlarmStatus)
-                .heartNum(heartNum).talkNum(talkNum)
-                .isDeleted(isDeleted)
-                .build();
-        }
+
+
+        UserInfo userInfo = UserInfo.builder()
+            .email(email).nickname(nickname)
+            .picture(picture).snsId(snsId)
+            .noticeAlarmStatus(noticeAlarmStatus).disasterAlarmStatus(disasterAlarmStatus)
+            .heartNum(heartNum).talkNum(talkNum)
+            .isDeleted(isDeleted)
+            .build();
+
 
 
         // 3. 유저 정보 저장
@@ -126,24 +119,13 @@ public class UserInfoService {
             //주소 저장 로직
             int orderCnt = 1;
             for (PostAddressReq postAddressReq : postAddressReqs) {
-                Address address = null;
 
-                //추가할 주소가 가지고 있었던 주소보다 많으면 새로 생성
-                if (existAddress.size() >= orderCnt) {
-                    address = existAddress.get(orderCnt - 1);
-                    address.setFirstAddressName(postAddressReq.getFirstAddressName());
-                    address.setSecondAddressName(postAddressReq.getSecondAddressName());
-                }
-
-                else {
-                    address = Address.builder()
+                Address address = Address.builder()
                             .userInfo(userInfo)
                             .firstAddressName(postAddressReq.getFirstAddressName())
                             .secondAddressName(postAddressReq.getSecondAddressName())
                             .addressOrder(orderCnt++)
                             .build();
-                }
-
 
                 address = addressRepository.save(address);
                 addressIds.add(address.getId());
@@ -153,14 +135,7 @@ public class UserInfoService {
             throw new BaseException(BaseResponseStatus.FAILED_TO_POST_USER);
         }
 
-        //유저 알람 생성
-        if (existsUserInfo != null) {
-            disasterAlarm = disasterAlarmRepository.findByUserIdx(existsUserInfo.getId()).orElse(null);
-        }
-        else {
-            disasterAlarm = new DisasterAlarm();
-        }
-
+        DisasterAlarm disasterAlarm = new DisasterAlarm();
         disasterAlarm.setUserIdx(userInfo.getId());
         disasterAlarm.setTargetToken(targetToken);
         disasterAlarmRepository.save(disasterAlarm);
@@ -230,7 +205,7 @@ public class UserInfoService {
         // 1. 존재하는 UserInfo가 있는지 확인 후 저장
         UserInfo userInfo = userInfoProvider.retrieveUserInfoByUserId(userId);
         userInfo.setIsDeleted("Y");
-
+        userInfo.setSnsId((long) 0);
         // UserInfo isDelete Y로 번경 -> 조회 로직 점검
         try {
             userInfoRepository.save(userInfo);
