@@ -10,6 +10,7 @@ import ga.todayOutside.src.disaster.model.DisasterHomeInfoRes;
 import ga.todayOutside.src.disaster.model.DisasterInfo;
 import ga.todayOutside.src.user.UserInfoProvider;
 import ga.todayOutside.src.user.UserInfoRepository;
+import ga.todayOutside.src.user.UserInfoService;
 import ga.todayOutside.src.user.models.UserInfo;
 import ga.todayOutside.utils.JwtService;
 import org.json.simple.JSONArray;
@@ -34,20 +35,18 @@ public class DisasterService {
     private final DisasterAlarmRepository disasterAlarmRepository;
     private final JwtService jwtService;
     private final AddressRepository addressRepository;
-    private final UserInfoRepository userInfoRepository;
+    private final UserInfoProvider userInfoProvider;
 
     @Autowired
-    public DisasterService(DisasterProvider disasterProvider, DisasterRepository disasterRepository, DisasterAlarmRepository disasterAlarmRepository, JwtService jwtService, AddressRepository addressRepository, UserInfoRepository userInfoRepository, UserInfoProvider userInfoProvider) {
+    public DisasterService(DisasterProvider disasterProvider, DisasterRepository disasterRepository, DisasterAlarmRepository disasterAlarmRepository, JwtService jwtService, AddressRepository addressRepository, UserInfoRepository userInfoRepository, UserInfoService userInfoService, UserInfoProvider userInfoProvider) {
         this.disasterProvider = disasterProvider;
         this.disasterRepository = disasterRepository;
         this.disasterAlarmRepository = disasterAlarmRepository;
         this.jwtService = jwtService;
         this.addressRepository = addressRepository;
-        this.userInfoRepository = userInfoRepository;
         this.userInfoProvider = userInfoProvider;
     }
 
-    private UserInfoProvider userInfoProvider;
 
 
     /**
@@ -278,12 +277,10 @@ public class DisasterService {
 
         //동네 2개
         List<Address> address = addressRepository.findByUserAddress(userId);
-        UserInfo userInfo = userInfoRepository.findById(userId).orElse(null);
+        UserInfo userInfo = userInfoProvider.retrieveUserInfoByUserId(userId);
         DisasterAlarm disasterAlarm = disasterAlarmRepository.findByUserIdx(userId).orElse(null);
         Set<String> filter = disasterProvider.filterDisaster(disasterAlarm);
 
-
-        if (userInfo == null) throw new BaseException(BaseResponseStatus.NOT_FOUND_USER);
         if (disasterAlarm == null) throw new BaseException(BaseResponseStatus.NOT_FOUND_ALARM);
 
         for (Address a : address) {

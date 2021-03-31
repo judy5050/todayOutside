@@ -1,6 +1,8 @@
 package ga.todayOutside.src.FCM;
 
 
+import ga.todayOutside.src.user.UserInfoRepository;
+import ga.todayOutside.src.user.models.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,11 +10,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 public class FCMController {
     @Autowired
     FirebaseCloudMessageService firebaseCloudMessageService;
+
+    UserInfoRepository userInfoRepository;
 
     @GetMapping("/FCM")
     public void test(@RequestParam String title, @RequestParam String body) throws IOException {
