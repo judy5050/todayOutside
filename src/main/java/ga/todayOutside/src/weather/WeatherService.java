@@ -652,13 +652,10 @@ public class WeatherService {
                         clockValue.put("PTY", ptyValue);
                     } else if (object.get("category").equals("T3H")) {
                         System.out.println(" today clock = " + clock);
-                        if(clockName.equals("21시")){
-                            System.out.println("확인하세요!!!!");
-                        }
                         count++;
                         String T3H = object.get("fcstValue").toString();
                         clockValue.put("time",clockName);//TODO 수정된 부분
-                        clockValue.put("T3H", T3H);
+                        clockValue.put("T1H", T3H);
                         todayWeatherList.add(clockValue);
                     }
 
@@ -683,7 +680,7 @@ public class WeatherService {
                             count++;
                             System.out.println("count = " + count);
                             String T3H = object.get("fcstValue").toString();
-                            clockValue.put("T3H", T3H);
+                            clockValue.put("T1H", T3H);
                             day1Result.add(clockValue);
                         }
 
@@ -711,7 +708,7 @@ public class WeatherService {
                         System.out.println("count = " + count);
 //                    System.out.println("object = " + object);
                         String T3H = object.get("fcstValue").toString();
-                        clockValue.put("T3H", T3H);
+                        clockValue.put("T1H", T3H);
                         day1Result.add(clockValue);
                     }
 
@@ -733,7 +730,7 @@ public class WeatherService {
                     System.out.println("count = " + count);
                     System.out.println("object = " + object);
                     String T3H = object.get("fcstValue").toString();
-                    clockValue.put("T3H", T3H);
+                    clockValue.put("T1H", T3H);
                     day2Result.add(clockValue);
                 }
 
