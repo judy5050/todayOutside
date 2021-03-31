@@ -46,8 +46,8 @@ public interface UserInfoRepository extends JpaRepository<UserInfo, Integer> {
     @Query(" update UserInfo  u set u.talkNum=u.talkNum-1 where u.id =:userIdx")
     void updateUserTalkSub(@Param("userIdx") Long userIdx);
 
-    @Query("select u from UserInfo  u where u.snsId =:snsId")
-    List<UserInfo> findByUser(@Param("snsId") Long snsId);
+    @Query("select u from UserInfo  u where u.snsId =:snsId and u.isDeleted =:isDeleted")
+    List<UserInfo> findByUser(@Param("snsId") Long snsId,@Param("isDeleted") String status);
 
 
     //Integer delete(String email);

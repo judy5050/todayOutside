@@ -408,7 +408,7 @@ public class AddressService {
             System.out.println("index = " + index);
         }
 
-
+        System.out.println("secondAddressName = " + secondAddressName);
             address.put("secondAddressName",secondAddressName);
             homeWeather.putAll(weatherService.getTodayWeatherHighAndLow(nx, ny));
             System.out.println("현재 날씨 하늘 정보 조회 함수 ");
