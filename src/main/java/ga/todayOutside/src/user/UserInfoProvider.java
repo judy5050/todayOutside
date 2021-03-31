@@ -136,7 +136,8 @@ public class UserInfoProvider {
             throw new BaseException(BaseResponseStatus.FAILED_TO_GET_USER);
         }
 
-        if (userInfo == null ) {
+        //존재하는 회원인지 확인
+        if (userInfo == null) {
             throw new BaseException(BaseResponseStatus.NOT_FOUND_USER);
         }
         // 3. UserInfo를 return
@@ -151,8 +152,8 @@ public class UserInfoProvider {
      */
     public boolean checkDuplication(String name) {
         UserInfo userInfo = userInfoRepository.findByNickname(name).orElse(null);
-        if (userInfo != null) return false;
-        return true;
+        if (userInfo == null || userInfo.getIsDeleted().equals("Y")) return true;
+        return false;
     }
 
     //카카오 snsId 값

@@ -63,6 +63,7 @@ public class DisasterAlaramController {
 //        List<DisasterAlarmUser> disasterAlarmUserList = disasterAlarmService.alarm();
 //    }
 
+
 //
 //    /**
 //     * 재난 정보 조회, DB 저장 -> 여기서 알람이랑 연동될 예정
