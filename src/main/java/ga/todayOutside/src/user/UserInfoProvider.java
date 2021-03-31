@@ -160,7 +160,7 @@ public class UserInfoProvider {
     public UserInfo findOne(Long snsId)throws BaseException{
 
         List<UserInfo> result=null;
-        result=userInfoRepository.findByUser(snsId);
+        result=userInfoRepository.findByUser(snsId,"N");
         if(result!=null&&result.size()>0){
             return result.get(0);
         }

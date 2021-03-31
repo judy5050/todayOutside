@@ -119,7 +119,6 @@ public class AddressController {
 
          try{
              addressService.deleteAddress(addressIdx);
-             addressService.bulkAddressOrder(userIdx);
          }
          catch (BaseException exception){
             return new BaseResponse(exception.getStatus());

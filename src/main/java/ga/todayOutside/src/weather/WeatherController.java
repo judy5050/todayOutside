@@ -67,9 +67,9 @@ public class WeatherController {
         String ny=nxNy.get("y");
 
         //nx, ny,userIdx 확인
-        System.out.println("nx = " + nx);
-        System.out.println("ny = " + ny);
-        System.out.println("userIdx :"+userIdx);
+//        System.out.println("nx = " + nx);
+//        System.out.println("ny = " + ny);
+//        System.out.println("userIdx :"+userIdx);
         ArrayList res;
         res =weatherService.getTodayWeatherList(nx,ny);
 
@@ -327,7 +327,7 @@ public class WeatherController {
         Address address;
         Map allAddressesByUserIdx=null;
         JSONArray allAddressesByUserIdx1;
-        ArrayList allAddressesByUserIdx2=null;
+        ArrayList allAddressesByUserIdx2=new ArrayList();
         ArrayList allAddressesByUserIdx3=null;
 
         try {

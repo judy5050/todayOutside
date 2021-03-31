@@ -194,54 +194,8 @@ public class AddressService {
 
     }
 
-    /**
-     * 주소 삭제 후 남은 address 의 addressOrder 수정하기
-     */
-
-    @Transactional
-    public  void bulkAddressOrder(Long userIdx)throws BaseException{
-        Address address;
-
-         List<Address> addressList = addressRepository.findByUserIdx(userIdx);
-            if(addressList.size()>=1){
-                for(int i=0;i<addressList.size();i++){
-                   address = addressList.get(i);
-                   addressRepository.subBulkAddressOrder(address.getId());
 
 
-                }
-        }
-    }
-
-    @Transactional
-    public void patchAddressOrder(Long userIdx, Long addressIdx, PatchAddressOrder patchAddressOrder,Integer maxAddress) {
-
-        Address address;
-        Address address1;
-
-        address1 = addressRepository.findById(addressIdx).orElse(null);
-        //순서 수정
-        address1.setAddressOrder(patchAddressOrder.getAddressOrder());
-        //update
-        addressRepository.save(address1);
-
-
-        List<Address> addressList = addressRepository.findByUserIdx(userIdx);
-        if(addressList.size()>=1){
-            for(int i=0;i<addressList.size();i++){
-                address = addressList.get(i);
-                //변경하고자 하는 addressOrder 값 보다 같거나 클 경우 addressOrder 을 +1씩 해준다.
-                if(address.getId()!=addressIdx&&address.getAddressOrder()>= patchAddressOrder.getAddressOrder()&&address.getAddressOrder() <maxAddress)
-                addressRepository.plusBulkAddressOrder(address.getId());
-                else if(address.getId()!=addressIdx&&address.getAddressOrder()>= patchAddressOrder.getAddressOrder()&&address.getAddressOrder() >=maxAddress){
-                    addressRepository.subBulkAddressOrder(address.getId());
-                }
-
-            }
-        }
-
-
-    }
 
     /**
      * 구 정보에 맞는 동네 목록 조회 API
@@ -366,7 +320,8 @@ public class AddressService {
         ArrayList arrayList=new ArrayList();
         ArrayList<Map> weatherList=new ArrayList<>();
         JSONArray jsonArray=new JSONArray();
-        List<Address> addresses = addressRepository.findByUserAddress(userIdx);
+        List<Address> addresses;
+        addresses  = addressRepository.findByUserAddress(userIdx);
         for(int i=0;i<addresses.size();i++){
 
 
@@ -407,7 +362,7 @@ public class AddressService {
             System.out.println("index = " + index);
         }
 
-
+        System.out.println("secondAddressName = " + secondAddressName);
             address.put("secondAddressName",secondAddressName);
             homeWeather.putAll(weatherService.getTodayWeatherHighAndLow(nx, ny));
             System.out.println("현재 날씨 하늘 정보 조회 함수 ");
