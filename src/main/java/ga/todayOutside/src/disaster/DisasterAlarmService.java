@@ -47,9 +47,6 @@ public class DisasterAlarmService {
      */
     public void postAlarm(List<String> name, Long userId) throws BaseException {
         UserInfo userInfo = userInfoProvider.retrieveUserInfoByUserId(userId);
-        if (userInfo == null) {
-            throw new BaseException(BaseResponseStatus.NOT_FOUND_USER);
-        }
 
         //등록된 알람이 있는지 확인
         DisasterAlarm disasterAlarm = disasterAlarmRepository.findByUserIdx(userId).orElse(null);
@@ -66,6 +63,11 @@ public class DisasterAlarmService {
         }
     }
 
+    /**
+     * 알람 송신할 유저데이터 만들기
+     * @param infos
+     * @return
+     */
     public List<DisasterAlarmUser> alarm(ArrayList<DisasterInfo> infos) {
 
         List<DisasterAlarmUser> alarmUsers = new ArrayList<>();
@@ -74,6 +76,9 @@ public class DisasterAlarmService {
 
         // 각 리스트마다 시, 도, 재난 정보 확인해서 모두 일치하면 알람 송신
         for (UserInfo user : userInfos) {
+            //삭제된 유저 제외
+            if (user.getIsDeleted().equals("Y")) continue;
+
             Long userId = user.getId();
             //각 유저별로 재난 알람 조회
             DisasterAlarm disasterAlarm = disasterAlarmRepository.findByUserIdx(userId).orElse(null);
@@ -108,6 +113,11 @@ public class DisasterAlarmService {
         return alarmUsers;
     }
 
+    /**
+     * 유저들에게 알람 송신
+     * @param disasterAlarmUsers
+     * @throws IOException
+     */
     public void sendMessage(List<DisasterAlarmUser> disasterAlarmUsers) throws IOException {
 
         for (DisasterAlarmUser user : disasterAlarmUsers) {

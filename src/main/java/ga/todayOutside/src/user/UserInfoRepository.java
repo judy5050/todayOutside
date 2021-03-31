@@ -24,6 +24,9 @@ public interface UserInfoRepository extends JpaRepository<UserInfo, Integer> {
     Optional<UserInfo> save(PatchUserReq patchUserReq);
     Optional<UserInfo> findByNickname(String nickname);
 
+    @Query("select u from UserInfo u where u.isDeleted = :isDeleted")
+    List<UserInfo> findAllByIsDeleted(@Param("isDeleted") String isDeleted);
+
     //주디 작성
     //유저 하트수 증가
     @Modifying

@@ -122,6 +122,13 @@ public class UserInfo extends BaseEntity {
      */
     @Column(name = "talkNum")
     private Long talkNum;
+
+    /**
+     * 삭제 여부
+     */
+    @Column(name = "isDeleted")
+    private String isDeleted;
+
 //    @Builder
 //    public UserInfo(Long id, String nickname,
 //                    String email, String noticeAlarmStatus,
@@ -150,7 +157,7 @@ public class UserInfo extends BaseEntity {
     public UserInfo(Long id, String nickname,
                     String email, String noticeAlarmStatus,
                     String disasterAlarmStatus,String picture,
-                    Long heartNum, Long snsId, Long talkNum) {
+                    Long heartNum, Long snsId, Long talkNum, String isDeleted) {
         this.id = id;
         this.nickname = nickname;
         this.email = email;
@@ -160,6 +167,7 @@ public class UserInfo extends BaseEntity {
         this.heartNum = heartNum;
         this.snsId = snsId;
         this.talkNum = talkNum;
+        this.isDeleted = isDeleted;
     }
 
 }

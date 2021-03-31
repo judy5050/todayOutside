@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -75,14 +76,15 @@ public class UserInfoService {
         // 중복된 닉네임 조회 중복시 false 리턴
         boolean duplication = userInfoProvider.checkDuplication(postUserReq.getNickname());
 
-        // 1-3. 이미 존재하는 회원이 있다면 return DUPLICATED_USER
+        // 1-3. 닉네임 중복시 return DUPLICATED_USER
         if (!duplication ) {
             throw new BaseException(BaseResponseStatus.DUPlICATED_NICKNAME);
         }
 
-        if (existsUserInfo != null) {
+        if (existsUserInfo != null && existsUserInfo.getIsDeleted().equals("N")) {
             throw new BaseException(BaseResponseStatus.DUPLICATED_USER);
         }
+
 
         // 2. 유저 정보 생성
         String email = postUserReq.getEmail();
@@ -96,13 +98,26 @@ public class UserInfoService {
         List<Long> addressIds = new ArrayList<>();
         String targetToken = postUserReq.getTargetToken();
         Long talkNum = (long) 0;
+        String isDeleted = "N";
+        UserInfo userInfo = null;
+        List<Address> existAddress = new ArrayList<>();
+        DisasterAlarm disasterAlarm = null;
 
-        UserInfo userInfo = UserInfo.builder()
+        if (existsUserInfo != null) {
+            existAddress = addressRepository.findByUserAddress(existsUserInfo.getId());
+            existsUserInfo.setIsDeleted(isDeleted);
+            userInfo = existsUserInfo;
+        }
+        else {
+            userInfo = UserInfo.builder()
                 .email(email).nickname(nickname)
                 .picture(picture).snsId(snsId)
                 .noticeAlarmStatus(noticeAlarmStatus).disasterAlarmStatus(disasterAlarmStatus)
                 .heartNum(heartNum).talkNum(talkNum)
+                .isDeleted(isDeleted)
                 .build();
+        }
+
 
         // 3. 유저 정보 저장
         try {
@@ -111,13 +126,24 @@ public class UserInfoService {
             //주소 저장 로직
             int orderCnt = 1;
             for (PostAddressReq postAddressReq : postAddressReqs) {
+                Address address = null;
 
-                Address address = Address.builder()
-                        .userInfo(userInfo)
-                        .firstAddressName(postAddressReq.getFirstAddressName())
-                        .secondAddressName(postAddressReq.getSecondAddressName())
-                        .addressOrder(orderCnt++)
-                        .build();
+                //추가할 주소가 가지고 있었던 주소보다 많으면 새로 생성
+                if (existAddress.size() >= orderCnt) {
+                    address = existAddress.get(orderCnt - 1);
+                    address.setFirstAddressName(postAddressReq.getFirstAddressName());
+                    address.setSecondAddressName(postAddressReq.getSecondAddressName());
+                }
+
+                else {
+                    address = Address.builder()
+                            .userInfo(userInfo)
+                            .firstAddressName(postAddressReq.getFirstAddressName())
+                            .secondAddressName(postAddressReq.getSecondAddressName())
+                            .addressOrder(orderCnt++)
+                            .build();
+                }
+
 
                 address = addressRepository.save(address);
                 addressIds.add(address.getId());
@@ -126,14 +152,19 @@ public class UserInfoService {
         } catch (Exception exception) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_POST_USER);
         }
-        System.out.println(333);
 
         //유저 알람 생성
-        DisasterAlarm disasterAlarm = new DisasterAlarm();
+        if (existsUserInfo != null) {
+            disasterAlarm = disasterAlarmRepository.findByUserIdx(existsUserInfo.getId()).orElse(null);
+        }
+        else {
+            disasterAlarm = new DisasterAlarm();
+        }
+
         disasterAlarm.setUserIdx(userInfo.getId());
         disasterAlarm.setTargetToken(targetToken);
         disasterAlarmRepository.save(disasterAlarm);
-        System.out.println(3333333);
+
         // 4. JWT 생성
         String jwt = jwtService.createJwt(userInfo.getId());
 
@@ -198,13 +229,21 @@ public class UserInfoService {
     public void deleteUserInfo(Long userId) throws BaseException {
         // 1. 존재하는 UserInfo가 있는지 확인 후 저장
         UserInfo userInfo = userInfoProvider.retrieveUserInfoByUserId(userId);
+        userInfo.setIsDeleted("Y");
 
-        // 2-1. 해당 UserInfo를 완전히 삭제
+        // UserInfo isDelete Y로 번경 -> 조회 로직 점검
         try {
-            userInfoRepository.delete(userInfo);
-        } catch (Exception exception) {
+            userInfoRepository.save(userInfo);
+        } catch (Exception e){
             throw new BaseException(BaseResponseStatus.FAILED_TO_DELETE_USER);
         }
+
+        // 2-1. 해당 UserInfo를 완전히 삭제
+//        try {
+//            userInfoRepository.delete(userInfo);
+//        } catch (Exception exception) {
+//            throw new BaseException(BaseResponseStatus.FAILED_TO_DELETE_USER);
+//        }
 
     }
 
