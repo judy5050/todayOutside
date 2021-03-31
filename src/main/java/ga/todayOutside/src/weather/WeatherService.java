@@ -202,7 +202,7 @@ public class WeatherService {
      * 한시간 단위로 날씨 정보를 받아오는 함수
      * 시간별 날씨조회 API 에서 사용
      */
-    public void todayWeatherPer1Hour(String x,String y) throws IOException, ParseException {
+    public String todayWeatherPer1Hour(String x,String y) throws IOException, ParseException {
 
         //시간을 받아오는 코드
         //조회하는 시간에서 +1 정보만 가져온다.
@@ -248,9 +248,18 @@ public class WeatherService {
                 baseTime = after30Minute;    //조회하고싶은 시간
             }
         }
+        //        }
+        String baseDate = null;    //조회하고싶은 날짜
+        if(Integer.parseInt(baseTime)==2330){
+            baseDate=yesterdayStr;
+        }
+        else{
+
+            baseDate=todayStr;
+        }
         System.out.println("baseTime = " + baseTime);
-        System.out.println("todayStr =  "+ todayStr);
-        String baseDate = todayStr;    //조회하고싶은 날짜
+//        System.out.println("todayStr =  "+ todayStr);
+
         String dataType = "json";    //타입 xml, json 등등 ..
         String numOfRows = "50";    //한 페이지 결과 수
 
@@ -285,7 +294,7 @@ public class WeatherService {
         rd.close();
         conn.disconnect();
         String data = sb.toString();
-        System.out.println("data = " + data);
+//        System.out.println("data = " + data);
         // Json parser를 만들어 만들어진 문자열 데이터를 객체화
         JSONParser parser = new JSONParser();
         JSONObject obj = (JSONObject) parser.parse(data);
@@ -301,7 +310,7 @@ public class WeatherService {
         JSONObject element;
 
         //시간 확인
-        getTodayWeatherMaxHour(baseTime);
+        String todayWeatherMaxHour = getTodayWeatherMaxHour(baseTime);
         System.out.println("parse_body = " + parse_body);
         for (int i = 0; i < parse_item.size(); i++) {
             element = (JSONObject) parse_item.get(i);
@@ -337,7 +346,7 @@ public class WeatherService {
 
         }
 
-
+        return todayWeatherMaxHour;
     }
 
     /**
@@ -426,7 +435,7 @@ public class WeatherService {
 
         //4시간 더해 변환
         else if (baseTime.equals("0230") || baseTime.equals("0530") || baseTime.equals("0830") || baseTime.equals("1130") || baseTime.equals("1430") || baseTime.equals("1730") || baseTime.equals("2030") || baseTime.equals("2330")) {
-
+            System.out.println("beforeCalValue = " + beforeCalValue);
             Integer afterCalValue = beforeCalValue + 400;
             if (afterCalValue > 2430) {
                 afterCalValue = afterCalValue - 2400;
@@ -456,7 +465,7 @@ public class WeatherService {
     //3시간 마다 날씨 정보 제공
 //    @ResponseBody
 //    @GetMapping("/per3today")
-    public void weatherPer3Hour(String x,String y) throws IOException, ParseException {
+    public void weatherPer3Hour(String x,String y,String maxTime) throws IOException, ParseException {
 
         /**
          * 시간 관련
@@ -509,7 +518,7 @@ public class WeatherService {
 
         }
         System.out.println("value = " + value);
-        String cp = getTodayWeatherMaxHour(value);
+        String cp = maxTime;
         System.out.println("cmp = " + cp);
         String baseDate = "";    //조회하고싶은 날짜
         String baseTime="";
@@ -842,8 +851,8 @@ public class WeatherService {
         //오늘 날짜 받아오기
 
 //        date();
-        todayWeatherPer1Hour(x,y);
-        weatherPer3Hour(x,y);
+        String maxtime = todayWeatherPer1Hour(x, y);
+        weatherPer3Hour(x,y,maxtime);
 
         Map<String, Map> hashMap1 = new LinkedHashMap();
         Map<String, Map> hashMap2 = new LinkedHashMap();
@@ -1092,12 +1101,20 @@ public class WeatherService {
         System.out.println("todayStr =  "+ todayStr);
         String baseDate = null;    //조회하고싶은 날짜
 //        baseTime="0530";
-        if(baseTime.equals("2330")){
-            baseDate = yesterdayStr;
+//        if(baseTime.equals("2330")){
+//            baseDate = yesterdayStr;
+//        }
+//        else{
+//            baseDate = todayStr;
+//        }
+        if(Integer.parseInt(baseTime)==2330){
+            baseDate=yesterdayStr;
         }
         else{
-            baseDate = todayStr;
+            baseDate=todayStr;
         }
+
+
         System.out.println("시간 계산");
 
         String dataType = "json";    //타입 xml, json 등등 ..

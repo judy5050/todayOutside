@@ -166,30 +166,7 @@ public class MessageBoardService {
         PageRequest pageRequest=PageRequest.of(page,10);
         //:TODO 게시글 오늘 데이터만 조회하기 시도중
          messageBoards= messageBoardRepository.findByAddressMsgLike(filter,pageRequest,boardType,"N",date);
-//         messageBoards= messageBoardRepository.findByAddressMsgLike(filter,pageRequest,boardType,"N");
-
-//        if(messageBoards.isEmpty()){
-//            throw new BaseException(BaseResponseStatus.EMPTY_MESSAGE_BOARD_LIST);
-//        }
         getMessageBoardHeartRes1=messageBoards.map(GetMessageBoardRecentlyRes::new).getContent();
-
-//       if(messageBoards.getContent().isEmpty()||messageBoards.isEmpty()){
-//           System.out.println("messageBoards = " + messageBoards);
-//           throw new BaseException(BaseResponseStatus.EMPTY_MESSAGE_BOARD_LIST);
-//       }
-//       else{
-//           for(int i=0;i<messageBoards.getContent().size();i++){
-//               MessageBoard messageBoard = messageBoards.getContent().get(i);
-//               System.out.println("messageBoard = " + s.format(messageBoard.getCreatedAt()));
-//               System.out.println("compare"+now.compareTo(s.format(messageBoard.getCreatedAt())));
-//               System.out.println("messageBoard.getIsDeleted() = " + messageBoard.getIsDeleted());
-//               if((now.compareTo(s.format(messageBoard.getCreatedAt())))==0){
-//                   getMessageBoardHeartRes1=messageBoards.map(GetMessageBoardRecentlyRes::new).getContent();
-//               }
-//           }
-//       }
-
-
 
         return getMessageBoardHeartRes1;
     }
@@ -198,18 +175,12 @@ public class MessageBoardService {
     /**
      * 날씨 게시글 최신 순 조회
      */
-    public List<GetMessageBoardRecentlyRes> getRecentlyMessageBoardList(String secondAddressName, int page, BoardType boardType) throws ParseException {
+    public List<GetMessageBoardRecentlyRes> getRecentlyMessageBoardList(String secondAddressName, int page, BoardType boardType) throws ParseException, BaseException {
+
 
         int index;
         String filter;
-        List<GetMessageBoardRecentlyRes> getMessageBoardRecentlyRes;
-
-        //오늘 게시글만 받아오기 위해
-        Date localDateTime=new Date();
-        SimpleDateFormat s=new SimpleDateFormat("yyyy-MM-dd", Locale.KOREA);
-        String now=s.format(System.currentTimeMillis());
-        System.out.println("now = " + now);
-        Date date = s.parse(now);
+        List<GetMessageBoardRecentlyRes>getMessageBoardRecentlyRes=new ArrayList<>();
 
         //게시글 필터링 구 정보 받기
         if(secondAddressName.length()>=2&&secondAddressName.length()<=4){
@@ -224,12 +195,19 @@ public class MessageBoardService {
         }
         System.out.println("filter = " + filter);
 
+        //오늘 게시글만 받아오기 위해
+        Date localDateTime=new Date();
+        SimpleDateFormat s=new SimpleDateFormat("yyyy-MM-dd", Locale.KOREA);
+        String now=s.format(System.currentTimeMillis());
+        System.out.println("now = " + now);
+        Date date = s.parse(now);
+
         //page 처리
         PageRequest pageRequest=PageRequest.of(page,10);
         Page <MessageBoard> messageBoards= messageBoardRepository.findByAddressRecentlyMsg(filter,pageRequest,boardType,"N",date);
-        List<GetMessageBoardRecentlyRes> getMessageBoardHeartRes1=messageBoards.map(GetMessageBoardRecentlyRes::new).getContent();
+        getMessageBoardRecentlyRes=messageBoards.map(GetMessageBoardRecentlyRes::new).getContent();
 
-        return getMessageBoardHeartRes1;
+        return getMessageBoardRecentlyRes;
     }
     /**
      * 날씨  게시글 최신순 한개 조회
@@ -239,8 +217,8 @@ public class MessageBoardService {
 
         int index;
         String filter;
-        List<GetMessageBoardRecentlyRes> getMessageBoardRecentlyRes=null;
-        GetMessageBoardRecentlyRes messageBoardRecentlyRes=null;
+        List<GetMessageBoardRecentlyRes> getMessageBoardRecentlyRes;
+
 
         //오늘 게시글만 받아오기 위해
         Date localDateTime=new Date();
@@ -265,12 +243,7 @@ public class MessageBoardService {
         PageRequest pageRequest=PageRequest.of(0,1);
         Page <MessageBoard> messageBoards= messageBoardRepository.findByAddressRecentlyMsg(filter,pageRequest,BoardType.WEATHER,"N",date);
         getMessageBoardRecentlyRes=messageBoards.map(GetMessageBoardRecentlyRes::new).getContent();
-        if(getMessageBoardRecentlyRes.isEmpty()){
-            System.out.println("데이터 없음");
-//            messageBoardRecentlyRes=new GetMessageBoardRecentlyRes("Y");
-//            System.out.println("messageBoardRecentlyRes.getIsExistent() = " + messageBoardRecentlyRes.getIsExistent());
-//            getMessageBoardRecentlyRes.add(messageBoardRecentlyRes);
-        }
+
 
 
 

@@ -320,72 +320,72 @@ public class UserInfoController {
 
     }
 
-    /**
-     * 홈 화면 모든 데이터 합치기
-     */
-
-    @GetMapping("/home")
-    @ResponseBody
-    public BaseResponse<ArrayList> home() throws java.text.ParseException {
-
-
-        weatherService.date();
-        Long userIdx;
-        List<Address> address=null;
-        ArrayList arrayList=new ArrayList();
-        Map allAddressesByUserIdx=null;
-        JSONArray allAddressesByUserIdx1;
-        ArrayList allAddressesByUserIdx2=null;
-        ArrayList allAddressesByUserIdx3=new ArrayList();
-
-        try {
-
-            //유저 정보 받아옴 토큰에서
-            userIdx = jwtService.getUserId();
-
-            //해당 유저 찾기 없을경우 오류값 반환
-            UserInfo byUser = userInfoService.findByUserIdx(userIdx);
-            System.out.println(byUser.getId());
-
-            //유저에 해당하는 주소 가져옴
-            address = addressService.findByAddressList(userIdx);
-            allAddressesByUserIdx2 = addressService.getAllAddressesByUserIdx(userIdx);
-
-            //날씨 게시글 쪽
-            if(address.size()==0){
-                throw new BaseException(BaseResponseStatus.FAILED_TO_GET_ADDRESS);
-            }
-            else{
-
-                for(int i=0;i<address.size();i++){
-                    System.out.println("i = " + i);
-                    address.get(i).getId();
-                    System.out.println("address.get(i).getId() = " + address.get(i).getId());
-
-                    arrayList.addAll( messageBoardService.getRecentlyTop1(address.get(i).getSecondAddressName()));
-                    if(arrayList.size()-1!=i){
-                        arrayList.add(new GetMessageBoardRecentlyRes("N"));
-
-                    }
-
-                }
-
-            }
-
-
-        } catch (BaseException exception) {
-            return new BaseResponse<>(exception.getStatus());
-        } catch (ParseException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        allAddressesByUserIdx3.addAll(allAddressesByUserIdx2);
-        allAddressesByUserIdx3.addAll(arrayList);
-        allAddressesByUserIdx2.addAll(arrayList);
-        return new BaseResponse<>(BaseResponseStatus.SUCCESS_HOME_WEATHER, allAddressesByUserIdx3);
-    }
+//    /**
+//     * 홈 화면 모든 데이터 합치기
+//     */
+//
+//    @GetMapping("/home")
+//    @ResponseBody
+//    public BaseResponse<ArrayList> home() throws java.text.ParseException {
+//
+//
+//        weatherService.date();
+//        Long userIdx;
+//        List<Address> address=null;
+//        ArrayList arrayList=new ArrayList();
+//        Map allAddressesByUserIdx=null;
+//        JSONArray allAddressesByUserIdx1;
+//        ArrayList allAddressesByUserIdx2=null;
+//        ArrayList allAddressesByUserIdx3=new ArrayList();
+//
+//        try {
+//
+//            //유저 정보 받아옴 토큰에서
+//            userIdx = jwtService.getUserId();
+//
+//            //해당 유저 찾기 없을경우 오류값 반환
+//            UserInfo byUser = userInfoService.findByUserIdx(userIdx);
+//            System.out.println(byUser.getId());
+//
+//            //유저에 해당하는 주소 가져옴
+//            address = addressService.findByAddressList(userIdx);
+//            allAddressesByUserIdx2 = addressService.getAllAddressesByUserIdx(userIdx);
+//
+//            //날씨 게시글 쪽
+//            if(address.size()==0){
+//                throw new BaseException(BaseResponseStatus.FAILED_TO_GET_ADDRESS);
+//            }
+//            else{
+//
+//                for(int i=0;i<address.size();i++){
+//                    System.out.println("i = " + i);
+//                    address.get(i).getId();
+//                    System.out.println("address.get(i).getId() = " + address.get(i).getId());
+//
+//                    arrayList.addAll( messageBoardService.getRecentlyTop1(address.get(i).getSecondAddressName()));
+//                    if(arrayList.size()-1!=i){
+//                        arrayList.add(new GetMessageBoardRecentlyRes("N"));
+//
+//                    }
+//
+//                }
+//
+//            }
+//
+//
+//        } catch (BaseException exception) {
+//            return new BaseResponse<>(exception.getStatus());
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        allAddressesByUserIdx3.addAll(allAddressesByUserIdx2);
+//        allAddressesByUserIdx3.addAll(arrayList);
+//        allAddressesByUserIdx2.addAll(arrayList);
+//        return new BaseResponse<>(BaseResponseStatus.SUCCESS_HOME_WEATHER, allAddressesByUserIdx3);
+//    }
 
 
 }

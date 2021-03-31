@@ -179,7 +179,7 @@ public class MessageBoardController {
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
-
+        System.out.println("address.getFirstAddressName() = " + address.getFirstAddressName());
 
         //하트순 조회
         if(sortType.equals("heart")&&boardType.equals(BoardType.WEATHER)){
@@ -196,11 +196,11 @@ public class MessageBoardController {
         //날씨 최신순 조회
         else if(sortType.equals("recently")&&boardType.equals(BoardType.WEATHER)){
 
-            List<GetMessageBoardRecentlyRes> recentlyMessageBoardList = messageBoardService.getRecentlyMessageBoardList(address.getSecondAddressName(), page,boardType);
-            if(recentlyMessageBoardList.isEmpty()){
+            List<GetMessageBoardRecentlyRes> recentlyMessageBoardList1 = messageBoardService.getRecentlyMessageBoardList(address.getSecondAddressName(), page,boardType);
+            if(recentlyMessageBoardList1.isEmpty()||recentlyMessageBoardList1==null){
                 return new BaseResponse<>(BaseResponseStatus.EMPTY_MESSAGE_BOARD_LIST);
             }
-            return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_MESSAGE_BOARD_RECENTLY,recentlyMessageBoardList);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_MESSAGE_BOARD_RECENTLY,recentlyMessageBoardList1);
 
 
 

@@ -366,7 +366,8 @@ public class AddressService {
         ArrayList arrayList=new ArrayList();
         ArrayList<Map> weatherList=new ArrayList<>();
         JSONArray jsonArray=new JSONArray();
-        List<Address> addresses = addressRepository.findByUserAddress(userIdx);
+        List<Address> addresses;
+        addresses  = addressRepository.findByUserAddress(userIdx);
         for(int i=0;i<addresses.size();i++){
 
 
