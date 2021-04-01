@@ -242,8 +242,8 @@ public class DisasterService {
      */
     public ArrayList<DisasterInfo> filterByMonth(String month) throws BaseException {
 
-        String s = "2021-"+ month +"-01 00:00:00";
-        String e = "2021-"+ month +"-31 23:59:59";
+        String s = "2021/"+ month +"/01 00:00:00";
+        String e = "2021/"+ month +"/31 23:59:59";
 
         ArrayList<DisasterInfo> result = disasterRepository.findAllByCreateDateBetween(s, e);
 
@@ -258,9 +258,16 @@ public class DisasterService {
      * @throws BaseException
      */
     public ArrayList<DisasterInfo> filterByDay(String month, String day) throws BaseException {
+        if (month.length() < 2) {
+            month = "0" + month;
+        }
 
-        String s = "2021-"+ month +"-"+ day +" 00:00:00";
-        String e = "2021-"+ month +"-"+ day +" 23:59:59";
+        if (day.length() < 2) {
+            day = "0" + day;
+        }
+
+        String s = "2021/"+ month +"/"+ day +" 00:00:00";
+        String e = "2021/"+ month +"/"+ day +" 23:59:59";
 
         ArrayList<DisasterInfo> result = disasterRepository.findAllByCreateDateBetween(s, e);
 
