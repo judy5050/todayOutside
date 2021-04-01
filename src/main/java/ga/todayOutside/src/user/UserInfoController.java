@@ -88,15 +88,12 @@ public class UserInfoController {
     @ResponseBody
     @GetMapping("/{userId}")
     public BaseResponse<GetUserRes> getUser(@PathVariable Long userId) throws BaseException {
-        Long jwtId = jwtService.getUserId();
-        if (jwtId != userId) return new BaseResponse<>(BaseResponseStatus.NOT_MATCH_USER);
 
         if (userId == null || userId <= 0) {
             return new BaseResponse<>(BaseResponseStatus.EMPTY_USERID);
         }
 
         try {
-
             GetUserRes getUserRes = userInfoProvider.retrieveUserInfo(userId);
             return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_USER, getUserRes);
         } catch (BaseException exception) {
