@@ -1,14 +1,15 @@
 package ga.todayOutside.src.messageBoard.models;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.text.SimpleDateFormat;
 
+@Setter
 @Getter
 @NoArgsConstructor
-@Setter
 public class GetMessageBoardRecentlyRes {
 
     private Long userIdx;
@@ -27,8 +28,17 @@ public class GetMessageBoardRecentlyRes {
     public GetMessageBoardRecentlyRes(MessageBoard messageBoard) {
         this.userIdx=messageBoard.getUserInfo().getId();
         int size=0;
-        if(messageBoard==null){
+        if(messageBoard==null||messageBoard.getId()==null){
+            System.out.println("nullllllllllll");
             this.isExistent="N";
+            this.messageBoardIdx=null;
+            this.userNickName=null;
+            this.msg= null;
+            this.heartNum=null;
+            this.date= null;
+            this.commentNum = null;
+            this.picture= null;
+
         }
         else{
             this.isExistent="Y";

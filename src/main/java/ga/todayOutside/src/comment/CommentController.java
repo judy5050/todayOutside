@@ -4,10 +4,7 @@ import ga.todayOutside.config.BaseException;
 import ga.todayOutside.config.BaseResponse;
 import ga.todayOutside.config.BaseResponseStatus;
 import ga.todayOutside.src.address.model.Address;
-import ga.todayOutside.src.comment.model.Comment;
-import ga.todayOutside.src.comment.model.GetCommentRes;
-import ga.todayOutside.src.comment.model.PostCommentReq;
-import ga.todayOutside.src.comment.model.PostCommentRes;
+import ga.todayOutside.src.comment.model.*;
 import ga.todayOutside.src.messageBoard.models.GetMessageBoardRecentlyRes;
 import ga.todayOutside.src.user.UserInfoService;
 import ga.todayOutside.src.user.models.UserInfo;
@@ -35,25 +32,25 @@ public class CommentController {
      * 게시글과 관련된 댓글 조회
      */
     @GetMapping("/messageBoards/{messageBoardIdx}/commentList")
-    public BaseResponse<List<GetCommentRes>> getCommentList(@PathVariable Long messageBoardIdx, @RequestParam("page")int page){
+    public BaseResponse<GetCommentListRes> getCommentList(@PathVariable Long messageBoardIdx, @RequestParam("page")int page){
 
         Long userIdx;
         Address address;
         UserInfo userInfo;
-        List<GetCommentRes> commentRes;
+        GetCommentListRes commentListRes;
         try {
             //jwt 토큰값으로 유저 확인
             userIdx = jwtService.getUserId();
             //해당 유저 존재하는지 확인
             userInfo=userInfoService.findByUserIdx(userIdx);
 
-            commentRes = commentService.findAllByMessageId(messageBoardIdx, page);
+            commentListRes = commentService.findAllByMessageId(messageBoardIdx, page);
 
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
 
-        return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_COMMENT_LIST,commentRes);
+        return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_COMMENT_LIST,commentListRes);
     }
 
     /**

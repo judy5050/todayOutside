@@ -1,7 +1,6 @@
 package ga.todayOutside.src.messageBoard;
 
 
-import com.fasterxml.jackson.databind.ser.Serializers;
 import ga.todayOutside.config.BaseException;
 import ga.todayOutside.config.BaseResponse;
 import ga.todayOutside.config.BaseResponseStatus;
@@ -18,13 +17,11 @@ import ga.todayOutside.utils.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static ga.todayOutside.config.BaseResponseStatus.SUCCESS_GET_HEART_STATUS;
-import static ga.todayOutside.config.BaseResponseStatus.SUCCESS_POST_HEART;
+import static ga.todayOutside.config.BaseResponseStatus.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -155,13 +152,13 @@ public class MessageBoardController {
     }
 
     /**
-     * 게시판 글 조회 API
+     * 게시판 글 목록 조회 API
      * boardType가 heat일 경우 heart순 정렬
      * recently 일 경우 최신순 정렬
      */
     @ResponseBody
     @GetMapping("/address/{addressIdx}/messageBoardList")
-    public BaseResponse<List<GetMessageBoardRecentlyRes>>getMessageBoardList(@PathVariable Long addressIdx, @RequestParam("sortType")String sortType, @RequestParam("boardType") BoardType boardType, @RequestParam("page")int page) throws BaseException, ParseException {
+    public BaseResponse<GetMessageBoardListRes>getMessageBoardList(@PathVariable Long addressIdx, @RequestParam("sortType")String sortType, @RequestParam("boardType") BoardType boardType, @RequestParam("page")int page) throws BaseException, ParseException {
 
         Long userIdx;
         Address address=null;
@@ -179,60 +176,73 @@ public class MessageBoardController {
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
-        System.out.println("address.getFirstAddressName() = " + address.getFirstAddressName());
-
-        //하트순 조회
-        if(sortType.equals("heart")&&boardType.equals(BoardType.WEATHER)){
-
-            List<GetMessageBoardRecentlyRes> recentlyMessageBoardList = messageBoardService.getHeartMessageBoardList(address.getSecondAddressName(), page,boardType);
-            if(recentlyMessageBoardList.isEmpty()||recentlyMessageBoardList==null){
-                return new BaseResponse<>(BaseResponseStatus.EMPTY_MESSAGE_BOARD_LIST);
-            }
-
-            return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_MESSAGE_BOARD_HEART,recentlyMessageBoardList);
-
-        }
-
-        //날씨 최신순 조회
-        else if(sortType.equals("recently")&&boardType.equals(BoardType.WEATHER)){
-
-            List<GetMessageBoardRecentlyRes> recentlyMessageBoardList1 = messageBoardService.getRecentlyMessageBoardList(address.getSecondAddressName(), page,boardType);
-            if(recentlyMessageBoardList1.isEmpty()||recentlyMessageBoardList1==null){
-                return new BaseResponse<>(BaseResponseStatus.EMPTY_MESSAGE_BOARD_LIST);
-            }
-            return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_MESSAGE_BOARD_RECENTLY,recentlyMessageBoardList1);
-
-
-
-        }
-
-        else if(sortType.equals("heart")&&boardType.equals(BoardType.DISASTER)){
-
-            List<GetMessageBoardRecentlyRes> recentlyMessageBoardList = messageBoardService.getHeartMessageBoardDisasterList(address.getSecondAddressName(), page,boardType);
-            if(recentlyMessageBoardList.isEmpty()){
-                return new BaseResponse<>(BaseResponseStatus.EMPTY_MESSAGE_BOARD_LIST);
-            }
-            return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_MESSAGE_BOARD_HEART,recentlyMessageBoardList);
-
-
-        }
-        else if(sortType.equals("recently")&&boardType.equals(BoardType.DISASTER)){
-
-            List<GetMessageBoardRecentlyRes> recentlyMessageBoardList = messageBoardService.getRecentlyMessageBoardDisasterList(address.getSecondAddressName(), page,boardType);
-            if(recentlyMessageBoardList.isEmpty()){
-                return new BaseResponse<>(BaseResponseStatus.EMPTY_MESSAGE_BOARD_LIST);
-            }
-            return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_MESSAGE_BOARD_RECENTLY,recentlyMessageBoardList);
-
-
-
-        }
-        else if(sortType.isEmpty()||sortType==null){
+        if(sortType.isEmpty()||sortType==null){
             return new BaseResponse<>(BaseResponseStatus.FAILED_TO_POST_ADDRESS);//TODO 오류 값 수정하기 boardType를 입력하세요
         }
 
+//        System.out.println("address.getFirstAddressName() = " + address.getFirstAddressName());
 
-        return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_MESSAGE_BOARD_HEART);
+        //하트순 조회
+        try {
+            if (sortType.equals("heart") && boardType.equals(BoardType.WEATHER)) {
+
+                GetMessageBoardListRes recentlyMessageBoardList = messageBoardService.getHeartMessageBoardList(address.getSecondAddressName(), page, boardType);
+
+                return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_MESSAGE_BOARD_HEART, recentlyMessageBoardList);
+
+            }
+        }
+        catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+
+        //날씨 최신순 조회
+        try {
+            if(sortType.equals("recently")&&boardType.equals(BoardType.WEATHER)){
+
+                GetMessageBoardListRes recentlyMessageBoardList1 = messageBoardService.getRecentlyMessageBoardList(address.getSecondAddressName(), page,boardType);
+
+                return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_MESSAGE_BOARD_RECENTLY,recentlyMessageBoardList1);
+
+
+
+            }
+        }
+         catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+        try {
+            if(sortType.equals("heart")&&boardType.equals(BoardType.DISASTER)){
+
+                GetMessageBoardListRes recentlyMessageBoardList = messageBoardService.getHeartMessageBoardDisasterList(address.getSecondAddressName(), page,boardType);
+                return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_MESSAGE_BOARD_HEART,recentlyMessageBoardList);
+
+
+            }
+        }
+        catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+
+        try {
+            if(sortType.equals("recently")&&boardType.equals(BoardType.DISASTER)){
+
+                GetMessageBoardListRes recentlyMessageBoardList = messageBoardService.getRecentlyMessageBoardDisasterList(address.getSecondAddressName(), page,boardType);
+
+                return new BaseResponse<>(BaseResponseStatus.SUCCESS_READ_MESSAGE_BOARD_RECENTLY,recentlyMessageBoardList);
+
+
+
+            }
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+
+
+
+
+
+      return new BaseResponse<>(SUCCESS_READ_MESSAGE_BOARD);
     }
 
 

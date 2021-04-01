@@ -4,10 +4,7 @@ package ga.todayOutside.src.comment;
 
 import ga.todayOutside.config.BaseException;
 import ga.todayOutside.config.BaseResponseStatus;
-import ga.todayOutside.src.comment.model.Comment;
-import ga.todayOutside.src.comment.model.GetCommentRes;
-import ga.todayOutside.src.comment.model.PostCommentReq;
-import ga.todayOutside.src.comment.model.PostCommentRes;
+import ga.todayOutside.src.comment.model.*;
 import ga.todayOutside.src.messageBoard.MessageBoardRepository;
 import ga.todayOutside.src.messageBoard.models.GetMessageBoardRecentlyRes;
 import ga.todayOutside.src.messageBoard.models.MessageBoard;
@@ -33,26 +30,27 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CommentService {
 
-    @Autowired
+
     private  final CommentRepository commentRepository;
-    @Autowired
+
     private final UserInfoRepository userInfoRepository;
-    @Autowired
+
     private final MessageBoardRepository messageBoardRepository;
-    @Autowired
+
     private final JwtService jwtService;
 
     @Transactional
-    public List<GetCommentRes> findAllByMessageId(Long messageBoardIdx,int page) throws BaseException {
+    public GetCommentListRes findAllByMessageId(Long messageBoardIdx,int page) throws BaseException {
 
         PageRequest pageRequest=PageRequest.of(page,10);
         Page<Comment> comments = commentRepository.findAllByMessageId(messageBoardIdx, pageRequest,"N");
         List<GetCommentRes> getCommentRes=comments.map(GetCommentRes::new).getContent();
+        GetCommentListRes getCommentListRes=new GetCommentListRes(getCommentRes,comments.getTotalElements());
         if(getCommentRes.isEmpty()){
             throw new BaseException(BaseResponseStatus.NOU_FOUND_COMMENT);
         }
 
-        return getCommentRes;
+        return getCommentListRes;
     }
 
     /**

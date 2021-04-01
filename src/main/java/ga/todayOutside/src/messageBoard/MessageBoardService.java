@@ -4,12 +4,9 @@ package ga.todayOutside.src.messageBoard;
 import ga.todayOutside.config.BaseException;
 import ga.todayOutside.config.BaseResponse;
 import ga.todayOutside.config.BaseResponseStatus;
-import ga.todayOutside.src.address.model.GetAddressRes;
 import ga.todayOutside.src.messageBoard.models.*;
 import ga.todayOutside.src.user.UserInfoService;
 import ga.todayOutside.src.user.models.UserInfo;
-import ga.todayOutside.src.weather.WeatherService;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -135,13 +131,12 @@ public class MessageBoardService {
     /**
      *하트순서대로 날씨 관련 게시글 리스트 가져오기
      */
-    public List<GetMessageBoardRecentlyRes> getHeartMessageBoardList(String secondAddressName, int page, BoardType boardType) throws BaseException, ParseException {
+    public GetMessageBoardListRes getHeartMessageBoardList(String secondAddressName, int page, BoardType boardType) throws BaseException, ParseException {
 
         int index;
-
+        ArrayList result=new ArrayList();
         String filter;
-        List<GetMessageBoardRecentlyRes> getMessageBoardRecentlyRes;
-
+        Map<String,Long>pageInfo=new HashMap<>();
         //게시글 필터링 구 정보 받기
         if(secondAddressName.length()>=2&&secondAddressName.length()<=4){
             filter=secondAddressName;
@@ -160,7 +155,7 @@ public class MessageBoardService {
         String now=s.format(System.currentTimeMillis());
         System.out.println("now = " + now);
         Date date = s.parse(now);
-        List<GetMessageBoardRecentlyRes> getMessageBoardHeartRes1=Collections.emptyList();
+        List<GetMessageBoardRecentlyRes> getMessageBoardHeartRes1;
         Page<MessageBoard>messageBoards;
         //page 처리
         PageRequest pageRequest=PageRequest.of(page,10);
@@ -168,14 +163,20 @@ public class MessageBoardService {
          messageBoards= messageBoardRepository.findByAddressMsgLike(filter,pageRequest,boardType,"N",date);
         getMessageBoardHeartRes1=messageBoards.map(GetMessageBoardRecentlyRes::new).getContent();
 
-        return getMessageBoardHeartRes1;
+        if(getMessageBoardHeartRes1.isEmpty()){
+            throw  new BaseException(BaseResponseStatus.EMPTY_MESSAGE_BOARD_LIST);
+        }
+        GetMessageBoardListRes getMessageBoardListRes =new GetMessageBoardListRes(getMessageBoardHeartRes1,messageBoards.getTotalElements());
+
+        return getMessageBoardListRes;
+//        return getMessageBoardHeartRes1;
     }
 
 
     /**
      * 날씨 게시글 최신 순 조회
      */
-    public List<GetMessageBoardRecentlyRes> getRecentlyMessageBoardList(String secondAddressName, int page, BoardType boardType) throws ParseException, BaseException {
+    public GetMessageBoardListRes getRecentlyMessageBoardList(String secondAddressName, int page, BoardType boardType) throws ParseException, BaseException {
 
 
         int index;
@@ -206,8 +207,11 @@ public class MessageBoardService {
         PageRequest pageRequest=PageRequest.of(page,10);
         Page <MessageBoard> messageBoards= messageBoardRepository.findByAddressRecentlyMsg(filter,pageRequest,boardType,"N",date);
         getMessageBoardRecentlyRes=messageBoards.map(GetMessageBoardRecentlyRes::new).getContent();
-
-        return getMessageBoardRecentlyRes;
+        GetMessageBoardListRes getMessageBoardListRes=new GetMessageBoardListRes(getMessageBoardRecentlyRes,messageBoards.getTotalElements());
+        if(getMessageBoardRecentlyRes.isEmpty()||getMessageBoardRecentlyRes==null){
+            throw  new BaseException(BaseResponseStatus.EMPTY_MESSAGE_BOARD_LIST);
+        }
+        return getMessageBoardListRes;
     }
     /**
      * 날씨  게시글 최신순 한개 조회
@@ -304,12 +308,10 @@ public class MessageBoardService {
      * 재난 관련 하트순
      */
 
-    public List<GetMessageBoardRecentlyRes> getHeartMessageBoardDisasterList(String secondAddressName, int page, BoardType boardType) throws ParseException {
+    public GetMessageBoardListRes getHeartMessageBoardDisasterList(String secondAddressName, int page, BoardType boardType) throws ParseException, BaseException {
 
         int index;
         String filter;
-        List<GetMessageBoardRecentlyRes> getMessageBoardRecentlyRes;
-
         //게시글 필터링 구 정보 받기
         if(secondAddressName.length()>=2&&secondAddressName.length()<=4){
             filter=secondAddressName;
@@ -338,15 +340,18 @@ public class MessageBoardService {
 //        Page <MessageBoard> messageBoards= messageBoardRepository.findByAddressMsgLike(filter,pageRequest,boardType,"N",date);
         Page <MessageBoard> messageBoards= messageBoardRepository.findByAddressMsgLike(filter,pageRequest,boardType,"N",date);
         List<GetMessageBoardRecentlyRes> getMessageBoardListHeartRes=messageBoards.map(GetMessageBoardRecentlyRes::new).getContent();
-
-        return getMessageBoardListHeartRes;
+        if(getMessageBoardListHeartRes.isEmpty()||getMessageBoardListHeartRes==null){
+            throw  new BaseException(BaseResponseStatus.EMPTY_MESSAGE_BOARD_LIST);
+        }
+        GetMessageBoardListRes getMessageBoardListRes=new GetMessageBoardListRes(getMessageBoardListHeartRes,messageBoards.getTotalElements());
+        return getMessageBoardListRes;
     }
 
     /**
      * 재난 관련 최신순
      */
 
-    public List<GetMessageBoardRecentlyRes> getRecentlyMessageBoardDisasterList(String secondAddressName, int page, BoardType boardType) throws ParseException {
+    public GetMessageBoardListRes getRecentlyMessageBoardDisasterList(String secondAddressName, int page, BoardType boardType) throws ParseException, BaseException {
 
         int index;
         String filter;
@@ -378,8 +383,11 @@ public class MessageBoardService {
         PageRequest pageRequest=PageRequest.of(page,10);
         Page <MessageBoard> messageBoards= messageBoardRepository.findByAddressRecentlyMsg(filter,pageRequest,boardType,"N",date);
         List<GetMessageBoardRecentlyRes> getMessageBoardListHeartRes=messageBoards.map(GetMessageBoardRecentlyRes::new).getContent();
-
-        return getMessageBoardListHeartRes;
+        if(getMessageBoardListHeartRes.isEmpty()){
+            throw  new BaseException(BaseResponseStatus.EMPTY_MESSAGE_BOARD_LIST);
+        }
+        GetMessageBoardListRes getMessageBoardListRes=new GetMessageBoardListRes(getMessageBoardListHeartRes,messageBoards.getTotalElements());
+        return getMessageBoardListRes;
     }
 
 
