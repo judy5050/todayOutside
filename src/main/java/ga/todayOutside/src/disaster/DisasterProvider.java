@@ -159,9 +159,10 @@ public class DisasterProvider {
         //감염병
         Pattern pattern1 = Pattern.compile("[\\w\\W\\d\\D\\s\\S]*코로나+[\\w\\W\\d\\D\\s\\S]*");
         Pattern pattern2 = Pattern.compile("[\\w\\W\\d\\D\\s\\S]*방역+[\\w\\W\\d\\D\\s\\S]*");
-        Pattern pattern3 = Pattern.compile("[\\w\\W\\d\\D\\s\\S]*확진자+[\\w\\W\\d\\D\\s\\S]*");
+        Pattern pattern3 = Pattern.compile("[\\w\\W\\d\\D\\s\\S]*확진+[\\w\\W\\d\\D\\s\\S]*");
         Pattern pattern4 = Pattern.compile("[\\w\\W\\d\\D\\s\\S]*접촉자+[\\w\\W\\d\\D\\s\\S]*");
         Pattern pattern1_1 = Pattern.compile("[\\w\\W\\d\\D\\s\\S]*진료소+[\\w\\W\\d\\D\\s\\S]*");
+        Pattern pattern1_2 = Pattern.compile("[\\w\\W\\d\\D\\s\\S]*보건소+[\\w\\W\\d\\D\\s\\S]*");
 
 
         //지진
@@ -206,7 +207,7 @@ public class DisasterProvider {
         Matcher matcher;
         if (pattern1.matcher(msg).matches() || pattern2.matcher(msg).matches() ||
                 pattern3.matcher(msg).matches() || pattern4.matcher(msg).matches() ||
-                pattern1_1.matcher(msg).matches()) {
+                pattern1_1.matcher(msg).matches() || pattern1_2.matcher(msg).matches()) {
 
             result = "감염병";
 
